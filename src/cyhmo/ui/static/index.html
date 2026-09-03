@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CYHMO</title>
+  <link rel="stylesheet" href="/static/tokens.css">
+  <link rel="stylesheet" href="/static/components.css">
+  <script type="module" src="/static/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-shell__header">
+      <h1 class="app-shell__title" data-i18n="app.title"></h1>
+      <span id="link-pill" class="pill pill--lg pill--muted" role="status" aria-live="polite"></span>
+      <span id="phase-pill" class="pill pill--idle" role="status" aria-live="polite" hidden></span>
+      <div id="component-status" class="app-shell__components" data-i18n-label="tools.status.title" hidden></div>
+      <span class="app-shell__spacer"></span>
+      <button id="update-badge" class="pill pill--ok pill--action" type="button" data-i18n="update.badge" data-i18n-title="update.badgeTitle" hidden></button>
+      <button id="restart-badge" class="pill pill--warning pill--action" type="button" data-i18n="app.restartPending" data-i18n-title="app.restartPendingTitle" hidden></button>
+      <button id="listen-toggle" class="button button--primary" type="button"></button>
+      <button id="app-restart" class="button button--ghost button--sm" type="button" data-i18n="app.restart"></button>
+      <button id="app-exit" class="button button--danger button--sm" type="button" data-i18n="app.exit"></button>
+    </header>
+
+    <nav class="tabs" role="tablist" data-i18n-label="app.title">
+      <button class="tabs__tab tabs__tab--active" type="button" role="tab" id="tabbtn-panel" data-tab="panel" aria-selected="true" aria-controls="tab-panel" data-i18n="tabs.panel"></button>
+      <button class="tabs__tab" type="button" role="tab" id="tabbtn-cheats" data-tab="cheats" aria-selected="false" aria-controls="tab-cheats" data-i18n="tabs.cheats"></button>
+      <button class="tabs__tab" type="button" role="tab" id="tabbtn-settings" data-tab="settings" aria-selected="false" aria-controls="tab-settings" data-i18n="tabs.settings"></button>
+      <button class="tabs__tab" type="button" role="tab" id="tabbtn-history" data-tab="history" aria-selected="false" aria-controls="tab-history" data-i18n="tabs.history" hidden></button>
+      <button class="tabs__tab" type="button" role="tab" id="tabbtn-tools" data-tab="tools" aria-selected="false" aria-controls="tab-tools" data-i18n="tabs.tools" hidden></button>
+      <button class="tabs__tab" type="button" role="tab" id="tabbtn-console" data-tab="console" aria-selected="false" aria-controls="tab-console" data-i18n="tabs.console" hidden></button>
+    </nav>
+
+    <main class="app-shell__main">
+      <section id="tab-panel" class="panel" role="tabpanel" aria-labelledby="tabbtn-panel">
+        <section class="card">
+          <div id="voice" class="voice voice--idle">
+            <div class="voice__stage">
+              <div class="voice__halo"></div>
+              <div class="voice__orb" aria-hidden="true">
+                <span class="voice__bar"></span>
+                <span class="voice__bar"></span>
+                <span class="voice__bar"></span>
+                <span class="voice__bar"></span>
+                <span class="voice__bar"></span>
+              </div>
+            </div>
+            <span id="voice-caption" class="voice__caption" role="status" aria-live="polite"></span>
+            <p id="voice-text" class="voice__text voice__text--placeholder" aria-live="polite"></p>
+            <div id="voice-commands" class="voice__commands"></div>
+            <p id="voice-result" class="voice__result"></p>
+            <p id="voice-hint" class="voice__hint"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card__title" data-i18n="recent.title"></h2>
+          <div class="card__body">
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-i18n="recent.status"></th>
+                    <th scope="col" data-i18n="recent.text"></th>
+                    <th scope="col" data-i18n="recent.commands"></th>
+                  </tr>
+                </thead>
+                <tbody id="recent-rows"></tbody>
+              </table>
+            </div>
+            <p id="recent-empty" class="empty" data-i18n="recent.empty"></p>
+          </div>
+        </section>
+      </section>
+
+      <section id="tab-cheats" class="panel" role="tabpanel" aria-labelledby="tabbtn-cheats" hidden>
+        <section class="card">
+          <h2 class="card__title" data-i18n="cheats.title"></h2>
+          <div class="card__body">
+            <p class="text-muted text-sm" data-i18n="cheats.subtitle"></p>
+            <label class="field">
+              <span class="field__label" data-i18n="cheats.search"></span>
+              <input id="cheats-search" class="field__control" type="search" autocomplete="off" data-i18n-placeholder="cheats.searchPlaceholder">
+            </label>
+            <div class="row">
+              <span id="cheats-count" class="text-muted text-sm"></span>
+              <span id="cheats-stale" class="pill pill--warning" data-i18n="cheats.stale" hidden></span>
+            </div>
+            <ul id="cheats-list" class="list list--scroll" data-i18n-label="cheats.title"></ul>
+          </div>
+        </section>
+      </section>
+
+      <section id="tab-settings" class="panel" role="tabpanel" aria-labelledby="tabbtn-settings" hidden>
+        <p id="settings-advanced-note" class="text-muted text-sm" data-i18n="settings.advancedNotice" hidden></p>
+        <div id="settings-root" class="grid"></div>
+      </section>
+
+      <section id="tab-history" class="panel" role="tabpanel" aria-labelledby="tabbtn-history" hidden>
+        <section class="card">
+          <h2 class="card__title" data-i18n="history.title"></h2>
+          <div class="card__body">
+            <p class="text-muted text-sm" data-i18n="history.hint"></p>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-i18n="history.columns.id"></th>
+                    <th scope="col" data-i18n="history.columns.status"></th>
+                    <th scope="col" data-i18n="history.columns.text"></th>
+                    <th scope="col" data-i18n="history.columns.commands"></th>
+                    <th scope="col" data-i18n="history.columns.method"></th>
+                    <th scope="col" data-i18n="history.columns.confidence"></th>
+                    <th scope="col" data-i18n="history.columns.total"></th>
+                  </tr>
+                </thead>
+                <tbody id="history-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <h2 class="card__title" data-i18n="history.detail"></h2>
+          <div id="history-detail" class="card__body"></div>
+        </section>
+      </section>
+
+      <section id="tab-tools" class="panel" role="tabpanel" aria-labelledby="tabbtn-tools" hidden>
+        <div class="grid">
+          <section class="card">
+            <h2 class="card__title" data-i18n="tools.status.title"></h2>
+            <div id="status-body" class="card__body"></div>
+          </section>
+          <section class="card">
+            <h2 class="card__title" data-i18n="tools.latency.title"></h2>
+            <div id="latency-body" class="card__body"></div>
+          </section>
+          <section class="card">
+            <h2 class="card__title" data-i18n="tools.interpret.title"></h2>
+            <div class="card__body">
+              <form id="interpret-form" class="stack">
+                <label class="field">
+                  <span class="field__label" data-i18n="tools.interpret.label"></span>
+                  <input id="interpret-text" class="field__control" type="text" autocomplete="off" required data-i18n-placeholder="tools.interpret.placeholder">
+                </label>
+                <div class="row">
+                  <button class="button button--primary" type="submit" data-i18n="tools.interpret.submit"></button>
+                </div>
+              </form>
+              <div id="interpret-result" class="stack"></div>
+            </div>
+          </section>
+          <section class="card">
+            <h2 class="card__title" data-i18n="tools.inject.title"></h2>
+            <div class="card__body">
+              <form id="inject-form" class="stack">
+                <label class="field">
+                  <span class="field__label" data-i18n="tools.inject.label"></span>
+                  <input id="inject-text" class="field__control field__control--mono" type="text" autocomplete="off" required data-i18n-placeholder="tools.inject.placeholder">
+                </label>
+                <div class="row">
+                  <button class="button button--danger" type="submit" data-i18n="tools.inject.submit"></button>
+                </div>
+              </form>
+              <div id="inject-result" class="stack"></div>
+            </div>
+          </section>
+          <section class="card">
+            <h2 class="card__title" data-i18n="tools.mic.title"></h2>
+            <div class="card__body">
+              <div class="row">
+                <button id="mic-test-button" class="button button--secondary" type="button" data-i18n="tools.mic.submit"></button>
+              </div>
+              <div id="mic-test-result" class="stack"></div>
+            </div>
+          </section>
+          <section class="card">
+            <h2 class="card__title" data-i18n="tools.injector.title"></h2>
+            <div class="card__body">
+              <div class="row">
+                <button id="injector-refresh" class="button button--secondary" type="button" data-i18n="tools.injector.refresh"></button>
+              </div>
+              <div id="injector-status" class="stack"></div>
+            </div>
+          </section>
+          <section class="card grid__span-2">
+            <h2 class="card__title" data-i18n="tools.calibration.title"></h2>
+            <div class="card__body">
+              <p class="text-muted text-sm" data-i18n="tools.calibration.help"></p>
+              <form id="calibration-form" class="form">
+                <label class="field">
+                  <span class="field__label" data-i18n="tools.calibration.dataset"></span>
+                  <input id="calibration-dataset" class="field__control field__control--mono" type="text" autocomplete="off">
+                </label>
+                <label class="field">
+                  <span class="field__label" data-i18n="tools.calibration.spontaneous"></span>
+                  <input id="calibration-spontaneous" class="field__control field__control--mono" type="text" autocomplete="off">
+                </label>
+                <label class="field">
+                  <span class="field__label" data-i18n="tools.calibration.grid"></span>
+                  <input id="calibration-grid" class="field__control field__control--mono" type="text" autocomplete="off">
+                </label>
+                <div class="form__footer">
+                  <button id="calibration-start" class="button button--primary" type="submit" data-i18n="tools.calibration.start"></button>
+                  <button id="calibration-cancel" class="button button--secondary" type="button" data-i18n="tools.calibration.cancel" hidden></button>
+                </div>
+              </form>
+              <div id="calibration-result" class="stack"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="tab-console" class="panel" role="tabpanel" aria-labelledby="tabbtn-console" hidden>
+        <section class="card">
+          <h2 class="card__title" data-i18n="console.title"></h2>
+          <div class="card__body">
+            <div class="row">
+              <label class="field field--inline">
+                <span class="field__label" data-i18n="console.level"></span>
+                <select id="console-filter" class="field__control">
+                  <option value="debug" data-i18n="console.levelDebug"></option>
+                  <option value="info" data-i18n="console.levelInfo"></option>
+                  <option value="warning" data-i18n="console.levelWarning"></option>
+                  <option value="error" data-i18n="console.levelError"></option>
+                </select>
+              </label>
+              <span id="console-count" class="text-muted text-sm"></span>
+              <button id="console-copy" class="button button--ghost" type="button" data-i18n="console.copy"></button>
+            </div>
+            <div id="console-lines" class="console" role="log" aria-live="off"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="update-root"></div>
+    <div id="offline-root"></div>
+    <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+  </div>
+</body>
+</html>

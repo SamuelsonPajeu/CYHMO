@@ -1,0 +1,110 @@
+# Fala espontânea em pt-BR que NÃO é comando: conversa cotidiana, comentários sobre o jogo,
+# leitura de texto. Autoria própria. Qualquer Interpretation com commands não vazio conta como falso positivo.
+version: 1
+phrases:
+  - que horas são agora
+  - meu celular tá quase sem bateria
+  - preciso comprar pão antes de a padaria fechar
+  - acho que vai chover mais tarde
+  - esse jogo é de dois mil e três
+  - vou tomar um café e já volto
+  - a reunião foi remarcada pra amanhã cedo
+  - deixa eu ver onde eu parei
+  - essa parte do hotel é meio confusa
+  - o gráfico envelheceu mas a ideia é boa
+  - minha internet caiu de novo
+  - você viu onde deixei o controle
+  - o cachorro tá latindo desde cedo
+  - tem alguém batendo na porta
+  - amanhã eu tenho dentista às nove
+  - a pizza chegou fria de novo
+  - esqueci de responder a mensagem da minha mãe
+  - o ônibus atrasou meia hora hoje
+  - preciso trocar a lâmpada do corredor
+  - o emulador tá rodando bem suave
+  - acho que salvei no ponto errado
+  - a legenda desse trecho tá pequena demais
+  - olha o tamanho dessa barata
+  - vou baixar o volume da música
+  - tô com fome mas não quero cozinhar
+  - a cadeira do escritório tá rangendo
+  - que sono que eu tô
+  - lembra de comprar leite e ovos
+  - o filme de ontem foi bem chato
+  - tá muito calor aqui dentro
+  - liga o ventilador por favor
+  - meu fone descarregou no meio do caminho
+  - a conta de luz veio mais cara este mês
+  - o vizinho tá fazendo obra outra vez
+  - acabou o papel da impressora
+  - a senha do wi-fi mudou semana passada
+  - deixa eu conferir o e-mail rapidinho
+  - o carro tá fazendo um barulho esquisito
+  - a criança dormiu cedo hoje
+  - quanto custa aquele monitor novo
+  - hoje é sexta ou quinta
+  - acho que a ração do gato acabou
+  - o jogo travou bem na hora do save
+  - essa cutscene é longa demais
+  - a voz da personagem é bem expressiva
+  - o microfone antigo nunca me entendia
+  - a trilha sonora desse hotel é assustadora
+  - preciso ler o manual desse emulador
+  - vou anotar isso no caderno depois
+  - a reunião de amanhã foi cancelada
+  - o pão de queijo saiu do forno
+  - você já assistiu a série nova
+  - tô esperando a atualização terminar
+  - o ventilador de teto tá desbalanceado
+  - alguém deixou a geladeira aberta
+  - esse capítulo parece mais difícil que o anterior
+  - a chave do armário sumiu de novo
+  - vou dar uma volta no quarteirão
+  - o bolo ficou um pouco queimado embaixo
+  - preciso agendar a revisão do carro
+  - o time perdeu de novo ontem
+  - a fila do banco tava enorme
+  - esqueci o guarda-chuva no trabalho
+  - a tela do notebook tá com um risco
+  - hoje o trânsito tava tranquilo
+  - vou levantar pra pegar água
+  - o teclado tá com uma tecla travando
+  - tem café passado na cozinha
+  - a encomenda chega na quarta-feira
+  - deixa eu aumentar o brilho da tela
+  - o gato derrubou o vaso da janela
+  - quem ligou agora há pouco
+  - preciso responder aquele formulário
+  - o aluguel vence dia dez
+  - tá faltando sabão em pó
+  - o técnico vem amanhã de manhã
+  - o ar-condicionado tá pingando
+  - vou passar na farmácia mais tarde
+  - a novela acabou semana passada
+  - o rádio só pega chiado aqui
+  - a impressora não conecta no wi-fi
+  - já tá na hora de dormir
+  - o elevador do prédio tá em manutenção
+  - vou esquentar o almoço de ontem
+  - a planta da sala precisa de água
+  - meu relógio tá cinco minutos adiantado
+  - a porta do quarto tá rangendo
+  - a batalha anterior foi mais tranquila
+  - esse puzzle do duto me deixou perdido
+  - o narrador desse guia escreve bem
+  - o disco do jogo tá cheio de arranhão
+  - preciso configurar a porta usb do emulador
+  - a tradução da mod ainda tá em andamento
+  - o cursor do mapa some às vezes
+  - vou fazer uma pausa de dez minutos
+  - a luz do quarto queimou
+  - o pedido do mercado atrasou
+  - tem um documentário novo sobre o espaço
+  - ontem dormi muito mal
+  - o vizinho de cima tá ouvindo música alta
+  - a bateria do notebook dura pouco
+  - amanhã é feriado então tá tranquilo
+  - vou terminar esse relatório antes do almoço
+  - minha voz tá rouca hoje
+  - o pote de biscoito tá vazio
+  - deixa eu ver o placar do jogo de ontem

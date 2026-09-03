@@ -1,0 +1,378 @@
+# Pacote de idioma — Chinês simplificado (mandarim)
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# word_separator: none — o chinês escreve sem espaço entre palavras. A fronteira de palavra
+# sai deste vocabulário por casamento mais longo, então um termo que falte aqui é cortado
+# caractere a caractere. Prefira cadastrar a palavra inteira (停下) a confiar no caractere.
+#
+# Variantes tradicionais das palavras de comando estão cadastradas junto das simplificadas:
+# o Whisper alterna entre as duas escritas conforme a âncora da cena, e uma transcrição em
+# tradicional não pode deixar o comando mudo.
+
+code: zh-CN
+name: 中文（简体）
+stt_language: zh
+word_separator: none
+
+numerals:
+  cardinal:
+    零: 0
+    〇: 0
+    一: 1
+    二: 2
+    两: 2
+    兩: 2
+    三: 3
+    四: 4
+    五: 5
+    六: 6
+    七: 7
+    八: 8
+    九: 9
+    十: 10
+  ordinal:
+    第一: 1
+    第二: 2
+    第三: 3
+    第四: 4
+    第五: 5
+    第六: 6
+
+quantifiers: [次, 遍, 下]
+connectives: [然后, 然後, 接着, 接著, 再, 还有, 還有, 并且, 之后, 之後]
+affirmations: [是, 是的, 对, 對, 好, 好的, 没错, 沒錯, 确认, 確認]
+negations: [不, 不是, 不对, 不對, 不要, 没有, 沒有, 否]
+target_words: [号, 號, 目标, 目標, 敌人, 敵人]
+
+body_parts:
+  头: HEAD
+  頭: HEAD
+  脑袋: HEAD
+  嘴: MOUTH
+  嘴巴: MOUTH
+  左眼: LEFT EYE
+  左边的眼睛: LEFT EYE
+  中眼: MIDDLE EYE
+  中间的眼睛: MIDDLE EYE
+  右眼: RIGHT EYE
+  右边的眼睛: RIGHT EYE
+  红眼: RED EYE
+  紅眼: RED EYE
+  眼: EYE
+  眼睛: EYE
+  舌头: TONGUE
+  舌頭: TONGUE
+  左腹: LEFT STOMACH
+  左边的肚子: LEFT STOMACH
+  右腹: RIGHT STOMACH
+  右边的肚子: RIGHT STOMACH
+  红腹: RED STOMACH
+  肚子: STOMACH
+  腹部: STOMACH
+  前腿: FRONT LEG
+  身体: BODY
+  身體: BODY
+  尾巴: TAIL
+  树枝: BRANCHES
+  樹枝: BRANCHES
+  根: ROOT
+  藤蔓: VINES
+  叶子: LEAF
+  葉子: LEAF
+
+directions:
+  左: LEFT
+  左边: LEFT
+  左邊: LEFT
+  向左: LEFT
+  往左: LEFT
+  右: RIGHT
+  右边: RIGHT
+  右邊: RIGHT
+  向右: RIGHT
+  往右: RIGHT
+  上面: UP
+  向上: UP
+  往上: UP
+  下面: DOWN
+  向下: DOWN
+  往下: DOWN
+  前面: FRONT
+  向前: FRONT
+  往前: FRONT
+  后面: BACK
+  後面: BACK
+  向后: BACK
+  向後: BACK
+
+lexicon:
+  后退: move back
+  後退: move back
+  退后: move back
+  开枪: shoot
+  開槍: shoot
+  射击: shoot
+  射擊: shoot
+  射: shoot
+  逃跑: flee
+  快逃: flee
+  逃: flee
+  撤退: flee
+  跑: run
+  快跑: run
+  走: walk
+  走路: walk
+  步行: walk
+  停: stop
+  停下: stop
+  停止: stop
+  等: wait
+  等等: wait
+  等一下: wait
+  换弹: reload
+  換彈: reload
+  装弹: reload
+  裝彈: reload
+  重新装填: reload
+  闪避: dodge
+  閃避: dodge
+  躲开: dodge
+  躲避: dodge
+  躲: dodge
+  恢复: recover
+  恢復: recover
+  治疗: recover
+  治療: recover
+  回血: recover
+  靠近: approach
+  接近: approach
+  回去: go back
+  返回: go back
+  回来: go back
+  回來: go back
+  检查: check
+  檢查: check
+  查看: check
+  看: look
+  看看: look
+  打开: open
+  打開: open
+  关上: close
+  關上: close
+  关闭: close
+  读: read
+  讀: read
+  拿: get
+  拿走: take
+  捡起: take
+  移动: move
+  移動: move
+  转: turn
+  轉: turn
+  左转: turn left
+  右转: turn right
+  跳: jump
+  嘲讽: taunt
+  嘲諷: taunt
+  听: listen
+  聽: listen
+  听着: listen
+  快点: hurry
+  快點: hurry
+  赶快: hurry
+  快: hurry
+  起来: get up
+  起來: get up
+  站起来: get up
+  醒醒: wake up
+  醒来: wake up
+  找: search
+  搜索: search
+  寻找: search
+  推: push
+  按: press
+  按下: press
+  用: use
+  使用: use
+  买: buy
+  进去: enter
+  進去: enter
+  出去: go outside
+  离开: leave
+  離開: leave
+  你好: hello
+  嗨: hi
+  谢谢: thank you
+  謝謝: thank you
+  对不起: sorry
+  對不起: sorry
+  我爱你: i love you
+  我愛你: i love you
+  冷静: calm down
+  冷靜: calm down
+  慢一点: slow down
+  慢點: slow down
+  休息: break time
+  存档: save point
+  存檔: save point
+  是的: "yes"
+  对: "yes"
+  對: "yes"
+  不是: "no"
+  不要: "no"
+  桌子: table
+  书桌: desk
+  書桌: desk
+  办公桌: desk
+  储物柜: locker
+  儲物櫃: locker
+  柜子: locker
+  櫃子: locker
+  椅子: chair
+  门: door
+  門: door
+  走廊: hallway
+  过道: hallway
+  房间: room
+  房間: room
+  纸: paper
+  紙: paper
+  文件: paper
+  笔记本: notebook
+  筆記本: notebook
+  书: book
+  書: book
+  杂志: magazine
+  报纸: newspaper
+  報紙: newspaper
+  便条: note
+  纸条: note
+  报告: report
+  報告: report
+  地图: map
+  地圖: map
+  键盘: keyboard
+  鍵盤: keyboard
+  显示器: monitor
+  电脑: computer
+  電腦: computer
+  摄像头: camera
+  攝像頭: camera
+  相机: camera
+  监控: camera
+  杯子: cup
+  盘子: plate
+  托盘: tray
+  咖啡: coffee
+  汽水: soda
+  饮料: drink
+  售货机: dispenser
+  自动售货机: vending machines
+  裙子: dress
+  连衣裙: dress
+  洞: hole
+  牢房: cell
+  锁: lock
+  鎖: lock
+  秘密: secret
+  接线员: operator
+  女朋友: girlfriend
+  名字: name
+  按钮: button
+  按鈕: button
+  胶囊: capsule
+  膠囊: capsule
+  枪: gun
+  槍: gun
+  子弹: bullet
+
+command_examples:
+  Shoot: [开枪, 射击, 打它, 开火]
+  Flee: [逃跑, 快逃, 撤退, 快跑开]
+  Recover: [恢复, 治疗, 用胶囊, 回血]
+  Reload: [换弹, 装弹, 重新装填, 换子弹]
+  Dodge: [闪避, 躲开, 躲一下]
+  Approach: [靠近, 接近它, 走近一点]
+  Get up: [起来, 站起来, 快起来]
+  Walk: [走, 走路, 慢慢走, 继续走]
+  Run: [跑, 快跑, 跑起来]
+  Stop: [停, 停下, 别动, 停在那里]
+  Wait: [等, 等一下, 稍等]
+  Go back: [回去, 返回, 结束对话]
+  Consultation: [咨询, 我们谈谈, 开始咨询]
+  Check: [检查, 查看一下, 看看这个]
+  Head: [头, 打头, 射头]
+  Mouth: [嘴巴, 打嘴巴, 射嘴]
+  Eye: [眼睛, 打眼睛]
+  Left eye: [左眼, 打左眼, 左边的眼睛]
+  Right eye: [右眼, 打右眼, 右边的眼睛]
+  Middle eye: [中眼, 中间的眼睛]
+  Red eye: [红眼, 打红眼]
+  Tongue: [舌头, 打舌头]
+  Body: [身体, 打身体]
+  Tail: [尾巴, 打尾巴]
+  Stomach: [肚子, 腹部, 打肚子]
+  Front leg: [前腿, 打前腿]
+  Move left: [向左移动, 往左走, 左边]
+  Move right: [向右移动, 往右走, 右边]
+  Move forward: [向前移动, 往前走, 前进]
+  Move back: [后退, 往后退, 退后]
+  Turn left: [左转, 向左转]
+  Turn right: [右转, 向右转]
+  Jump: [跳, 跳起来]
+  Taunt: [嘲讽, 挑衅它]
+  "Number 1": [一号, 一号敌人, 第一个, 目标一]
+  "Number 2": [二号, 二号敌人, 第二个, 目标二]
+  "Number 3": [三号, 三号敌人, 第三个, 目标三]
+  "Number 4": [四号, 四号敌人, 第四个]
+  "Number 5": [五号, 五号敌人, 第五个]
+  "Number 6": [六号, 六号敌人, 第六个]
+  "Yes": [是, 是的, 对, 好的, 没错]
+  "No": [不, 不是, 不要, 没有]
+  Hello: [你好, 嗨, 哈喽]
+  Thank you: [谢谢, 谢谢你, 多谢]
+  Thanks: [谢谢, 谢啦]
+  "I'm Sorry": [对不起, 抱歉]
+  I love you: [我爱你]
+  Calm down: [冷静, 冷静一点, 别急]
+  Hurry: [快点, 赶快, 快一点]
+  Slow down: [慢一点, 走慢点, 减速]
+  Pace up: [加快脚步, 走快一点]
+  Pace down: [放慢脚步, 走慢一点]
+  Listen: [听, 听着, 注意听]
+  Look behind you: [看你身后, 回头看, 看后面]
+  Look over your shoulder: [回头看看, 看看肩膀后面]
+  Exit the room: [出房间, 离开这个房间]
+  Leave the room: [离开房间, 出去吧]
+  Go outside: [出去, 到外面去]
+  Save point: [存档, 存档点, 我要存档]
+  Camera check: [检查摄像头, 看看监控, 查看相机]
+  Break time: [休息, 休息一下, 歇会儿]
+  Wake up: [醒醒, 快醒来]
+  Hustle: [快动起来, 动作快点]
+  Dash: [冲刺, 冲过去]
+  Zoom In: [放大, 拉近一点]
+  Use a heal capsule: [用治疗胶囊, 吃个胶囊]
+  Hallway: [走廊, 去走廊, 看走廊]
+  Table: [桌子, 看桌子]
+  Desk: [书桌, 办公桌, 看书桌]
+  Desks: [那些书桌]
+  Lockers: [储物柜, 柜子, 看储物柜]
+  Chair: [椅子, 看椅子]
+  Door: [门, 那扇门, 看门]
+  Paper: [纸, 那张纸]
+  Notebook: [笔记本, 看笔记本]
+  Newspaper: [报纸, 看报纸]
+  Map: [地图, 看地图]
+  Keyboard: [键盘, 看键盘]
+  Coffee: [咖啡, 来杯咖啡]
+  Open: [打开, 打开它]
+  Read: [读, 读一下, 看这个]
+  Search: [找, 搜索, 找一找]
+  Push: [推, 推一下]
+  Take: [拿走, 捡起来]
+  Hi Rio: [你好 rio, 嗨 rio]
+  Hey Rio: [喂 rio, rio 听我说]
+  Rio: [rio]

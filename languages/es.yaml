@@ -1,0 +1,127 @@
+# Paquete de idioma — Español
+# Esquema: src/cyhmo/domain/language_pack.py. Minúsculas, sin puntuación.
+# Ejemplo de paquete adicional: el usuario puede copiarlo para crear otros idiomas.
+
+code: es
+name: Español
+stt_language: es
+
+numerals:
+  cardinal:
+    cero: 0
+    un: 1
+    uno: 1
+    una: 1
+    dos: 2
+    tres: 3
+    cuatro: 4
+    cinco: 5
+    seis: 6
+    siete: 7
+    ocho: 8
+    nueve: 9
+    diez: 10
+  ordinal:
+    primero: 1
+    primera: 1
+    segundo: 2
+    segunda: 2
+    tercero: 3
+    tercera: 3
+    cuarto: 4
+    cuarta: 4
+    quinto: 5
+    quinta: 5
+    sexto: 6
+    sexta: 6
+
+quantifiers: [veces, vez]
+connectives: [y, luego, después, despues, y luego, y después]
+affirmations: [sí, si, claro, vale, afirmativo]
+negations: ["no", negativo, nunca]
+target_words: [número, numero, enemigo, objetivo]
+
+body_parts:
+  cabeza: HEAD
+  boca: MOUTH
+  ojo izquierdo: LEFT EYE
+  ojo del medio: MIDDLE EYE
+  ojo central: MIDDLE EYE
+  ojo derecho: RIGHT EYE
+  ojo rojo: RED EYE
+  ojo: EYE
+  lengua: TONGUE
+  estómago izquierdo: LEFT STOMACH
+  estomago izquierdo: LEFT STOMACH
+  estómago derecho: RIGHT STOMACH
+  estomago derecho: RIGHT STOMACH
+  estómago rojo: RED STOMACH
+  estomago rojo: RED STOMACH
+  estómago: STOMACH
+  estomago: STOMACH
+  pata delantera: FRONT LEG
+  cuerpo: BODY
+  cola: TAIL
+  ramas: BRANCHES
+  raíz: ROOT
+  raiz: ROOT
+  enredaderas: VINES
+  hoja: LEAF
+
+directions:
+  izquierda: LEFT
+  a la izquierda: LEFT
+  derecha: RIGHT
+  a la derecha: RIGHT
+  arriba: UP
+  hacia arriba: UP
+  abajo: DOWN
+  hacia abajo: DOWN
+  adelante: FRONT
+  atrás: BACK
+  atras: BACK
+
+lexicon:
+  dispara: shoot
+  fuego: shoot
+  huye: flee
+  escapa: flee
+  corre: run
+  camina: walk
+  anda: walk
+  para: stop
+  detente: stop
+  espera: wait
+  recarga: reload
+  esquiva: dodge
+  cúrate: recover
+  curate: recover
+  vuelve: go back
+  regresa: go back
+  revisa: check
+  examina: check
+  mira: look
+  abre: open
+  cierra: close
+  lee: read
+  número: number
+  numero: number
+  sí: "yes"
+  si: "yes"
+  "no": "no"
+
+command_examples:
+  Shoot: [dispara, fuego, dispárale]
+  Flee: [huye, escapa, sal de ahí]
+  Recover: [cúrate, usa la cápsula, recupérate]
+  Reload: [recarga, recarga el arma]
+  Dodge: [esquiva, apártate]
+  Walk: [camina, anda, sigue caminando]
+  Run: [corre, rápido]
+  Stop: [para, detente, espera ahí]
+  Go back: [vuelve, regresa]
+  Check: [revisa, examina, echa un vistazo]
+  Head: [cabeza, a la cabeza]
+  Mouth: [boca, a la boca]
+  "Yes": [sí, claro, vale]
+  "No": ["no", para nada]

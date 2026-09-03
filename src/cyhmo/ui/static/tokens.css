@@ -1,0 +1,138 @@
+/* Tokens do design system. Única fonte de cores, espaçamentos,
+   tipografia, raios, sombras e movimento. Trocar o tema só redefine tokens.
+   Paleta derivada da identidade visual do próprio jogo: o tema escuro segue o
+   HUD in-game (teal néon sobre azul-quase-preto); o claro, a capa japonesa
+   gélida. Vermelho/laranja ficam reservados a erro, como o CANNOT TALK. */
+
+:root {
+  color-scheme: light;
+
+  --color-bg: #edf1f4;
+  --color-bg-deep: #dce4e9;
+  --color-surface: #fafcfd;
+  --color-surface-2: #e7eef1;
+  --color-border: #c6d4da;
+  --color-border-strong: #9db4bc;
+  --color-text: #132228;
+  --color-text-muted: #52696f;
+  --color-accent: #0c7c86;
+  --color-accent-dim: #4b9aa2;
+  --color-accent-contrast: #f5fdfd;
+  --color-success: #157a48;
+  --color-warning: #96500f;
+  --color-danger: #ba1b10;
+  --color-info: #1d6fa8;
+
+  --color-phase-idle: #546a72;
+  --color-phase-listening: var(--color-accent);
+  --color-phase-transcribing: var(--color-info);
+  --color-phase-interpreting: var(--color-info);
+  --color-phase-injecting: var(--color-success);
+
+  --color-glow: rgba(12, 124, 134, 0.16);
+  --color-grid: rgba(12, 124, 134, 0.05);
+  --color-viewport: #0a1216;
+  --color-viewport-text: #f4fbfa;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 56px;
+
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-pill: 999px;
+
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+  --font-mono: "Cascadia Mono", ui-monospace, Consolas, "Liberation Mono", Menlo, monospace;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.25rem;
+
+  --tracking-label: 0.14em;
+  --tracking-display: 0.22em;
+
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.1);
+  --shadow-md: 0 10px 28px rgba(16, 24, 40, 0.18);
+  --shadow-glow: 0 0 14px var(--color-glow);
+
+  --motion-fast: 120ms;
+  --motion-base: 220ms;
+  --motion-slow: 420ms;
+
+  --focus-ring: 0 0 0 2px #edf1f4, 0 0 0 4px rgba(12, 124, 134, 0.8);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0e1a21;
+  --color-bg-deep: #081014;
+  --color-surface: #13222b;
+  --color-surface-2: #1a2f3a;
+  --color-border: #29434c;
+  --color-border-strong: #3d6a73;
+  --color-text: #dcf3f0;
+  --color-text-muted: #8fb5b4;
+  --color-accent: #56e8e0;
+  --color-accent-dim: #2fa9a9;
+  --color-accent-contrast: #05161b;
+  --color-success: #57d394;
+  --color-warning: #f2995b;
+  --color-danger: #f0776a;
+  --color-info: #9ccdea;
+
+  --color-phase-idle: #7f9ba1;
+
+  --color-glow: rgba(86, 232, 224, 0.16);
+  --color-grid: rgba(86, 232, 224, 0.045);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+  --focus-ring: 0 0 0 2px #0e1a21, 0 0 0 4px rgba(86, 232, 224, 0.85);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"],
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --color-bg: #0e1a21;
+    --color-bg-deep: #081014;
+    --color-surface: #13222b;
+    --color-surface-2: #1a2f3a;
+    --color-border: #29434c;
+    --color-border-strong: #3d6a73;
+    --color-text: #dcf3f0;
+    --color-text-muted: #8fb5b4;
+    --color-accent: #56e8e0;
+    --color-accent-dim: #2fa9a9;
+    --color-accent-contrast: #05161b;
+    --color-success: #57d394;
+    --color-warning: #f2995b;
+    --color-danger: #f0776a;
+    --color-info: #9ccdea;
+
+    --color-phase-idle: #7f9ba1;
+
+    --color-glow: rgba(86, 232, 224, 0.16);
+    --color-grid: rgba(86, 232, 224, 0.045);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+    --focus-ring: 0 0 0 2px #0e1a21, 0 0 0 4px rgba(86, 232, 224, 0.85);
+  }
+}

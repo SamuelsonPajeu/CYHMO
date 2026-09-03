@@ -1,0 +1,181 @@
+name: CI
+
+# Nao roda sozinho em push na main: quem o chama la e o release.yml, via
+# workflow_call. Assim o smoke nao executa duas vezes no mesmo merge.
+on:
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke (Windows / Python 3.11)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      # O pacote inteiro so importa numpy, pydantic e pyyaml no nivel de modulo --
+      # torch, faster-whisper, sounddevice, sentence-transformers e cia entram dentro
+      # da funcao que os usa. Instalar com --no-deps transforma essa regra de
+      # arquitetura em teste executavel: se alguem subir um import pesado para o topo
+      # de um modulo, o proximo passo estoura com ModuleNotFoundError.
+      # Custo: ~30 s, contra ~5 min para baixar a pilha do torch.
+      - name: Instala apenas o que o import exige
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --no-deps -e .
+          python -m pip install numpy "pydantic>=2" pyyaml
+
+      - name: Import tardio (nenhuma dependencia pesada no caminho de import)
+        run: |
+          python - <<'PY'
+          import sys
+
+          import cyhmo.app.cli  # noqa: F401
+
+          heavy = (
+              "torch", "sentence_transformers", "transformers", "faster_whisper",
+              "sounddevice", "soxr", "keyboard", "silero_vad", "onnxruntime",
+              "httpx", "anthropic", "fastapi", "uvicorn",
+          )
+          leaked = sorted(name for name in heavy if name in sys.modules)
+          if leaked:
+              raise SystemExit("import tardio violado: " + ", ".join(leaked))
+          print("ok: o pacote importa sem nenhuma dependencia pesada")
+          PY
+
+      - name: CLI sobe (offline, sem PCSX2 e sem modelo)
+        run: |
+          python -m cyhmo --help > /dev/null
+          python -m cyhmo config --init
+          python -m cyhmo languages
+
+      # Todo subcomando anunciado no --help precisa existir de verdade: o parser e
+      # registrado separado da funcao, entao remover um handler nao quebra o --help,
+      # so estoura um NameError quando alguem roda o comando.
+      - name: Todo subcomando anunciado responde
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+
+          listed = subprocess.run(
+              [sys.executable, "-m", "cyhmo", "--help"], capture_output=True, text=True, check=True
+          ).stdout
+          start = listed.index("{") + 1
+          commands = listed[start : listed.index("}", start)].split(",")
+
+          broken = []
+          for command in commands:
+              result = subprocess.run(
+                  [sys.executable, "-m", "cyhmo", command, "--help"], capture_output=True, text=True
+              )
+              if result.returncode != 0:
+                  broken.append(f"{command}: {result.stderr.strip().splitlines()[-1:]}")
+          if broken:
+              raise SystemExit("subcomandos quebrados: " + "; ".join(broken))
+          print("ok:", len(commands), "subcomandos ->", ", ".join(commands))
+          PY
+
+      - name: Paridade dos textos da interface
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          locales = Path("src/cyhmo/ui/locales")
+          reference, other = locales / "pt-BR.json", locales / "en.json"
+
+          def flatten(node, prefix=""):
+              flat = {}
+              for key, value in node.items():
+                  path = f"{prefix}.{key}" if prefix else key
+                  if isinstance(value, dict):
+                      flat.update(flatten(value, path))
+                  else:
+                      flat[path] = str(value)
+              return flat
+
+          left = flatten(json.loads(reference.read_text(encoding="utf-8")))
+          right = flatten(json.loads(other.read_text(encoding="utf-8")))
+
+          problems = [f"falta em en.json: {key}" for key in sorted(set(left) - set(right))]
+          problems += [f"sobra em en.json: {key}" for key in sorted(set(right) - set(left))]
+
+          placeholders = re.compile(r"\{([a-zA-Z0-9_]+)\}")
+          for key in sorted(set(left) & set(right)):
+              here, there = set(placeholders.findall(left[key])), set(placeholders.findall(right[key]))
+              if here != there:
+                  problems.append(f"parametros divergentes em {key}: {sorted(here)} != {sorted(there)}")
+
+          if problems:
+              print("\n".join(problems))
+              raise SystemExit(f"{len(problems)} divergencia(s) entre os locales")
+          print(f"ok: {len(left)} chaves em paridade")
+          PY
+
+      # O runtime resolve estes caminhos relativos ao diretorio do config.toml.
+      # Faltar um deles nao quebra o import: quebra so quando o usuario roda.
+      - name: Carga que a release precisa levar
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          required = [
+              Path("config/write_recipe.yaml"),
+              Path("catalog/commands.yaml"),
+              Path("datasets/intent_pt-BR.yaml"),
+              Path("datasets/intent_spontaneous_pt-BR.yaml"),
+              Path("datasets/grammars/battle.yaml"),
+              Path("datasets/grammars/exploration.yaml"),
+              Path("requirements.txt"),
+              Path("pyproject.toml"),
+              Path("install.ps1"),
+              Path("CYHMO.cmd"),
+              Path("LICENSE"),
+              Path("README.md"),
+          ]
+          missing = [str(path) for path in required if not path.is_file()]
+
+          packs = sorted(path.stem for path in Path("languages").glob("*.yaml"))
+          if not packs:
+              missing.append("languages/*.yaml")
+
+          for folder in (Path("src/cyhmo/ui/static"), Path("src/cyhmo/ui/locales")):
+              if not any(folder.glob("*")):
+                  missing.append(f"{folder}/*")
+
+          if missing:
+              raise SystemExit("faltando no repositorio: " + ", ".join(missing))
+          print("ok: pacotes de idioma ->", ", ".join(packs))
+          PY
+
+      # A receita e a unica fonte de enderecos do mod: um erro de digitacao aqui vira
+      # escrita na memoria errada do jogo, e nao ha teste em runtime que pegue isso.
+      - name: Receita de injecao valida
+        run: |
+          python - <<'PY'
+          from cyhmo.inject.recipe import WriteRecipe
+
+          recipe = WriteRecipe.load("config/write_recipe.yaml")
+          print(f"ok: receita {recipe.serial} / {recipe.crc}, {recipe.ascii_words.max_slots} slots")
+          PY

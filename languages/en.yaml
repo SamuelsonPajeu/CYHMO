@@ -1,0 +1,93 @@
+# Language pack — English
+# Schema: src/cyhmo/domain/language_pack.py. Lowercase, no punctuation.
+# Grammar strings are already English, so command_examples only add spoken variants.
+
+code: en
+name: English
+stt_language: en
+
+numerals:
+  cardinal:
+    zero: 0
+    one: 1
+    two: 2
+    three: 3
+    four: 4
+    five: 5
+    six: 6
+    seven: 7
+    eight: 8
+    nine: 9
+    ten: 10
+  ordinal:
+    first: 1
+    second: 2
+    third: 3
+    fourth: 4
+    fifth: 5
+    sixth: 6
+    seventh: 7
+    eighth: 8
+    ninth: 9
+    tenth: 10
+
+quantifiers: [times, time]
+connectives: [and, then, and then, after that]
+affirmations: ["yes", yeah, yep, yup, sure, affirmative, ok, okay]
+negations: ["no", nope, nah, negative]
+target_words: [number, enemy, target]
+
+body_parts:
+  head: HEAD
+  mouth: MOUTH
+  left eye: LEFT EYE
+  middle eye: MIDDLE EYE
+  center eye: MIDDLE EYE
+  right eye: RIGHT EYE
+  red eye: RED EYE
+  eye: EYE
+  tongue: TONGUE
+  left stomach: LEFT STOMACH
+  right stomach: RIGHT STOMACH
+  red stomach: RED STOMACH
+  stomach: STOMACH
+  front leg: FRONT LEG
+  body: BODY
+  tail: TAIL
+  branches: BRANCHES
+  root: ROOT
+  vines: VINES
+  leaf: LEAF
+
+directions:
+  left: LEFT
+  right: RIGHT
+  up: UP
+  down: DOWN
+  forward: FRONT
+  front: FRONT
+  back: BACK
+  backward: BACK
+
+lexicon:
+  fire: shoot
+  attack: shoot
+  escape: flee
+  heal: recover
+  return: go back
+  examine: check
+  inspect: check
+
+command_examples:
+  Shoot: [shoot, fire, shoot it, open fire]
+  Flee: [flee, run away, get out of there]
+  Recover: [recover, heal, use a heal capsule]
+  Reload: [reload, reload the gun]
+  Dodge: [dodge, evade, get out of the way]
+  Walk: [walk, keep walking]
+  Run: [run, hurry up]
+  Stop: [stop, hold on, wait there]
+  Go back: [go back, return]
+  Check: [check, examine, take a look]
+  "Yes": ["yes", yeah, sure]
+  "No": ["no", nope]

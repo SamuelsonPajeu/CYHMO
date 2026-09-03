@@ -1,0 +1,1281 @@
+# =============================================================================
+# CYHMO — commands.yaml (anexo semântico, opcional)
+#
+# Este arquivo NÃO é a fonte do vocabulário: o vocabulário é lido da gramática
+# ativa na memória do jogo, em tempo real, a cada troca de cena. O que ele
+# acrescenta é contexto — categoria, situação de uso e exemplos falados por
+# idioma — para enriquecer o casamento de intenção, sobretudo nos comandos de
+# alta frequência, que de outro modo chegam sem nenhum exemplo em pt-BR.
+# O mod roda sem ele; ausente, o matching segue só com as strings do jogo.
+#
+# As categorias, os contextos e as listas de palavras-chave foram levantados a
+# partir do guia de Daniel Engel no GameFAQs:
+#   https://gamefaqs.gamespot.com/ps2/561643-lifeline/faqs
+# Nenhum trecho do guia é reproduzido aqui: locais e ações de desbloqueio estão
+# PARAFRASEADOS e as respostas da Rio não aparecem. Os códigos entre parênteses
+# nas notas (G-01..G-05, F-01..F-06 e as seções por letra) apontam para seções
+# desse guia.
+#
+# Convenções dos campos:
+# - game_id: null em todas as entradas — o jogo casa pela string, não por id.
+# - class core => examples."pt-BR" com 2 a 4 variações faladas.
+# - category scenario => somente examples.en.
+# - class free_phrase => sem pt-BR, fora do MVP.
+# - source: presente nas entradas que não vêm das listas de palavras-chave.
+# - class e contexts derivados do guia são hipóteses, não verificação em jogo.
+# - notes: campo informativo; o mod lê apenas key, category e examples.
+# =============================================================================
+version: 1
+commands:
+
+  # ---------------------------------------------------------------------------
+  # NORMAL (G-01) — as 5 keywords básicas
+  # ---------------------------------------------------------------------------
+
+  - key: WALK
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal, duct]
+    source: guide_keyword_list
+    examples:
+      en: ["walk"]
+      "pt-BR": ["anda", "caminha", "vai andando"]
+    notes: "No puzzle dos dutos, retoma o movimento depois de um STOP (F-04)."
+
+  - key: RUN
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal, dialogue]
+    source: guide_keyword_list
+    examples:
+      en: ["run"]
+      "pt-BR": ["corre", "vai correndo", "corre agora"]
+    notes: "Também aceito como resposta de escolha em cenas roteirizadas (Warehouse e Exhibit Room)."
+
+  - key: STOP
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal, duct]
+    source: guide_keyword_list
+    examples:
+      en: ["stop"]
+      "pt-BR": ["para", "para aí", "espera"]
+    notes: "Essencial no puzzle dos dutos para esperar o vapor passar (F-04)."
+
+  - key: GO BACK
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal, consultation]
+    source: guide_keyword_list
+    examples:
+      en: ["go back"]
+      "pt-BR": ["volta", "volta pra tela anterior", "encerra a conversa"]
+    notes: "Volta à tela anterior; dentro de CONSULTATION, encerra a conversa."
+
+  - key: CHECK
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_keyword_list
+    examples:
+      en: ["check", "check note", "check under sink"]
+      "pt-BR": ["examina", "verifica isso", "dá uma olhada", "olha isso aí"]
+    notes: "Alvo opcional; com alvo vira comando composto (CHECK NOTE, CHECK UNDER SINK)."
+
+  # ---------------------------------------------------------------------------
+  # NORMAL — verbos e comandos de exploração que só aparecem no walkthrough (F)
+  # ---------------------------------------------------------------------------
+
+  - key: READ
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["read notebook", "read newspaper", "read note"]
+      "pt-BR": ["lê", "lê isso", "lê o documento"]
+    notes: "Sempre composto com alvo já identificado por CHECK (READ NOTEBOOK etc.)."
+
+  - key: OPEN
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["open briefcase", "open left stall", "open safe"]
+      "pt-BR": ["abre", "abre isso", "abre a maleta"]
+
+  - key: CLOSE
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["close the toilet lid"]
+      "pt-BR": ["fecha", "fecha isso", "fecha a tampa"]
+
+  - key: LOOK
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["look under wig", "look on top of left vending machine"]
+      "pt-BR": ["olha", "olha embaixo", "olha ali em cima"]
+    notes: "Usado com locativos (embaixo de, em cima de)."
+
+  - key: PICK UP
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["pick up heal capsule"]
+      "pt-BR": ["pega isso do chão", "apanha", "recolhe"]
+
+  - key: USE
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["use id card with card reader"]
+      "pt-BR": ["usa", "usa o cartão", "usa isso"]
+
+  - key: TAKE
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: target, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["take document on desk"]
+      "pt-BR": ["pega o documento", "pega da mesa", "leva isso"]
+
+  - key: LEAVE ROOM
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    examples:
+      en: ["leave room", "leave the room"]
+      "pt-BR": ["sai do quarto", "sai da sala", "vamos sair daqui"]
+
+  - key: DESTINATION
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    args: [{name: destination, type: string}]
+    source: guide_walkthrough
+    examples:
+      en: ["guest room one", "shutter nine", "save point", "bathroom"]
+      "pt-BR": ["vai para o quarto um", "vai até o ponto de save", "vai pro banheiro"]
+    notes: "Key sintética (hipótese): dizer o nome do local faz a Rio ir até ele; enumerar os destinos de cada sala está por fazer."
+
+  - key: LAUNCHER
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    examples:
+      en: ["launcher", "use the launcher"]
+      "pt-BR": ["lançador", "usa o lançador", "manda uma granada"]
+    notes: "Derruba painéis no Observatory Restaurant; uso em batalha não confirmado."
+
+  - key: GET OFF
+    category: normal
+    class: contextual
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    examples:
+      en: ["get off"]
+    notes: "Desce do lift no Equipment Room (F-02)."
+
+  - key: LOOK UP
+    category: normal
+    class: contextual
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    examples:
+      en: ["look up"]
+    notes: "Usado no Laboratory para a Rio olhar para cima (F-06)."
+
+  - key: MAKE A COPY
+    category: normal
+    class: contextual
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    examples:
+      en: ["make a copy"]
+    notes: "Na copiadora do Business Center; revela a keyword JUMP (F-04)."
+
+  - key: CLEAN UP COFFEE
+    category: normal
+    class: contextual
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    examples:
+      en: ["clean up coffee"]
+    notes: "Na mesa do Break Room; revela a chave do escritório do gerente (F-05)."
+
+  # ---------------------------------------------------------------------------
+  # BATTLE (G-04) — keywords de batalha listadas no guia (+ TURN LEFT)
+  # Batalha aceita pilha de até 3 comandos.
+  # ---------------------------------------------------------------------------
+
+  - key: SHOOT
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle, normal]
+    args: [{name: target, type: string}]
+    source: guide_keyword_list
+    examples:
+      en: ["shoot", "shoot it", "fire", "shoot mouth"]
+      "pt-BR": ["atira", "fogo", "atira nele", "manda bala"]
+    notes: "Alvo opcional; fora de batalha usado em interações pontuais (SHOOT BUCKET, SHOOT MIDDLE MIRROR)."
+
+  - key: RELOAD
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["reload"]
+      "pt-BR": ["recarrega", "carrega a arma", "troca o pente"]
+
+  - key: FLEE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["flee"]
+      "pt-BR": ["foge", "recua", "sai de perto"]
+
+  - key: APPROACH
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["approach"]
+      "pt-BR": ["aproxima", "chega perto", "avança"]
+
+  - key: RECOVER
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle, normal]
+    source: guide_keyword_list
+    examples:
+      en: ["recover"]
+      "pt-BR": ["cura", "se cura", "usa a cápsula de cura"]
+    notes: "Consome uma heal capsule; junto com SHOOT, é exceção utilizável fora de batalha (G-04)."
+
+  - key: DODGE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["dodge"]
+      "pt-BR": ["esquiva", "desvia", "sai da frente"]
+
+  - key: FRONT
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["front"]
+      "pt-BR": ["frente", "pra frente", "vai pra frente"]
+
+  - key: BACK
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["back"]
+      "pt-BR": ["trás", "pra trás", "recua um passo"]
+
+  - key: NUMBER
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    args: [{name: enemy_number, type: int}]
+    source: guide_keyword_list
+    examples:
+      en: ["number one", "number two", "number six"]
+      "pt-BR": ["número um", "inimigo dois", "alvo três"]
+    notes: "Key sintética para a família NUMBER 1..N do guia; alterna o alvo entre inimigos numerados; N máximo a confirmar."
+
+  - key: TURN RIGHT
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle, dialogue]
+    source: guide_keyword_list
+    examples:
+      en: ["turn right"]
+      "pt-BR": ["vira à direita", "vira pra direita", "gira pra direita"]
+    notes: "Também aceito em momento roteirizado no Moon Suite (F-03)."
+
+  - key: TURN LEFT
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    examples:
+      en: ["turn left"]
+      "pt-BR": ["vira à esquerda", "vira pra esquerda", "gira pra esquerda"]
+    notes: "Funcional segundo o guia, embora não conste da lista in-game (G-04)."
+
+  - key: GET UP
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["get up"]
+      "pt-BR": ["levanta", "levanta daí", "fica de pé"]
+    notes: "Levanta a Rio quando derrubada ou agarrada por um inimigo (F-01)."
+
+  # ---------------------------------------------------------------------------
+  # BATTLE — alvos de corpo como comandos isolados (walkthrough F + seção E)
+  # Regra canônica (F-01): dizer o alvo sozinho equivale a SHOOT + alvo.
+  # ---------------------------------------------------------------------------
+
+  - key: HEAD
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["head", "shoot head"]
+      "pt-BR": ["cabeça", "atira na cabeça", "mira na cabeça"]
+    notes: "Alvo isolado equivale a SHOOT HEAD (regra de F-01)."
+
+  - key: MOUTH
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["mouth", "shoot mouth"]
+      "pt-BR": ["boca", "atira na boca", "mira na boca"]
+    notes: "Alvo isolado equivale a SHOOT MOUTH (regra de F-01)."
+
+  - key: TONGUE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["tongue", "shoot tongue"]
+      "pt-BR": ["língua", "atira na língua", "acerta a língua"]
+    notes: "Alvo isolado equivale a SHOOT TONGUE; mata o crawler rápido (seção E)."
+
+  - key: EYE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["eye", "shoot eye"]
+      "pt-BR": ["olho", "atira no olho", "mira no olho"]
+    notes: "Alvo isolado equivale a SHOOT EYE; alvo genérico do crawler e do gremlin."
+
+  - key: LEFT EYE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["left eye", "shoot left eye"]
+      "pt-BR": ["olho esquerdo", "atira no olho esquerdo", "mira no olho esquerdo"]
+    notes: "Alvo isolado equivale a SHOOT LEFT EYE (regra de F-01)."
+
+  - key: MIDDLE EYE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["middle eye", "shoot middle eye"]
+      "pt-BR": ["olho do meio", "olho central", "atira no olho do meio"]
+    notes: "Alvo isolado equivale a SHOOT MIDDLE EYE (regra de F-01)."
+
+  - key: RIGHT EYE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["right eye", "shoot right eye"]
+      "pt-BR": ["olho direito", "atira no olho direito", "mira no olho direito"]
+    notes: "Alvo isolado equivale a SHOOT RIGHT EYE (regra de F-01)."
+
+  - key: RED EYE
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["red eye", "shoot red eye"]
+      "pt-BR": ["olho vermelho", "atira no olho vermelho", "mira no olho vermelho"]
+    notes: "Alvo isolado equivale a SHOOT RED EYE; exposto após destruir os três olhos do caterpillar."
+
+  - key: STOMACH
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["stomach", "shoot stomach"]
+      "pt-BR": ["estômago", "barriga", "atira na barriga"]
+    notes: "Alvo isolado equivale a SHOOT STOMACH; ponto fraco dos leeches virados."
+
+  - key: LEFT STOMACH
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["left stomach", "shoot left stomach"]
+      "pt-BR": ["estômago esquerdo", "barriga esquerda", "atira no estômago esquerdo"]
+    notes: "Alvo isolado equivale a SHOOT LEFT STOMACH; usado contra o frog (F-04)."
+
+  - key: RIGHT STOMACH
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["right stomach", "shoot right stomach"]
+      "pt-BR": ["estômago direito", "barriga direita", "atira no estômago direito"]
+    notes: "Alvo isolado equivale a SHOOT RIGHT STOMACH; usado contra o frog (F-04)."
+
+  - key: RED STOMACH
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["red stomach", "shoot red stomach"]
+      "pt-BR": ["estômago vermelho", "barriga vermelha", "atira no estômago vermelho"]
+    notes: "Alvo isolado equivale a SHOOT RED STOMACH; golpe final no frog (F-04)."
+
+  - key: FRONT LEG
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["front leg", "shoot front leg"]
+      "pt-BR": ["perna da frente", "pata dianteira", "atira na perna da frente"]
+    notes: "Alvo isolado equivale a SHOOT FRONT LEG; primeiro passo contra o frog (F-04)."
+
+  - key: BODY
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["body", "shoot body"]
+      "pt-BR": ["corpo", "atira no corpo", "mira no corpo"]
+    notes: "Alvo isolado equivale a SHOOT BODY (regra de F-01)."
+
+  - key: TAIL
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["tail", "shoot tail"]
+      "pt-BR": ["cauda", "rabo", "atira na cauda"]
+    notes: "Alvo isolado equivale a SHOOT TAIL (regra de F-01)."
+
+  - key: BRANCHES
+    category: battle
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["branches", "shoot branches"]
+      "pt-BR": ["galhos", "atira nos galhos", "acerta os galhos"]
+    notes: "Alvo isolado equivale a SHOOT BRANCHES; descobre os olhos do chefe planta (F-04)."
+
+  # ---------------------------------------------------------------------------
+  # BATTLE — comandos situacionais do walkthrough (F)
+  # ---------------------------------------------------------------------------
+
+  - key: LOOK OUT
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["look out", "watch out"]
+    notes: "Alerta de emboscada (Guest Room 3, F-02)."
+
+  - key: THROW IT
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["throw it"]
+    notes: "Sinal para lançar o coquetel molotov na boca aberta do chefe aranha (F-02)."
+
+  - key: HIDE
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [escape]
+    source: guide_walkthrough
+    examples:
+      en: ["hide"]
+    notes: "Sequência de fuga do Exhibit Room, quando os soldados atiram (F-05)."
+
+  - key: LEFT SOLDIER
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [escape]
+    source: guide_walkthrough
+    examples:
+      en: ["left soldier", "shoot left soldier"]
+    notes: "Fuga do Exhibit Room: faz o soldado da esquerda se abrigar (F-05)."
+
+  - key: RIGHT SOLDIER
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [escape]
+    source: guide_walkthrough
+    examples:
+      en: ["right soldier", "shoot right soldier"]
+    notes: "Fuga do Exhibit Room: faz o soldado da direita se abrigar (F-05)."
+
+  - key: ROOT
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["root", "shoot root"]
+    notes: "Parte atacável do chefe planta (F-04); alvo isolado equivale a SHOOT ROOT."
+
+  - key: VINES
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["vines", "shoot vines"]
+    notes: "Parte atacável do chefe planta (F-04); carregam os feixes azuis. Alvo isolado equivale a SHOOT VINES."
+
+  - key: LEAF
+    category: battle
+    class: contextual
+    game_id: null
+    contexts: [battle]
+    source: guide_walkthrough
+    examples:
+      en: ["leaf", "shoot leaf"]
+    notes: "Parte atacável do chefe planta (F-04); protege os olhos. Alvo isolado equivale a SHOOT LEAF."
+
+  # ---------------------------------------------------------------------------
+  # RESPONSE (extensão) — respostas e escolhas ditas em prompts do jogo
+  # ---------------------------------------------------------------------------
+
+  - key: "YES"
+    category: response
+    class: core
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["yes", "yeah", "okay"]
+      "pt-BR": ["sim", "pode ser", "claro", "isso"]
+    notes: "Resposta afirmativa usada em dezenas de prompts ao longo do jogo."
+
+  - key: "NO"
+    category: response
+    class: core
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["no", "nope"]
+      "pt-BR": ["não", "negativo", "de jeito nenhum"]
+
+  - key: LEFT
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue, safe, final_battle]
+    source: guide_walkthrough
+    examples:
+      en: ["left"]
+    notes: "Mão erguida no Warehouse, giro do cofre e pilotagem da shuttle na batalha final."
+
+  - key: RIGHT
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue, safe, final_battle]
+    source: guide_walkthrough
+    examples:
+      en: ["right"]
+    notes: "Mão erguida no Warehouse, giro do cofre e pilotagem da shuttle na batalha final."
+
+  - key: BOTH
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["both"]
+    notes: "Resposta 'as duas mãos' no teste do Warehouse (F-04)."
+
+  - key: UP
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [final_battle]
+    source: guide_walkthrough
+    examples:
+      en: ["up"]
+    notes: "Pilota a shuttle da Rio na batalha final (F-06)."
+
+  - key: DOWN
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [final_battle]
+    source: guide_walkthrough
+    examples:
+      en: ["down"]
+    notes: "Pilota a shuttle da Rio na batalha final (F-06)."
+
+  - key: RED
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [duct, escape]
+    source: guide_walkthrough
+    examples:
+      en: ["red"]
+    notes: "Muda para o duto vermelho (F-04); também alavanca vermelha na fuga do Exhibit Room (F-05)."
+
+  - key: BLUE
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [duct]
+    source: guide_walkthrough
+    examples:
+      en: ["blue"]
+    notes: "Muda para o duto azul no puzzle dos dutos (F-04)."
+
+  - key: GREEN
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [duct]
+    source: guide_walkthrough
+    examples:
+      en: ["green"]
+    notes: "Muda para o duto verde no puzzle dos dutos (F-04)."
+
+  - key: YELLOW
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [escape]
+    source: guide_walkthrough
+    examples:
+      en: ["yellow"]
+    notes: "Alavanca amarela na fuga do Exhibit Room (F-05)."
+
+  - key: DIGIT
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [safe]
+    args: [{name: value, type: int}]
+    source: guide_walkthrough
+    examples:
+      en: ["four", "six", "two"]
+    notes: "Key sintética: dígito falado (0-9) do cofre do Manager's Office; sequência direita 4, esquerda 6, direita 2 (F-05); modelagem a confirmar."
+
+  - key: READY SET
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["ready set"]
+    notes: "Sincroniza a passada de cartão na porta do Exhibit Room (F-05)."
+
+  - key: THREATEN
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["threaten"]
+    notes: "Escolha oferecida pela Rio ao sair do Break Room (F-05)."
+
+  - key: GOOD MEMORY
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["good memory"]
+    notes: "Resposta na mesa de operação da Infirmary (F-02)."
+
+  - key: "WHAT NOW?"
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["what now?"]
+    notes: "Pergunta feita à Rio na cena do quarto dela, após o chefe planta (F-04)."
+
+  - key: NAOMI
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["naomi"]
+    notes: "Nome da namorada do Operador; RIO e KRISTEN geram reações alternativas (easter egg, F-01)."
+
+  - key: GINO
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["gino"]
+    notes: "Resposta no Waiting Room sobre a quem perguntar da pedra (F-04)."
+
+  - key: JONATHAN TURNER
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["jonathan turner"]
+    notes: "Abre o key box do Business Center (F-04)."
+
+  - key: STRAWBERRY CANDY
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["strawberry candy"]
+    notes: "Abre o quarto do Jonathan; pista: fruta retratada nas caixas mas ausente no pote de balas (F-04)."
+
+  - key: "TWO CHLORO, THREE METHYL, PENTANE"
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["two chloro, three methyl, pentane"]
+    notes: "Resposta do enigma químico da porta do Gustav, resolvido com o documento científico (F-04)."
+
+  - key: MOLOTOV COCKTAIL
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["molotov cocktail"]
+    notes: "Arma correta na adivinhação da Infirmary; os palpites anteriores são vocabulário livre (F-02)."
+
+  - key: WAREHOUSE KEY
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["warehouse key"]
+    notes: "Resposta na cena do quarto da Rio sobre o que vieram buscar (F-04)."
+
+  - key: RED AND BLUE STARS
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["red and blue stars"]
+    notes: "Identifica o disco de 8 de agosto no Waiting Room (F-04)."
+
+  - key: I'M HERE
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["i'm here"]
+    notes: "Encorajamento nos Restrooms; o guia indica que frases similares também são aceitas."
+
+  - key: YOU'LL BE FINE
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["you'll be fine"]
+    notes: "Encorajamento nos Restrooms; frases similares também aceitas."
+
+  - key: LOVE
+    category: response
+    class: contextual
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["love"]
+    notes: "Escolha final dita à Rio após o último chefe (F-06)."
+
+  # ---------------------------------------------------------------------------
+  # SPECIAL (G-03) — keywords desbloqueáveis; unlock parafraseado do guia
+  # ---------------------------------------------------------------------------
+
+  - key: CONSULTATION
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Entregue pelo enredo na cena do primeiro SAVE POINT (Guest 1)."
+    examples:
+      en: ["consultation"]
+      "pt-BR": ["consulta", "vamos conversar", "quero te perguntar uma coisa"]
+    notes: "Abre a conversa em que as scenario keywords são aceitas; GO BACK encerra."
+
+  - key: MICROPHONE CHECK
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Guest 1, sala inicial: checar o segundo dispenser a partir da direita nas VENDING MACHINES."
+    examples:
+      en: ["microphone check"]
+      "pt-BR": ["teste de microfone", "testa o microfone", "checa o microfone"]
+
+  - key: ZOOM IN
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Guest Room 1, LIVING AREA: checar e abrir a maleta (BRIEFCASE)."
+    examples:
+      en: ["zoom in"]
+      "pt-BR": ["aproxima a câmera", "dá um zoom", "zoom"]
+
+  - key: LOW KICK
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Guest Room 2, LIVING AREA: checar o vestido e as luvas (GLOVES)."
+    examples:
+      en: ["low kick"]
+      "pt-BR": ["chute baixo", "dá um chute baixo", "rasteira"]
+
+  - key: CATEGORY GAME
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Guest Room 4, DRESSER: checar o verso do convite (INVITATION)."
+    examples:
+      en: ["category game"]
+      "pt-BR": ["jogo de categorias", "vamos jogar categorias", "jogo das categorias"]
+    notes: "Inicia o minigame; o conteúdo falado do jogo é a entrada free CATEGORY GAME ANSWER."
+
+  - key: SPIN THE GUN
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Sun Suite, WASHROOM do segundo andar: fechar a tampa do vaso (TOILET LID)."
+    examples:
+      en: ["spin the gun"]
+      "pt-BR": ["gira a arma", "roda a arma", "faz um truque com a arma"]
+
+  - key: TAUNT
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Equipment Room: com o lift do SUPPLY UNIT desenergizado, subir o lift do UTILITY UNIT até a prateleira superior direita e checar."
+    examples:
+      en: ["taunt"]
+      "pt-BR": ["provoca", "provoca ele", "zomba dele"]
+
+  - key: SEXY POSE
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Infirmary, DESK: ligar o PC com o cursor."
+    examples:
+      en: ["sexy pose"]
+      "pt-BR": ["pose sexy", "faz uma pose sexy", "faz charme"]
+    notes: "Contexto de uso não confirmado pelo guia."
+
+  - key: AUTO-FIRE
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Restrooms, LADIES' WASH STANDS: checar dentro da lixeira (TRASH CAN)."
+    examples:
+      en: ["auto-fire", "auto fire"]
+      "pt-BR": ["fogo automático", "tiro automático", "atira sem parar"]
+    notes: "Dispara rápido no alvo atual até receber novo comando."
+
+  - key: SHE SELLS
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Guest Room 5: olhar embaixo da peruca (WIG)."
+    examples:
+      en: ["she sells"]
+      "pt-BR": ["trava-línguas", "vamos brincar de trava-línguas", "she sells"]
+    notes: "Inicia o minigame; acertar os três trava-línguas restaura parte da vida da Rio."
+
+  - key: STRAFE
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Control Staff Quarters, GALLEY: checar atrás do papel encerado (WAX PAPER)."
+    examples:
+      en: ["strafe"]
+      "pt-BR": ["rajada", "espalha os tiros", "atira em leque"]
+
+  - key: BREAK TIME
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Warehouse, AREA C-ONE: visitar a mensagem que brilha no escuro antes de acender as luzes."
+    examples:
+      en: ["break time"]
+      "pt-BR": ["hora da pausa", "descansa um pouco", "senta e descansa"]
+    notes: "Senta a Rio no chão se ela estiver em movimento; contexto a confirmar."
+
+  - key: JUMP
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Waiting Room, BUSINESS CENTER: checar a copiadora e mandar fazer uma cópia (MAKE A COPY)."
+    examples:
+      en: ["jump"]
+      "pt-BR": ["pula", "salta", "pula agora"]
+    notes: "Pula ataques rasteiros como a onda de energia do gremlin."
+
+  - key: I'LL LEAVE IT TO YOU
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Observatory Restaurant, VIP SEAT THREE: derrubar o painel com o LAUNCHER e checar o topo da luminária (FLOOR LAMP)."
+    examples:
+      en: ["i'll leave it to you"]
+      "pt-BR": ["deixo com você", "por sua conta", "você decide a luta"]
+    notes: "A Rio luta sozinha até receber outra keyword."
+
+  - key: CAMERA CHECK
+    category: special
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_keyword_list
+    unlock: "Guest Room 3, EMERGENCY PANEL: checar embaixo da shutter key; alternativa tardia no Manager's Office (atrás dos quadros, junto à cama)."
+    examples:
+      en: ["camera check"]
+      "pt-BR": ["cadê você", "acha você na tela", "checa a câmera"]
+    notes: "Localiza a Rio na tela e dá zoom nela."
+
+  - key: JUMPBACK
+    category: special
+    class: core
+    game_id: null
+    contexts: [battle]
+    source: guide_keyword_list
+    unlock: "Break Room, GALLEY: checar o saquinho de chá (TEA BAG)."
+    examples:
+      en: ["jumpback", "jump back"]
+      "pt-BR": ["pula pra trás", "salto pra trás", "recua pulando"]
+    notes: "Salto rápido para trás mantendo a Rio de frente para o alvo."
+
+  # ---------------------------------------------------------------------------
+  # SCENARIO (G-02) — 62 perguntas de CONSULTATION (61 listadas + WHAT SHOULD
+  # WE DO, citada na introdução da seção). Somente examples.en; os pt-BR
+  # destas entradas ainda não foram escritos.
+  # ---------------------------------------------------------------------------
+
+  - {key: "WHAT SHOULD WE DO", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what should we do"]}, notes: "Sistema de dica geral; a resposta muda conforme o ponto do jogo."}
+  - {key: "WHY WERE YOU IN THE DETAINING CELL?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["why were you in the detaining cell?"]}}
+  - {key: "WHERE AM I?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["where am i?"]}}
+  - {key: "WHO'S NAOMI?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["who's naomi?"]}}
+  - {key: "WHAT IS JSL?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what is jsl?"]}}
+  - {key: "WHAT ARE YOU LOOKING FOR?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what are you looking for?"]}}
+  - {key: "WHAT WAS THAT MONSTER?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what was that monster?"]}}
+  - {key: "WHO IS HELEN JOHNSON?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["who is helen johnson?"]}}
+  - {key: "WHY ARE YOU SO CRANKY?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["why are you so cranky?"]}}
+  - {key: "I WONDER IF NAOMI'S ALIVE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["i wonder if naomi's alive?"]}}
+  - {key: "WHAT IS THE MANAGER LIKE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what is the manager like?"]}}
+  - {key: "WHAT DO YOU THINK OF THE PM?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what do you think of the pm?"]}}
+  - {key: "DO YOU HAVE ANY FRIENDS?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["do you have any friends?"]}}
+  - {key: "WHAT'S THE RELATIONSHIP WITH GINO?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what's the relationship with gino?"]}}
+  - {key: "IS A RESCUE TEAM COMING?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["is a rescue team coming?"]}}
+  - {key: "HOW ARE THINGS ON EARTH?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["how are things on earth?"]}}
+  - {key: "NAOMI ISN'T AROUND...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["naomi isn't around"]}}
+  - {key: "WHAT ARE THEY RESEARCHING HERE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what are they researching here?"]}}
+  - {key: "WHAT DO YOU THINK OF ALLEN?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what do you think of allen?"]}}
+  - {key: "WHERE IS THE ANNOUNCER?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["where is the announcer?"]}}
+  - {key: "TELL ME ABOUT YOURSELF", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["tell me about yourself"]}}
+  - {key: "TELL ME WHAT YOU'RE LOOKING FOR", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["tell me what you're looking for"]}}
+  - {key: "POWERS AND ALIEN?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["powers and alien?"]}, notes: "Hipótese: possível erro de digitação do guia para ALLEN; a confirmar."}
+  - {key: "WHAT DO YOU THINK OF POWERS?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what do you think of powers?"]}}
+  - {key: "HOW FAR AWAY ARE YOU?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["how far away are you?"]}}
+  - {key: "NAOMI WASN'T THERE...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["naomi wasn't there"]}}
+  - {key: "ABOUT THIS HOTEL'S STRUCTURE", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["about this hotel's structure"]}}
+  - {key: "HUMANOID ALIEN?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["humanoid alien?"]}}
+  - {key: "I WONDER IF THE PM AND HIS PEOPLE ARE OK?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["i wonder if the pm and his people are ok?"]}}
+  - {key: "WHAT DO YOU THINK OF THAT CAPTAIN?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what do you think of that captain?"]}}
+  - {key: "THAT ALIEN EARLIER...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["that alien earlier"]}}
+  - {key: "YOU'VE GOT GREAT REFLEXES", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["you've got great reflexes"]}}
+  - {key: "I WONDER IF NAOMI IS SAFE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["i wonder if naomi is safe?"]}}
+  - {key: "YOU'RE LOOKING FOR A GREEN ORB?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["you're looking for a green orb?"]}}
+  - {key: "I WONDER IF THE MANAGER IS OK?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["i wonder if the manager is ok?"]}}
+  - {key: "WHERE IS GINO?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["where is gino?"]}}
+  - {key: "THE ANNOUNCER WAS DEAD...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["the announcer was dead"]}}
+  - {key: "THAT MAN IN THE RESTAURANT...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["that man in the restaurant"]}}
+  - {key: "WHEN WE GET TO EARTH...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["when we get to earth"]}}
+  - {key: "HOW WAS EARTH?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["how was earth?"]}}
+  - {key: "IS THIS HOTEL OK?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["is this hotel ok?"]}}
+  - {key: "WHY DID TANAKA TURN INTO A MONSTER?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["why did tanaka turn into a monster?"]}}
+  - {key: "THE POOR MANAGER...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["the poor manager"]}}
+  - {key: "WHAT HAPPENED TO POWERS?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what happened to powers?"]}}
+  - {key: "I WONDER IF GINO IS OK?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["i wonder if gino is ok?"]}}
+  - {key: "WHAT IS PARACELSUS?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what is paracelsus?"]}}
+  - {key: "THE REMNANTS OF PARACELSUS?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["the remnants of paracelsus?"]}}
+  - {key: "THE POWER OF WORDS", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["the power of words"]}}
+  - {key: "ARE YOU CLOSE TO ME NOW", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["are you close to me now"]}}
+  - {key: "IS IT ZERO GRAVITY?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["is it zero gravity?"]}}
+  - {key: "WHAT'S A PHILOSOPHER'S STONE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what's a philosopher's stone?"]}}
+  - {key: "THE FIRST LADY WAS ATTACKED BY AN ALIEN", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["the first lady was attacked by an alien"]}}
+  - {key: "THAT ALLEN...", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["that allen"]}}
+  - {key: "WHAT HAPPENED TO GINO?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what happened to gino?"]}}
+  - {key: "WHAT WAS THAT GROUP?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what was that group?"]}}
+  - {key: "WHERE IS NAOMI?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["where is naomi?"]}}
+  - {key: "THE MONSTERS WERE MADE HERE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["the monsters were made here?"]}}
+  - {key: "ALLEN WAS CONDUCTING RESEARCH HERE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["allen was conducting research here?"]}}
+  - {key: "YOU'RE STRONG", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["you're strong"]}}
+  - {key: "IT'S ABOUT NAOMI", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["it's about naomi"]}}
+  - {key: "WHAT'S A FAKE STONE?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["what's a fake stone?"]}}
+  - {key: "POWERS IS JOSEPH?", category: scenario, class: contextual, game_id: null, contexts: [consultation], source: guide_keyword_list, examples: {en: ["powers is joseph?"]}}
+
+  # ---------------------------------------------------------------------------
+  # FUN (G-05) — 13 keywords de brincadeira; reações da Rio não reproduzidas
+  # ---------------------------------------------------------------------------
+
+  - {key: "SUICIDE", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["suicide"]}}
+  - {key: "KILL YOURSELF", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["kill yourself"]}}
+  - {key: "I LOVE YOU", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["i love you"]}}
+  - {key: "I HATE YOU", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["i hate you"]}}
+  - {key: "BARK LIKE A DOG", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["bark like a dog"]}}
+  - {key: "FUCK YOU", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["fuck you"]}}
+  - {key: "WHAT'S YOUR SIGN?", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["what's your sign?"]}}
+  - {key: "I'M SORRY", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["i'm sorry"]}}
+  - {key: "SIT DOWN", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["sit down"]}}
+  - {key: "WILL YOU HAVE SEX WITH ME?", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["will you have sex with me?"]}}
+  - {key: "ARE YOU A GIRL?", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["are you a girl?"]}}
+  - {key: "THIS GAME SUCKS", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["this game sucks"]}}
+  - {key: "TAKE OFF YOUR CLOTHES", category: fun, class: contextual, game_id: null, contexts: [normal], source: guide_keyword_list, examples: {en: ["take off your clothes"]}}
+
+  # ---------------------------------------------------------------------------
+  # FREE (extensão) — frases livres/verbatim; class free_phrase, FORA DO MVP.
+  # Sem pt-BR: devem ser ditas como estão (o jogo compara a fala em inglês).
+  # ---------------------------------------------------------------------------
+
+  - key: SUN SUITE PASSWORD
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["i want to monopolize", "even the very shadow that you cast in sunlight... i want to monopolize"]
+    notes: "Senha falada da Sun Suite em duas etapas; a segunda é lida em sincronia com a Rio (F-02). Fora do MVP."
+
+  - key: TIME FUSE TEXT
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: []
+    notes: "Texto amarelo exibido na tela do Exhibit Room, lido em voz alta para a Rio (F-05). Fora do MVP."
+
+  - key: INFIRMARY GUESS
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [dialogue]
+    source: guide_walkthrough
+    examples:
+      en: ["bandages", "alcohol", "gauze", "syringe", "scalpel", "medicine"]
+    notes: "Palpites livres de itens de enfermaria; após seis aceitos o enredo avança (F-02). Fora do MVP."
+
+  - key: WORD JUMBLE ANSWER
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [minigame]
+    source: guide_walkthrough
+    examples:
+      en: []
+    notes: "Palavra desembaralhada dita em voz alta; lista de palavras na seção I do guia. Fora do MVP."
+
+  - key: COMPLETE THE PHRASES ANSWER
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [minigame]
+    source: guide_walkthrough
+    examples:
+      en: []
+    notes: "Palavra que falta na frase famosa exibida; lista na seção J do guia. Fora do MVP."
+
+  - key: CATEGORY GAME ANSWER
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [minigame]
+    source: guide_walkthrough
+    examples:
+      en: []
+    notes: "Item da categoria da vez no CATEGORY GAME; listas na seção K do guia. Fora do MVP."
+
+  - key: SHE SELLS PHRASE
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [minigame]
+    source: guide_walkthrough
+    examples:
+      en: []
+    notes: "Trava-língua repetido literalmente após a Rio; lista na seção L do guia. Fora do MVP."
+
+  - key: THE CALC ANSWER
+    category: free
+    class: free_phrase
+    game_id: null
+    contexts: [minigame]
+    source: guide_walkthrough
+    examples:
+      en: []
+    notes: "Resultado do problema de matemática dito em voz alta no bônus The Calc. Fora do MVP."

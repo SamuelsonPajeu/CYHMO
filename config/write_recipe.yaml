@@ -1,0 +1,53 @@
+# Receita de injeção — Lifeline NTSC-U (SLUS-20848, CRC FD0936BF)
+# Nenhum endereço vive no código: é este arquivo que diz onde o mod escreve.
+# Todos estão na região estática do ELF (< 0x00600000), então sobrevivem a
+# reiniciar o emulador e o jogo. Outra região/versão do jogo exige outra receita.
+
+version: 2
+serial: SLUS-20848
+crc: FD0936BF
+active: ascii_words
+
+ascii_words:
+  words_addr:   0x003F6600
+  slot_size:    0x40
+  max_slots:    8
+  ptrs_addr:    0x003F6AA0
+  count_addr:   0x0034F43C
+  encoding:     ascii
+  terminator:   "\x00"
+  zero_slot_before_write: true
+
+  id_addr:      0x0034F440
+  id_sentinel:  0xFFFFFFFF
+  id_default:   18
+  asr_state:    {addr: 0x002DBE38, value: 3}
+  listening:    {addr: 0x0050E760, value: 0}
+
+  # Confiança do reconhecimento (0..9999). O jogo grava aqui o `conf` do motor L&H e o
+  # compara com `threshold_addr`; abaixo do limiar ele zera o id e a cena de tutorial
+  # mostra "Failed in recognition". O valor escrito sai de `inject.confidence`.
+  confidence:   {addr: 0x002DBE54, width: 32, threshold_addr: 0x002DBE4C, maximum: 9999}
+
+  commit:       {addr: 0x0050E764, width: 32, value: 1}
+
+  code_patch:
+    addr:      0x001E9F3C
+    original:  0x8C820180
+    patched:   0x0000102D
+    verify_original: true
+    on_orphan: adopt
+    restore: always
+
+  oracle:
+    candidate_ids: 0x0050E76C
+    accepted_ids:  0x0050E77C
+    matched_text:  0x0050E7E4
+    action_marks:  [0x00510568, 0x00510574, 0x00510578]
+
+grammar:
+  context_pointer: 0x0050E7A4
+  magic: "VGP 2.00"
+  ee_size: 0x02000000
+  span: 0x20000
+  gap: 0x400

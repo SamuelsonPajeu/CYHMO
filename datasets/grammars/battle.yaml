@@ -1,0 +1,52 @@
+# Fixture SINTÉTICA de gramática de batalha (não é extração do jogo; não distribui dados do jogo).
+# Montada a partir do guia do jogo no GameFAQs e dos comandos usados em jogo.
+# Cada entrada é a string literal como o matcher nativo a aceitaria.
+entries:
+  - Shoot
+  - Flee
+  - Recover
+  - Reload
+  - Dodge
+  - Approach
+  - Get up
+  - Head
+  - Mouth
+  - Eye
+  - Left eye
+  - Right eye
+  - Middle eye
+  - Red eye
+  - Tongue
+  - Body
+  - Tail
+  - Stomach
+  - Left stomach
+  - Right stomach
+  - Red stomach
+  - Front leg
+  - Branches
+  - Move left
+  - Move right
+  - Move forward
+  - Move back
+  - Front
+  - Back
+  - Turn left
+  - Turn right
+  - Number 1
+  - Number 2
+  - Number 3
+  - Number 4
+  - Number 5
+  - Number 6
+  - Auto fire
+  - Launcher
+  - Low kick
+  - Jump
+  - Jumpback
+  - Taunt
+  - Strafe
+  - Spin the gun
+  - Stop
+  - Go back
+  - Consultation

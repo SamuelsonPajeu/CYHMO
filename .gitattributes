@@ -1,0 +1,19 @@
+# Normaliza fim de linha no repositório; o checkout usa o do sistema.
+* text=auto
+
+*.py    text diff=python
+*.md    text
+*.yaml  text
+*.yml   text
+*.toml  text
+*.json  text
+*.css   text
+*.js    text
+*.html  text
+*.ps1   text eol=crlf
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+*.pnach text eol=lf
+
+*.wav   binary
+*.bin   binary

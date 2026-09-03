@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyhmo"
+# A versão de verdade é carimbada pelo CI a partir da tag da release.
+# Um clone de desenvolvimento reportar 0.0.0 é correto: ele não é uma release.
+version = "0.0.0"
+description = "Comandos por voz em qualquer idioma para Lifeline (PS2) no PCSX2: captura, transcrição, interpretação e injeção via PINE."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy",
+    "pydantic>=2",
+    "pyyaml",
+    "sounddevice",
+    "soxr",
+    "faster-whisper",
+    "silero-vad",
+    "sentence-transformers",
+    "keyboard",
+    "fastapi",
+    "uvicorn[standard]",
+    "httpx",
+    "anthropic",
+]
+
+[project.urls]
+Homepage = "https://github.com/SamuelsonPajeu/CYHMO"
+Issues = "https://github.com/SamuelsonPajeu/CYHMO/issues"
+
+[project.scripts]
+cyhmo = "cyhmo.app.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"cyhmo.ui" = ["static/*", "locales/*.json"]

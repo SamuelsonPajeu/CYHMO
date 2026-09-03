@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "languages": [
+    {
+      "code": "pt-BR",
+      "name": "Português (Brasil)",
+      "file": "pt-BR.yaml",
+      "description": "Português brasileiro, com exemplos falados para os comandos mais usados."
+    },
+    {
+      "code": "en",
+      "name": "English",
+      "file": "en.yaml",
+      "description": "Inglês, o idioma original dos comandos do jogo."
+    },
+    {
+      "code": "es",
+      "name": "Español",
+      "file": "es.yaml",
+      "description": "Espanhol."
+    },
+    {
+      "code": "zh-CN",
+      "name": "中文（简体）",
+      "file": "zh-CN.yaml",
+      "description": "Chinês simplificado; escrita sem espaço entre palavras."
+    }
+  ]
+}

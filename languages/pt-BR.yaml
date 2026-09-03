@@ -1,0 +1,314 @@
+# Pacote de idioma — Português (Brasil)
+# Esquema: src/cyhmo/domain/language_pack.py. Palavras em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+
+code: pt-BR
+name: Português (Brasil)
+stt_language: pt
+
+numerals:
+  cardinal:
+    zero: 0
+    um: 1
+    uma: 1
+    dois: 2
+    duas: 2
+    três: 3
+    tres: 3
+    quatro: 4
+    cinco: 5
+    seis: 6
+    sete: 7
+    oito: 8
+    nove: 9
+    dez: 10
+  ordinal:
+    primeiro: 1
+    primeira: 1
+    segundo: 2
+    segunda: 2
+    terceiro: 3
+    terceira: 3
+    quarto: 4
+    quarta: 4
+    quinto: 5
+    quinta: 5
+    sexto: 6
+    sexta: 6
+    sétimo: 7
+    setimo: 7
+    oitavo: 8
+    nono: 9
+    décimo: 10
+    decimo: 10
+
+quantifiers: [vezes, vez]
+connectives: [e, depois, então, entao, aí, ai, e depois, e então, e aí]
+affirmations: [sim, isso, claro, positivo, confirma, ok, beleza]
+negations: [não, nao, negativo, nem, jamais]
+target_words: [número, numero, inimigo, alvo, o número, o numero]
+
+body_parts:
+  cabeça: HEAD
+  cabeca: HEAD
+  boca: MOUTH
+  olho esquerdo: LEFT EYE
+  olho do meio: MIDDLE EYE
+  olho central: MIDDLE EYE
+  olho direito: RIGHT EYE
+  olho vermelho: RED EYE
+  olho: EYE
+  língua: TONGUE
+  lingua: TONGUE
+  estômago esquerdo: LEFT STOMACH
+  estomago esquerdo: LEFT STOMACH
+  barriga esquerda: LEFT STOMACH
+  estômago direito: RIGHT STOMACH
+  estomago direito: RIGHT STOMACH
+  barriga direita: RIGHT STOMACH
+  estômago vermelho: RED STOMACH
+  estomago vermelho: RED STOMACH
+  barriga vermelha: RED STOMACH
+  estômago: STOMACH
+  estomago: STOMACH
+  barriga: STOMACH
+  perna da frente: FRONT LEG
+  perna dianteira: FRONT LEG
+  corpo: BODY
+  cauda: TAIL
+  rabo: TAIL
+  galhos: BRANCHES
+  raiz: ROOT
+  cipós: VINES
+  cipos: VINES
+  vinhas: VINES
+  folha: LEAF
+
+directions:
+  esquerda: LEFT
+  para a esquerda: LEFT
+  pra esquerda: LEFT
+  direita: RIGHT
+  para a direita: RIGHT
+  pra direita: RIGHT
+  cima: UP
+  para cima: UP
+  pra cima: UP
+  baixo: DOWN
+  para baixo: DOWN
+  pra baixo: DOWN
+  frente: FRONT
+  para frente: FRONT
+  pra frente: FRONT
+  trás: BACK
+  tras: BACK
+  para trás: BACK
+  pra trás: BACK
+
+lexicon:
+  rio: rio
+  atira: shoot
+  atire: shoot
+  dispara: shoot
+  fogo: shoot
+  foge: flee
+  fuja: flee
+  corre: run
+  corra: run
+  anda: walk
+  ande: walk
+  caminha: walk
+  para: stop
+  pare: stop
+  espera: wait
+  recarrega: reload
+  recarregue: reload
+  desvia: dodge
+  desvie: dodge
+  cura: recover
+  se cura: recover
+  recupera: recover
+  volta: go back
+  volte: go back
+  examina: check
+  verifica: check
+  olha: look
+  abre: open
+  fecha: close
+  lê: read
+  le: read
+  pega: get
+  move: move
+  mexe: move
+  número: number
+  numero: number
+  consulta: consultation
+  esquerda: left
+  direita: right
+  cima: up
+  baixo: down
+  sim: "yes"
+  não: "no"
+  nao: "no"
+  escuta: listen
+  escute: listen
+  ouve: listen
+  ouça: listen
+  ouca: listen
+  aguarda: wait
+  aguarde: wait
+  espere: wait
+  rápido: hurry
+  rapido: hurry
+  apressa: hurry
+  levanta: get up
+  levante: get up
+  acorda: wake up
+  acorde: wake up
+  procura: search
+  procure: search
+  busca: search
+  empurra: push
+  empurre: push
+  aperta: press
+  aperte: press
+  pressiona: press
+  pressione: press
+  botão: button
+  botao: button
+  usa: use
+  use: use
+  compra: buy
+  compre: buy
+  entra: enter
+  entre: enter
+  sai: exit
+  saia: exit
+  mesa: table
+  mesas: desks
+  escrivaninha: desk
+  escrivaninhas: desks
+  armário: locker
+  armario: locker
+  armários: lockers
+  armarios: lockers
+  cadeira: chair
+  cadeiras: chairs
+  porta: door
+  portas: doors
+  corredor: hallway
+  papel: paper
+  papéis: papers
+  papeis: papers
+  folha: sheet
+  folhas: sheets
+  caderno: notebook
+  livro: book
+  revista: magazine
+  jornal: newspaper
+  bilhete: note
+  anotação: note
+  anotacao: note
+  memorando: memo
+  relatório: report
+  relatorio: report
+  mapa: map
+  teclado: keyboard
+  monitor: monitor
+  computador: computer
+  quadro: board
+  copo: cup
+  prato: plate
+  bandeja: tray
+  café: coffee
+  cafe: coffee
+  refrigerante: soda
+  bebida: drink
+  vestido: dress
+  buraco: hole
+  cela: cell
+  celas: cells
+  fechadura: lock
+  segredo: secret
+  operadora: operator
+  namorada: girlfriend
+  festa: party
+  nome: name
+
+command_examples:
+  Shoot: [atira, dispara, fogo, manda bala, atira nele]
+  Flee: [foge, fuja, cai fora, sai daí, corre daí]
+  Recover: [se cura, cura, usa a cápsula, recupera]
+  Reload: [recarrega, recarregue, troca o pente, carrega a arma]
+  Dodge: [desvia, desvie, esquiva, sai da frente]
+  Walk: [anda, caminha, vai andando, segue andando]
+  Run: [corre, vai correndo, corre agora, apressa]
+  Stop: [para, para aí, espera, fica parada]
+  Go back: [volta, volta pra tela anterior, encerra a conversa, retorna]
+  Consultation: [consulta, vamos conversar, abre a consulta]
+  Check: [examina, verifica isso, dá uma olhada, olha isso aí]
+  Head: [cabeça, na cabeça, atira na cabeça]
+  Mouth: [boca, na boca, atira na boca]
+  Left eye: [olho esquerdo, no olho esquerdo]
+  Right eye: [olho direito, no olho direito]
+  Middle eye: [olho do meio, olho central]
+  Red eye: [olho vermelho, no olho vermelho]
+  Tongue: [língua, na língua]
+  Body: [corpo, no corpo]
+  Tail: [cauda, rabo, na cauda]
+  Move left: [move pra esquerda, vai pra esquerda, esquerda]
+  Move right: [move pra direita, vai pra direita, direita]
+  Move forward: [vai pra frente, avança, frente]
+  Move back: [vai pra trás, recua, trás]
+  "Number 1": [número um, inimigo um, o primeiro, alvo um]
+  "Number 2": [número dois, inimigo dois, o segundo, alvo dois]
+  "Number 3": [número três, inimigo três, o terceiro, alvo três]
+  "Number 4": [número quatro, inimigo quatro, o quarto]
+  "Number 5": [número cinco, inimigo cinco, o quinto]
+  "Number 6": [número seis, inimigo seis, o sexto]
+  "Yes": [sim, isso, claro, positivo, confirma]
+  "No": [não, negativo, nem pensar]
+  Hello: [olá, oi, alô]
+  Thank you: [obrigado, obrigada, valeu]
+  Wait: [espera, aguarda, um momento]
+  Calm down: [calma, se acalma, relaxa]
+  Hurry: [rápido, se apressa, anda logo]
+  Look behind you: [olha pra trás, olha atrás de você]
+  Exit the room: [sai da sala, sai do quarto]
+  Leave the room: [deixa a sala, sai daí]
+  Save point: [ponto de salvamento, salvar o jogo, salvar, quero salvar]
+  Camera check: [checa a câmera, olha a câmera, verifica a câmera]
+  Slow down: [devagar, mais devagar, vai devagar, reduz a velocidade]
+  Pace up: [acelera, apressa o passo, aumenta o passo]
+  Pace down: [diminui o passo, passo mais lento, desacelera]
+  Break time: [descanso, hora do descanso, pausa, faz uma pausa]
+  Listen: [escuta, escute, ouve, presta atenção]
+  Zoom In: [zoom, aproxima, aproxima o zoom, dá um zoom]
+  Go outside: [sai pra fora, vai pra fora, vamos pra fora]
+  Hallway: [corredor, vai pro corredor, olha o corredor]
+  Table: [mesa, a mesa, olha a mesa]
+  Desk: [escrivaninha, a escrivaninha, olha a escrivaninha]
+  Desks: [escrivaninhas, as escrivaninhas]
+  Lockers: [armários, os armários, olha os armários]
+  Chair: [cadeira, a cadeira]
+  Chairs: [cadeiras, as cadeiras]
+  Wake up: [acorda, acorde, desperta]
+  Hustle: [corre logo, se mexe, mexe esses pés]
+  Dash: [disparada, arranca, dispara a correr]
+  Hi Rio: [oi rio, olá rio]
+  Hey Rio: [ei rio, escuta rio]
+  Get up: [levanta, fica de pé, se levanta]
+  Listen up: [presta atenção agora]
+  Open: [abre, abra, abre isso]
+  Read: [lê, leia, lê isso]
+  Search: [procura, procure, busca, revista]
+  Push: [empurra, empurre]
+  Take: [pega, pegue, leva]
+  Map: [mapa, olha o mapa]
+  Keyboard: [teclado, olha o teclado]
+  Coffee: [café, um café]
+  Door: [porta, a porta, olha a porta]
+  Paper: [papel, o papel]
+  Notebook: [caderno, o caderno]
+  Newspaper: [jornal, o jornal]

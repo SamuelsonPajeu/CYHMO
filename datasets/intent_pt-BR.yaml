@@ -1,0 +1,146 @@
+# Dataset de calibração da camada 2 — frases em pt-BR de autoria própria.
+# grammar: fixtures em datasets/grammars/ (união). expected: literais da gramática, na ordem.
+# mode: battle (pilha de 3) | normal (1 comando). enemies: quantidade de inimigos para alvos numerados.
+# core: false marca frases sem exemplo pt-BR curado (a população "sem anexo").
+version: 1
+grammar: [battle, exploration]
+cases:
+  # --- batalha: verbos ---
+  - {text: atira, expected: [Shoot]}
+  - {text: fogo, expected: [Shoot]}
+  - {text: dispara, expected: [Shoot]}
+  - {text: manda bala, expected: [Shoot]}
+  - {text: atira nele, expected: [Shoot]}
+  - {text: atira agora, expected: [Shoot]}
+  - {text: foge, expected: [Flee]}
+  - {text: fuja, expected: [Flee]}
+  - {text: cai fora, expected: [Flee]}
+  - {text: sai daí, expected: [Flee]}
+  - {text: corre daí, expected: [Flee]}
+  - {text: se cura, expected: [Recover]}
+  - {text: cura, expected: [Recover]}
+  - {text: usa a cápsula, expected: [Recover]}
+  - {text: recupera, expected: [Recover]}
+  - {text: recarrega, expected: [Reload]}
+  - {text: recarregue, expected: [Reload]}
+  - {text: troca o pente, expected: [Reload]}
+  - {text: carrega a arma, expected: [Reload]}
+  - {text: desvia, expected: [Dodge]}
+  - {text: desvie, expected: [Dodge]}
+  - {text: esquiva, expected: [Dodge]}
+  - {text: sai da frente, expected: [Dodge]}
+  - {text: aproxima, expected: [Approach]}
+  - {text: chega perto, expected: [Approach]}
+  - {text: levanta, expected: [Get up]}
+  - {text: fica de pé, expected: [Get up]}
+  - {text: fogo automático, expected: [Auto fire]}
+  - {text: atira sem parar, expected: [Auto fire]}
+  - {text: rajada, expected: [Strafe]}
+  - {text: gira a arma, expected: [Spin the gun]}
+  - {text: pula, expected: [Jump]}
+  - {text: chute baixo, expected: [Low kick]}
+  - {text: provoca, expected: [Taunt]}
+  - {text: pula pra trás, expected: [Jumpback]}
+  - {text: lançador, expected: [Launcher]}
+  - {text: usa o lançador, expected: [Launcher]}
+  - {text: para, expected: [Stop]}
+  - {text: para aí, expected: [Stop]}
+  - {text: volta, expected: [Go back]}
+  - {text: consulta, expected: [Consultation]}
+  # --- batalha: partes do corpo (args part) ---
+  - {text: boca, expected: [Mouth]}
+  - {text: na boca, expected: [Mouth]}
+  - {text: atira na boca, expected: [Mouth]}
+  - {text: cabeça, expected: [Head]}
+  - {text: atira na cabeça, expected: [Head]}
+  - {text: olho esquerdo, expected: [Left eye]}
+  - {text: no olho direito, expected: [Right eye]}
+  - {text: olho do meio, expected: [Middle eye]}
+  - {text: olho central, expected: [Middle eye]}
+  - {text: olho vermelho, expected: [Red eye]}
+  - {text: língua, expected: [Tongue]}
+  - {text: corpo, expected: [Body]}
+  - {text: cauda, expected: [Tail]}
+  - {text: rabo, expected: [Tail]}
+  - {text: perna da frente, expected: [Front leg]}
+  - {text: estômago esquerdo, expected: [Left stomach]}
+  - {text: barriga direita, expected: [Right stomach]}
+  - {text: estômago vermelho, expected: [Red stomach]}
+  - {text: galhos, expected: [Branches]}
+  # --- batalha: alvo numerado (args target) ---
+  - {text: número dois, expected: [Number 2], enemies: 3}
+  - {text: no segundo, expected: [Number 2], enemies: 2}
+  - {text: inimigo três, expected: [Number 3], enemies: 3}
+  - {text: alvo um, expected: [Number 1], enemies: 2}
+  - {text: número quatro, expected: [Number 4], enemies: 4}
+  - {text: o quinto, expected: [Number 5], enemies: 6}
+  - {text: número seis, expected: [Number 6], enemies: 6}
+  - {text: number two, lang: en, expected: [Number 2], enemies: 2}
+  - {text: número três, expected: [], enemies: 2}
+  # --- batalha: direções (args direction) ---
+  - {text: move pra esquerda, expected: [Move left]}
+  - {text: vai pra direita, expected: [Move right]}
+  - {text: esquerda, expected: [Move left]}
+  - {text: direita, expected: [Move right]}
+  - {text: vai pra frente, expected: [Move forward]}
+  - {text: avança, expected: [Move forward]}
+  - {text: vai pra trás, expected: [Move back]}
+  - {text: recua, expected: [Move back]}
+  - {text: trás, expected: [Back]}
+  - {text: frente, expected: [Front]}
+  - {text: vira à direita, expected: [Turn right]}
+  - {text: vira pra esquerda, expected: [Turn left]}
+  # --- batalha: compostos e empilhados ---
+  - {text: atira e foge, expected: [Shoot, Flee]}
+  - {text: atira três vezes, expected: [Shoot, Shoot, Shoot]}
+  - {text: shoot shoot shoot, lang: en, expected: [Shoot, Shoot, Shoot]}
+  - {text: atira no segundo e foge, expected: [Number 2, Flee], enemies: 2}
+  - {text: "atira, desvia e recarrega", expected: [Shoot, Dodge, Reload]}
+  - {text: recarrega e atira, expected: [Reload, Shoot]}
+  - {text: foge e se cura, expected: [Flee, Recover]}
+  - {text: atira duas vezes, expected: [Shoot, Shoot]}
+  - {text: atira atira, expected: [Shoot, Shoot]}
+  - {text: desvia e atira e foge e recarrega, expected: [Dodge, Shoot, Flee]}
+  - {text: cura e depois atira, expected: [Recover, Shoot]}
+  - {text: boca e foge, expected: [Mouth, Flee]}
+  - {text: atira quatro vezes, expected: [Shoot, Shoot, Shoot]}
+  - {text: shoot and flee, lang: en, expected: [Shoot, Flee]}
+  - {text: atira na cabeça e recarrega, expected: [Head, Reload]}
+  # --- exploração (1 comando) ---
+  - {text: anda, expected: [Walk], mode: normal}
+  - {text: caminha, expected: [Walk], mode: normal}
+  - {text: vai andando, expected: [Walk], mode: normal}
+  - {text: corre, expected: [Run], mode: normal}
+  - {text: vai correndo, expected: [Run], mode: normal}
+  - {text: espera, expected: [Wait], mode: normal}
+  - {text: oi, expected: [Hello], mode: normal}
+  - {text: olá, expected: [Hello], mode: normal}
+  - {text: obrigado, expected: [Thank you], mode: normal}
+  - {text: valeu, expected: [Thank you], mode: normal}
+  - {text: calma, expected: [Calm down], mode: normal}
+  - {text: se acalma, expected: [Calm down], mode: normal}
+  - {text: rápido, expected: [Hurry], mode: normal}
+  - {text: anda logo, expected: [Hurry], mode: normal}
+  - {text: olha pra trás, expected: [Look behind you], mode: normal}
+  - {text: sai da sala, expected: [Exit the room], mode: normal}
+  - {text: sai do quarto, expected: [Exit the room], mode: normal}
+  - {text: ponto de salvamento, expected: [Save point], mode: normal}
+  - {text: checa a câmera, expected: [Camera check], mode: normal}
+  - {text: volta pra tela anterior, expected: [Go back], mode: normal}
+  - {text: encerra a conversa, expected: [Go back], mode: normal}
+  - {text: acorda, expected: [Wake up], mode: normal, core: false}
+  - {text: devagar, expected: [Slow down], mode: normal, core: false}
+  - {text: vai lá fora, expected: [Go outside], mode: normal, core: false}
+  - {text: escuta, expected: [Listen], mode: normal, core: false}
+  # --- rejeições esperadas (fala não endereçada ao jogo) ---
+  - {text: que horas são, expected: [], mode: normal}
+  - {text: meu celular tá sem bateria, expected: [], mode: normal}
+  - {text: preciso comprar pão depois, expected: [], mode: normal}
+  - {text: acho que vai chover hoje, expected: [], mode: normal}
+  - {text: esse jogo é de 2003, expected: [], mode: normal}
+  - {text: vou tomar um café, expected: [], mode: normal}
+  - {text: a reunião é amanhã cedo, expected: [], mode: normal}
+  - {text: deixa eu ver aqui, expected: []}
+  - {text: essa fase é bem difícil, expected: []}
+  - {text: o gráfico desse jogo envelheceu, expected: []}
+  - {text: minha internet caiu de novo, expected: []}

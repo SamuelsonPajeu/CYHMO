@@ -1,0 +1,30 @@
+# --- Conteúdo do jogo: NUNCA versionar ---------------------------------------
+# Bytes extraídos da cópia do usuário. Isto inclui texto: o vocabulário lido da
+# memória do jogo é conteúdo extraído, mesmo sendo ASCII.
+*.iso
+*.bin
+*.elf
+*.p2s
+*.dump
+observed_vocab.yaml
+
+# --- Estado local do usuário -------------------------------------------------
+config.toml
+data/
+models/
+models.lock
+cheats/
+whisper_cpp/
+.venv/
+.venv-*/
+
+# --- Marcas do lançador (existem só na instalação do usuário) ----------------
+.cyhmo-reinstall
+.cyhmo-doctor-ok
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
