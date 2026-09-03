@@ -52,7 +52,7 @@
     "closedTitle": "CYHMO encerrado",
     "closed": "Você encerrou o mod. Pode fechar esta aba.",
     "lostTitle": "O CYHMO não está mais rodando",
-    "lost": "A janela do terminal foi fechada ou o mod parou de funcionar. Nada do que você clicar aqui chega ao jogo.",
+    "lost": "A janela do terminal foi fechada ou o mod parou de funcionar.",
     "hint": "Para jogar de novo, abra o CYHMO.cmd e deixe a janela do terminal aberta.",
     "retry": "Tentar reconectar"
   },
