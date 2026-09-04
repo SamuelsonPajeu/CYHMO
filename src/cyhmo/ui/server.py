@@ -1,18 +1,28 @@
 """Servidor HTTP/WebSocket local da interface.
 
 Roda no mesmo loop asyncio do pipeline; chamadas potencialmente lentas vão para
-thread e o fluxo de eventos usa a fila descarta-o-antigo do barramento."""
+thread e o fluxo de eventos usa a fila descarta-o-antigo do barramento.
+
+A interface é local mas o navegador que a abre não é: qualquer página aberta em outra
+aba fala com 127.0.0.1. Três guardas cuidam disso, e as três estão em ``_deny_reason``:
+o ``Host`` precisa ser um nome de loopback conhecido, o que fecha o DNS rebinding; o
+``Origin``, quando existe, precisa casar com o ``Host``, o que fecha o CSRF; e toda rota
+``/api`` exige o token da sessão, que só existe dentro do HTML servido aqui.
+"""
 
 from __future__ import annotations
 
 import asyncio
 import contextlib
+import hmac
 import logging
+import secrets
 import socket
 import threading
 import webbrowser
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from urllib.parse import urlsplit
 
 from pydantic import BaseModel, Field
 
@@ -20,7 +30,7 @@ from cyhmo.domain.errors import CyhmoError, UiServerError
 from cyhmo.ui.viewmodel import DEFAULT_GRAMMAR_LIMIT, UiViewModel
 
 if TYPE_CHECKING:
-    from fastapi import FastAPI, WebSocket
+    from fastapi import FastAPI, Request, WebSocket
 
 log = logging.getLogger("cyhmo.ui.server")
 
@@ -30,6 +40,49 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 MIC_TEST_MAX_SECONDS = 30.0
 DEFAULT_HOTKEY_TIMEOUT = 10.0
 HOTKEY_CAPTURE_MAX_SECONDS = 60.0
+
+DEFAULT_UI_HOST = "127.0.0.1"
+DEFAULT_UI_PORT = 8765
+LOOPBACK_NAMES = ("127.0.0.1", "localhost", "[::1]")
+TOKEN_META_NAME = "cyhmo-token"
+TOKEN_HEADER = "x-cyhmo-token"
+TOKEN_QUERY = "token"
+TOKEN_BYTES = 32
+HEAD_MARKER = "<head>"
+API_PREFIX = "/api/"
+WS_POLICY_VIOLATION = 1008
+FORBIDDEN = 403
+
+CODE_BAD_HOST = "bad_host"
+CODE_BAD_ORIGIN = "bad_origin"
+CODE_STALE_TOKEN = "stale_token"
+
+# default-src 'self' em vez de 'none' por segurança de operação: um recurso que eu não
+# tenha previsto continua carregando da própria origem em vez de sumir da tela. O que
+# fecha de verdade está nas outras diretivas. 'unsafe-inline' em style-src é exigido
+# pelo atributo style que a View escreve nas barras de nível e progresso.
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self'; "
+    "img-src 'self' data:; "
+    "style-src 'self' 'unsafe-inline'; "
+    "object-src 'none'; "
+    "base-uri 'none'; "
+    "form-action 'none'; "
+    "frame-ancestors 'none'"
+)
+
+REFUSED_HOST = (
+    "esta interface só atende pelo endereço local do mod. O pedido chegou com Host {host!r}, "
+    "que não é um deles — quase sempre é uma página de outro site tentando falar com o mod."
+)
+REFUSED_ORIGIN = (
+    "pedido recusado: veio da origem {origin!r}, que não é a interface do mod. "
+    "Abra o painel pelo endereço que o CYHMO imprime no terminal."
+)
+REFUSED_TOKEN = (
+    "esta aba está com o token de uma sessão antiga do mod. Recarregue a página (F5) para "
+    "pegar o token da sessão atual."
+)
 
 
 class ConfigPatchBody(BaseModel):
@@ -77,25 +130,114 @@ def _publish_route_annotations(**symbols: Any) -> None:
     globals().update(symbols)
 
 
-def create_app(viewmodel: UiViewModel, static_dir: Path | None = None) -> "FastAPI":
+def is_loopback(host: str) -> bool:
+    return host.strip().strip("[]").casefold() in {"127.0.0.1", "localhost", "::1"}
+
+
+def allowed_authorities(host: str, port: int) -> frozenset[str] | None:
+    """Os valores de ``Host`` que esta interface aceita, ou ``None`` para não conferir.
+
+    Fora do loopback o mod não tem como saber por qual nome o navegador chega, e quem
+    mudou ``ui.host`` já decidiu expor a interface; a checagem sai de cena e a defesa fica
+    com o token e com a igualdade Origin/Host, que não dependem do endereço."""
+    if not is_loopback(host):
+        return None
+    names = [f"{name}:{port}" for name in LOOPBACK_NAMES]
+    if port == 80:
+        names += list(LOOPBACK_NAMES)
+    return frozenset(name.casefold() for name in names)
+
+
+def index_with_token(static_dir: Path, token: str) -> str:
+    """O token da sessão viaja num ``<meta>`` do próprio HTML.
+
+    Num ``<script>`` embutido ele obrigaria a CSP a aceitar script inline, que é
+    justamente o que ela existe para barrar. E como nenhuma outra origem consegue ler o
+    corpo desta resposta, servir o token aqui não o entrega a ninguém."""
+    source = static_dir / "index.html"
+    try:
+        html = source.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise UiServerError(f"não consegui ler {source}: {exc}") from exc
+    position = html.find(HEAD_MARKER)
+    if position < 0:
+        raise UiServerError(f"{source} não tem <head>; a interface não pode ser servida com segurança")
+    cut = position + len(HEAD_MARKER)
+    return f'{html[:cut]}\n  <meta name="{TOKEN_META_NAME}" content="{token}">{html[cut:]}'
+
+
+def _deny_reason(
+    path: str, headers: Any, authorities: frozenset[str] | None, token: str, presented: str
+) -> tuple[str, str] | None:
+    """Motivo pelo qual o pedido não deve ser atendido, ou ``None`` quando pode passar."""
+    host_header = str(headers.get("host", "")).casefold()
+    if authorities is not None and host_header not in authorities:
+        return REFUSED_HOST.format(host=headers.get("host", "")), CODE_BAD_HOST
+    origin = headers.get("origin")
+    if origin and urlsplit(str(origin)).netloc.casefold() != host_header:
+        return REFUSED_ORIGIN.format(origin=origin), CODE_BAD_ORIGIN
+    if not path.startswith(API_PREFIX):
+        return None
+    if not hmac.compare_digest(presented, token):
+        return REFUSED_TOKEN, CODE_STALE_TOKEN
+    return None
+
+
+def _harden(response: Any, path: str) -> Any:
+    """Cabeçalhos que valem para toda resposta, inclusive as recusadas.
+
+    Sem ``Cache-Control`` o navegador aplica cache heurístico e pode servir a View antiga
+    sem perguntar — foi como uma atualização do mod deixou um navegador com o JS velho e a
+    página em branco. ``no-cache`` obriga a revalidar; o ETag mantém a resposta em 304,
+    então não custa nada."""
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("Content-Security-Policy", CONTENT_SECURITY_POLICY)
+    if path == "/" or path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
+def create_app(
+    viewmodel: UiViewModel,
+    static_dir: Path | None = None,
+    host: str = DEFAULT_UI_HOST,
+    port: int = DEFAULT_UI_PORT,
+) -> "FastAPI":
     from fastapi import FastAPI, Query, Request, WebSocket
-    from fastapi.responses import FileResponse, JSONResponse
+    from fastapi.responses import HTMLResponse, JSONResponse
     from fastapi.staticfiles import StaticFiles
 
     _publish_route_annotations(WebSocket=WebSocket, Request=Request)
     static_dir = static_dir or STATIC_DIR
     app = FastAPI(title="CYHMO", docs_url=None, redoc_url=None, openapi_url=None)
 
+    token = secrets.token_urlsafe(TOKEN_BYTES)
+    authorities = allowed_authorities(host, port)
+    index_html = index_with_token(static_dir, token)
+    app.state.cyhmo_token = token
+    if authorities is None:
+        log.warning(
+            "ui.host = %r não é loopback: a interface fica alcançável pela rede e a checagem de Host "
+            "não pode ser aplicada. O token da sessão continua sendo exigido.",
+            host,
+        )
+
     @app.middleware("http")
-    async def always_revalidate_the_view(request: Request, call_next: Any) -> Any:
-        """Sem ``Cache-Control`` o navegador aplica cache heurístico e pode servir a
-        View antiga sem perguntar — foi como uma atualização do mod deixou um
-        navegador com o JS velho e a página em branco. ``no-cache`` obriga a
-        revalidar; o ETag mantém a resposta em 304, então não custa nada."""
-        response = await call_next(request)
-        if request.url.path == "/" or request.url.path.startswith("/static/"):
-            response.headers["Cache-Control"] = "no-cache"
-        return response
+    async def guard_local_origin(request: Request, call_next: Any) -> Any:
+        denial = _deny_reason(
+            request.url.path,
+            request.headers,
+            authorities,
+            token,
+            request.headers.get(TOKEN_HEADER, ""),
+        )
+        if denial is not None:
+            message, code = denial
+            log.warning("pedido recusado em %s: %s", request.url.path, code)
+            return _harden(JSONResponse({"error": message, "code": code}, status_code=FORBIDDEN), request.url.path)
+        return _harden(await call_next(request), request.url.path)
 
     @app.exception_handler(CyhmoError)
     async def expected_error(_request: Request, exc: CyhmoError) -> JSONResponse:
@@ -157,6 +299,34 @@ def create_app(viewmodel: UiViewModel, static_dir: Path | None = None) -> "FastA
     @app.post("/api/llm/delete")
     async def post_llm_delete(body: ModelBody) -> dict[str, Any]:
         return await asyncio.to_thread(viewmodel.llm_delete_model, body.model)
+
+    @app.get("/api/stt/models")
+    async def get_stt_models() -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_status)
+
+    @app.post("/api/stt/models/download")
+    async def post_stt_model_download(body: ModelBody) -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_download, body.model)
+
+    @app.post("/api/stt/models/download/cancel")
+    async def post_stt_model_download_cancel() -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_download_cancel)
+
+    @app.post("/api/stt/models/delete")
+    async def post_stt_model_delete(body: ModelBody) -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_delete, body.model)
+
+    @app.post("/api/stt/gpu/install")
+    async def post_stt_gpu_install() -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_gpu_install)
+
+    @app.post("/api/stt/gpu/install/cancel")
+    async def post_stt_gpu_install_cancel() -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_gpu_install_cancel)
+
+    @app.post("/api/stt/gpu/remove")
+    async def post_stt_gpu_remove() -> dict[str, Any]:
+        return await asyncio.to_thread(viewmodel.whisper_gpu_remove)
 
     @app.get("/api/calibration")
     async def get_calibration() -> dict[str, Any]:
@@ -242,11 +412,25 @@ def create_app(viewmodel: UiViewModel, static_dir: Path | None = None) -> "FastA
 
     @app.websocket("/ws")
     async def websocket_events(websocket: WebSocket) -> None:
+        """O WebSocket não passa por CORS: sem esta guarda, qualquer aba aberta receberia o
+        snapshot com a configuração e o histórico do que o jogador falou. O token vem na
+        query porque o navegador não deixa a página escolher cabeçalhos aqui."""
+        denial = _deny_reason(
+            API_PREFIX,
+            websocket.headers,
+            authorities,
+            token,
+            websocket.query_params.get(TOKEN_QUERY, ""),
+        )
+        if denial is not None:
+            log.warning("WebSocket recusado: %s", denial[1])
+            await websocket.close(code=WS_POLICY_VIOLATION)
+            return
         await _stream_events(websocket, viewmodel)
 
     @app.get("/")
-    async def index() -> FileResponse:
-        return FileResponse(static_dir / "index.html", media_type="text/html")
+    async def index() -> HTMLResponse:
+        return HTMLResponse(index_html)
 
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
     return app

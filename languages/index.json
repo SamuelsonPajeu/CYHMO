@@ -24,6 +24,78 @@
       "name": "中文（简体）",
       "file": "zh-CN.yaml",
       "description": "Chinês simplificado; escrita sem espaço entre palavras."
+    },
+    {
+      "code": "hi",
+      "name": "हिन्दी",
+      "file": "hi.yaml",
+      "description": "Hindi; chandrabindu e anusvara cadastrados nas duas grafias."
+    },
+    {
+      "code": "ar",
+      "name": "العربية",
+      "file": "ar.yaml",
+      "description": "Árabe; imperativos nas formas masculina e feminina, hamza nas duas grafias."
+    },
+    {
+      "code": "bn",
+      "name": "বাংলা",
+      "file": "bn.yaml",
+      "description": "Bengali; imperativo na forma তুমি, a mais comum na fala corrente."
+    },
+    {
+      "code": "ru",
+      "name": "Русский",
+      "file": "ru.yaml",
+      "description": "Russo; \"ё\" e \"е\" cadastrados juntos."
+    },
+    {
+      "code": "ja",
+      "name": "日本語",
+      "file": "ja.yaml",
+      "description": "Japonês; escrita sem espaço entre palavras, kana de um caractere fora de propósito."
+    },
+    {
+      "code": "de",
+      "name": "Deutsch",
+      "file": "de.yaml",
+      "description": "Alemão; formas com trema e ß junto das transcritas ae/oe/ue/ss."
+    },
+    {
+      "code": "fr",
+      "name": "Français",
+      "file": "fr.yaml",
+      "description": "Francês; formas acentuadas e sem acento, além de \"œil\" e \"oeil\"."
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe",
+      "file": "tr.yaml",
+      "description": "Turco; formas com e sem diacrítico para ç ğ ı ö ş ü."
+    },
+    {
+      "code": "vi",
+      "name": "Tiếng Việt",
+      "file": "vi.yaml",
+      "description": "Vietnamita; formas sem tom como reserva, exceto onde duas palavras colidiriam."
+    },
+    {
+      "code": "ko",
+      "name": "한국어",
+      "file": "ko.yaml",
+      "description": "Coreano; numerais nativos e sino-coreanos, sem o ambíguo 이."
+    },
+    {
+      "code": "it",
+      "name": "Italiano",
+      "file": "it.yaml",
+      "description": "Italiano."
+    },
+    {
+      "code": "id",
+      "name": "Bahasa Indonesia",
+      "file": "id.yaml",
+      "description": "Indonésio; variantes coloquiais junto das formais."
     }
   ]
 }

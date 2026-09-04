@@ -117,6 +117,19 @@ class IntentInterpreter:
     def observed_vocabulary(self) -> ObservedVocabulary | None:
         return self._observed
 
+    def apply_intent(self, config: IntentConfig, llm_fallback: "LlmFallbackPort | None") -> None:
+        """Adota a seção ``intent`` recém-salva sem reconstruir o interpretador.
+
+        Antes, o que a interface salvava aqui só valia no reinício seguinte — e nada dizia
+        isso, então ligar o assistente parecia funcionar e não funcionava. Os campos que
+        exigem reconstrução de verdade (backend e modelo de embeddings, cache e anexo) são
+        lidos só na montagem e continuam anunciados como "requer reinício" pela View.
+
+        O índice não é tocado: limiar e top-k são lidos a cada enunciado."""
+        with self._lock:
+            self._config = config
+            self._llm = llm_fallback
+
     def wait_ready(self, timeout: float | None = None) -> bool:
         return self._ready.wait(timeout) and self.current_grammar is not None
 

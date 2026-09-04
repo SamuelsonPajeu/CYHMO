@@ -1,0 +1,176 @@
+# Pacote de idioma — Indonésio
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# O indonésio falado usa muita forma coloquial ("nggak", "udah"), então as variantes
+# informais estão cadastradas junto das formais: o Whisper transcreve o que foi dito.
+
+code: id
+name: Bahasa Indonesia
+stt_language: id
+
+numerals:
+  cardinal:
+    nol: 0
+    kosong: 0
+    satu: 1
+    dua: 2
+    tiga: 3
+    empat: 4
+    lima: 5
+    enam: 6
+    tujuh: 7
+    delapan: 8
+    sembilan: 9
+    sepuluh: 10
+  ordinal:
+    pertama: 1
+    kesatu: 1
+    kedua: 2
+    ketiga: 3
+    keempat: 4
+    kelima: 5
+    keenam: 6
+
+quantifiers: [kali]
+connectives: [dan, lalu, kemudian, terus, setelah itu, habis itu]
+affirmations: [ya, iya, oke, betul, benar, tentu, siap, boleh]
+negations: [tidak, nggak, enggak, bukan, jangan]
+target_words: [nomor, musuh, sasaran, target]
+
+body_parts:
+  kepala: HEAD
+  mulut: MOUTH
+  mata kiri: LEFT EYE
+  mata tengah: MIDDLE EYE
+  mata yang tengah: MIDDLE EYE
+  mata kanan: RIGHT EYE
+  mata merah: RED EYE
+  mata: EYE
+  lidah: TONGUE
+  perut kiri: LEFT STOMACH
+  perut kanan: RIGHT STOMACH
+  perut merah: RED STOMACH
+  perut: STOMACH
+  kaki depan: FRONT LEG
+  badan: BODY
+  tubuh: BODY
+  ekor: TAIL
+  dahan: BRANCHES
+  cabang: BRANCHES
+  ranting: BRANCHES
+  akar: ROOT
+  sulur: VINES
+  tanaman rambat: VINES
+  daun: LEAF
+
+directions:
+  kiri: LEFT
+  ke kiri: LEFT
+  sebelah kiri: LEFT
+  kanan: RIGHT
+  ke kanan: RIGHT
+  sebelah kanan: RIGHT
+  atas: UP
+  ke atas: UP
+  bawah: DOWN
+  ke bawah: DOWN
+  depan: FRONT
+  ke depan: FRONT
+  maju: FRONT
+  belakang: BACK
+  ke belakang: BACK
+  mundur: BACK
+
+lexicon:
+  tembak: shoot
+  tembakkan: shoot
+  api: shoot
+  kabur: flee
+  lari: run
+  jalan: walk
+  berjalan: walk
+  berhenti: stop
+  stop: stop
+  tunggu: wait
+  isi ulang: reload
+  reload: reload
+  hindar: dodge
+  mengelak: dodge
+  menghindar: dodge
+  sembuh: recover
+  obati: recover
+  pulihkan: recover
+  kembali: go back
+  balik: go back
+  periksa: check
+  cek: check
+  lihat: look
+  buka: open
+  tutup: close
+  baca: read
+  ambil: take
+  pungut: pick up
+  pakai: use
+  gunakan: use
+  sembunyi: hide
+  bersembunyi: hide
+  dekati: approach
+  mendekat: approach
+  bangun: get up
+  berdiri: get up
+  lompat: jump
+  lempar: throw
+  nomor: number
+  cepat: hurry
+  buruan: hurry
+  ya: "yes"
+  tidak: "no"
+
+command_examples:
+  Walk: [jalan, jalan terus, berjalan]
+  Run: [lari, lari cepat, cepat lari]
+  Stop: [berhenti, stop, diam di situ, tunggu di situ]
+  Go back: [kembali, balik, kembali ke belakang]
+  Check: [periksa, cek, lihat itu dulu]
+  Read: [baca, baca itu]
+  Open: [buka, buka itu]
+  Close: [tutup, tutup itu]
+  Look: [lihat, lihat itu]
+  Use: [pakai, gunakan, pakai itu]
+  Take: [ambil, ambil itu, pungut]
+  Shoot: [tembak, tembak dia, api]
+  Reload: [isi ulang, reload, isi peluru]
+  Flee: [kabur, lari dari sana, pergi dari sana]
+  Approach: [dekati, mendekat, jalan ke sana]
+  Recover: [sembuh, obati diri, pakai kapsul]
+  Dodge: [hindar, mengelak, minggir]
+  Hide: [sembunyi, bersembunyi, cari tempat aman]
+  Get up: [bangun, berdiri, ayo bangun]
+  Jump: [lompat, lompat sekarang]
+  Look out: [awas, hati-hati]
+  Throw it: [lempar, lempar itu]
+  Front: [depan, ke depan, maju]
+  Back: [belakang, ke belakang, mundur]
+  Left: [kiri, ke kiri]
+  Right: [kanan, ke kanan]
+  Up: [atas, ke atas]
+  Down: [bawah, ke bawah]
+  Head: [kepala, ke kepala, tembak kepalanya]
+  Mouth: [mulut, ke mulut]
+  Eye: [mata, ke mata]
+  Left eye: [mata kiri, ke mata kiri]
+  Middle eye: [mata tengah]
+  Right eye: [mata kanan, ke mata kanan]
+  Red eye: [mata merah, ke mata merah]
+  Tongue: [lidah, ke lidah]
+  Stomach: [perut, ke perut]
+  Body: [badan, tubuh, ke badan]
+  Tail: [ekor, ke ekor]
+  Consultation: [konsultasi, kita bicara, ngobrol dulu]
+  Camera check: [periksa kamera, lihat kamera]
+  Break time: [istirahat, waktunya istirahat]
+  Zoom in: [perbesar, zoom, dekatkan gambar]
+  "Yes": [ya, iya, betul]
+  "No": [tidak, nggak, bukan]

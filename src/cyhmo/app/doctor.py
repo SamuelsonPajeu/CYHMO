@@ -36,7 +36,18 @@ PINE_UNRESPONSIVE_HINT = (
     "isso acontece quando muitas conexões ficam presas do lado do emulador"
 )
 PINE_DROPPED_HINT = "a conexão PINE caiu no meio do diagnóstico; " + PINE_UNRESPONSIVE_HINT
-NO_GAME_HINT = "nenhum jogo rodando no PCSX2: carregue o Lifeline e tire a emulação da pausa"
+# Duas causas com o mesmo sintoma, e a segunda manda olhar para o lugar oposto: o PINE
+# fica com o PRIMEIRO PCSX2 que abriu, então com dois abertos o mod conversa com o que
+# não tem jogo nenhum — e ele responde certinho "sem jogo", com o Lifeline rodando na
+# tela ao lado. Sem esta segunda frase a dica mandava carregar um jogo já carregado.
+SECOND_INSTANCE_HINT = (
+    "Se o jogo JÁ está rodando, provavelmente há mais de um PCSX2 aberto: o PINE atende pelo "
+    "primeiro que subiu, e o mod está falando com o vazio. Feche todos e abra um só, com o jogo."
+)
+NO_GAME_HINT = (
+    "nenhum jogo rodando no PCSX2 que atende nesta porta: carregue o Lifeline e tire a emulação "
+    f"da pausa. {SECOND_INSTANCE_HINT}"
+)
 MEMORY_UNAVAILABLE_HINT = (
     "o PCSX2 respondeu, mas recusou a leitura: o jogo está rodando? o endereço pode não valer nesta versão"
 )
@@ -204,21 +215,29 @@ class _Doctor:
     def _check_whisper_cpp(self) -> tuple[bool, str, str]:
         if self._config is None or self._paths is None:
             return NO_CONFIG
+        from cyhmo.stt.whisper_gpu import effective_binary
+
         settings = self._config.stt.whisper_cpp
         if self._config.stt.engine != "whisper-cpp":
             return True, f"não usado (engine = {self._config.stt.engine})", ""
-        missing = [
-            str(path)
-            for path in ((self._paths.base_dir / settings.binary), (self._paths.base_dir / settings.model))
-            if not path.is_file()
-        ]
+        binary, use_gpu = effective_binary(
+            self._paths.base_dir, settings.binary, settings.gpu_binary, settings.use_gpu
+        )
+        missing = [str(path) for path in (binary, (self._paths.base_dir / settings.model)) if not path.is_file()]
         if missing:
             return (
                 False,
                 f"ausentes: {', '.join(missing)}",
                 "rode `CYHMO.cmd setup` para baixá-los; até lá o mod usa o faster-whisper, mais lento",
             )
-        return True, f"{Path(settings.model).name} em {'GPU (Vulkan)' if settings.use_gpu else 'CPU'}", ""
+        where = "GPU (CUDA)" if use_gpu else "CPU"
+        if settings.use_gpu and not use_gpu:
+            return (
+                True,
+                f"{Path(settings.model).name} em CPU — o build com GPU não está instalado",
+                "instale-o em Configurações › Modelo de reconhecimento, ou desligue stt.whisper_cpp.use_gpu",
+            )
+        return True, f"{Path(settings.model).name} em {where}", ""
 
     def _check_models_lock(self) -> tuple[bool, str, str]:
         if self._paths is None:
@@ -284,7 +303,11 @@ class _Doctor:
             return _pine_failure(exc, NO_GAME_HINT)
         name = STATUS_NAMES.get(status, f"desconhecido ({status})")
         if status != STATUS_RUNNING:
-            return False, f"VM {name}", "inicie o jogo no PCSX2 e tire a emulação da pausa"
+            return (
+                False,
+                f"VM {name}",
+                f"inicie o jogo no PCSX2 e tire a emulação da pausa. {SECOND_INSTANCE_HINT}",
+            )
         return True, f"VM {name}", ""
 
     def _check_serial(self) -> tuple[bool, str, str]:

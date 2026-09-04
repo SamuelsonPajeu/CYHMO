@@ -1,0 +1,204 @@
+# Pacote de idioma — Francês
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# A normalização não remove acento, então as formas acentuada e sem acento estão
+# cadastradas juntas: o Whisper alterna entre as duas conforme o áudio.
+# "œ" não é decomposto pelo NFKC, então "œil" e "oeil" são chaves distintas.
+
+code: fr
+name: Français
+stt_language: fr
+
+numerals:
+  cardinal:
+    zéro: 0
+    zero: 0
+    un: 1
+    une: 1
+    deux: 2
+    trois: 3
+    quatre: 4
+    cinq: 5
+    six: 6
+    sept: 7
+    huit: 8
+    neuf: 9
+    dix: 10
+  ordinal:
+    premier: 1
+    première: 1
+    premiere: 1
+    deuxième: 2
+    deuxieme: 2
+    second: 2
+    seconde: 2
+    troisième: 3
+    troisieme: 3
+    quatrième: 4
+    quatrieme: 4
+    cinquième: 5
+    cinquieme: 5
+    sixième: 6
+    sixieme: 6
+
+quantifiers: [fois]
+connectives: [et, puis, ensuite, et puis, après, apres, alors]
+affirmations: [oui, ouais, ok, d'accord, daccord, affirmatif, bien sûr, bien sur, exact]
+negations: [non, nan, négatif, negatif, jamais, pas du tout]
+target_words: [numéro, numero, ennemi, cible]
+
+body_parts:
+  tête: HEAD
+  tete: HEAD
+  bouche: MOUTH
+  œil gauche: LEFT EYE
+  oeil gauche: LEFT EYE
+  œil du milieu: MIDDLE EYE
+  oeil du milieu: MIDDLE EYE
+  œil central: MIDDLE EYE
+  oeil central: MIDDLE EYE
+  œil droit: RIGHT EYE
+  oeil droit: RIGHT EYE
+  œil rouge: RED EYE
+  oeil rouge: RED EYE
+  œil: EYE
+  oeil: EYE
+  langue: TONGUE
+  ventre gauche: LEFT STOMACH
+  estomac gauche: LEFT STOMACH
+  ventre droit: RIGHT STOMACH
+  estomac droit: RIGHT STOMACH
+  ventre rouge: RED STOMACH
+  estomac rouge: RED STOMACH
+  ventre: STOMACH
+  estomac: STOMACH
+  patte avant: FRONT LEG
+  patte de devant: FRONT LEG
+  corps: BODY
+  queue: TAIL
+  branches: BRANCHES
+  racine: ROOT
+  racines: ROOT
+  lianes: VINES
+  feuille: LEAF
+
+directions:
+  gauche: LEFT
+  à gauche: LEFT
+  a gauche: LEFT
+  droite: RIGHT
+  à droite: RIGHT
+  a droite: RIGHT
+  haut: UP
+  en haut: UP
+  vers le haut: UP
+  bas: DOWN
+  en bas: DOWN
+  vers le bas: DOWN
+  avant: FRONT
+  en avant: FRONT
+  devant: FRONT
+  arrière: BACK
+  arriere: BACK
+  en arrière: BACK
+  en arriere: BACK
+
+lexicon:
+  tire: shoot
+  tirez: shoot
+  feu: shoot
+  fuis: flee
+  fuyez: flee
+  cours: run
+  courez: run
+  marche: walk
+  marchez: walk
+  avance: walk
+  arrête: stop
+  arrete: stop
+  arrêtez: stop
+  stop: stop
+  attends: wait
+  attendez: wait
+  recharge: reload
+  esquive: dodge
+  soigne: recover
+  soigne-toi: recover
+  guéris: recover
+  gueris: recover
+  reviens: go back
+  retourne: go back
+  vérifie: check
+  verifie: check
+  examine: check
+  regarde: look
+  ouvre: open
+  ferme: close
+  lis: read
+  prends: take
+  ramasse: pick up
+  utilise: use
+  cache-toi: hide
+  planque-toi: hide
+  approche: approach
+  lève-toi: get up
+  leve-toi: get up
+  saute: jump
+  lance: throw
+  jette: throw
+  numéro: number
+  numero: number
+  vite: hurry
+  dépêche-toi: hurry
+  depeche-toi: hurry
+  oui: "yes"
+  non: "no"
+
+command_examples:
+  Walk: [marche, avance, continue à marcher, continue a marcher]
+  Run: [cours, plus vite, vas-y cours]
+  Stop: [stop, arrête-toi, arrete-toi, attends là, attends la]
+  Go back: [reviens, retourne, on revient en arrière, on revient en arriere]
+  Check: [vérifie, verifie, examine, jette un œil, jette un oeil]
+  Read: [lis, lis ça, lis ca]
+  Open: [ouvre, ouvre-le, ouvre ça, ouvre ca]
+  Close: [ferme, ferme-le]
+  Look: [regarde, regarde ça, regarde ca]
+  Use: [utilise, sers-t'en]
+  Take: [prends, prends-le, ramasse]
+  Shoot: [tire, feu, tire dessus, tire-lui dessus]
+  Reload: [recharge, recharge ton arme]
+  Flee: [fuis, sauve-toi, tire-toi de là, tire-toi de la]
+  Approach: [approche, avance vers lui, rapproche-toi]
+  Recover: [soigne-toi, guéris-toi, gueris-toi, utilise une capsule]
+  Dodge: [esquive, écarte-toi, ecarte-toi]
+  Hide: [cache-toi, planque-toi]
+  Get up: [lève-toi, leve-toi, debout, relève-toi, releve-toi]
+  Jump: [saute, saute maintenant]
+  Look out: [attention, fais gaffe, méfie-toi, mefie-toi]
+  Throw it: [lance-le, jette-le, balance-le]
+  Front: [devant, en avant, vers l'avant]
+  Back: [arrière, arriere, en arrière, en arriere, recule]
+  Left: [gauche, à gauche, a gauche]
+  Right: [droite, à droite, a droite]
+  Up: [en haut, vers le haut]
+  Down: [en bas, vers le bas]
+  Head: [la tête, la tete, tire dans la tête, tire dans la tete]
+  Mouth: [la bouche, dans la bouche]
+  Eye: [l'œil, l'oeil, dans l'œil, dans l'oeil]
+  Left eye: [œil gauche, oeil gauche, dans l'œil gauche, dans l'oeil gauche]
+  Middle eye: [œil du milieu, oeil du milieu, œil central, oeil central]
+  Right eye: [œil droit, oeil droit, dans l'œil droit, dans l'oeil droit]
+  Red eye: [œil rouge, oeil rouge, dans l'œil rouge, dans l'oeil rouge]
+  Tongue: [la langue, dans la langue]
+  Stomach: [le ventre, l'estomac, dans le ventre]
+  Body: [le corps, sur le corps]
+  Tail: [la queue, sur la queue]
+  Consultation: [consultation, on discute, parlons]
+  Camera check: [vérifie la caméra, verifie la camera, regarde la caméra, regarde la camera]
+  Break time: [pause, on fait une pause, temps de repos]
+  Zoom in: [zoome, fais un zoom, rapproche l'image]
+  "Yes": [oui, ouais, d'accord, daccord]
+  "No": [non, nan, pas du tout]

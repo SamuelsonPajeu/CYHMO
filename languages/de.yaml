@@ -1,0 +1,200 @@
+# Pacote de idioma — Alemão
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# A normalização não remove trema nem ß, então as formas com "ä ö ü ß" estão
+# cadastradas junto das transcritas "ae oe ue ss": o Whisper alterna entre as duas.
+
+code: de
+name: Deutsch
+stt_language: de
+
+numerals:
+  cardinal:
+    "null": 0
+    eins: 1
+    ein: 1
+    eine: 1
+    zwei: 2
+    drei: 3
+    vier: 4
+    fünf: 5
+    fuenf: 5
+    sechs: 6
+    sieben: 7
+    acht: 8
+    neun: 9
+    zehn: 10
+  ordinal:
+    erster: 1
+    erste: 1
+    zweiter: 2
+    zweite: 2
+    dritter: 3
+    dritte: 3
+    vierter: 4
+    vierte: 4
+    fünfter: 5
+    fuenfter: 5
+    sechster: 6
+    sechste: 6
+
+quantifiers: [mal]
+connectives: [und, dann, danach, und dann, anschließend, anschliessend]
+affirmations: [ja, jawohl, klar, ok, okay, genau, richtig, stimmt]
+negations: [nein, nö, noe, negativ, niemals, auf keinen fall]
+target_words: [nummer, gegner, feind, ziel]
+
+body_parts:
+  kopf: HEAD
+  mund: MOUTH
+  linkes auge: LEFT EYE
+  mittleres auge: MIDDLE EYE
+  mittlere auge: MIDDLE EYE
+  rechtes auge: RIGHT EYE
+  rotes auge: RED EYE
+  auge: EYE
+  zunge: TONGUE
+  linker bauch: LEFT STOMACH
+  linker magen: LEFT STOMACH
+  rechter bauch: RIGHT STOMACH
+  rechter magen: RIGHT STOMACH
+  roter bauch: RED STOMACH
+  roter magen: RED STOMACH
+  bauch: STOMACH
+  magen: STOMACH
+  vorderbein: FRONT LEG
+  vorderes bein: FRONT LEG
+  körper: BODY
+  koerper: BODY
+  schwanz: TAIL
+  äste: BRANCHES
+  aeste: BRANCHES
+  zweige: BRANCHES
+  wurzel: ROOT
+  wurzeln: ROOT
+  ranken: VINES
+  blatt: LEAF
+
+directions:
+  links: LEFT
+  nach links: LEFT
+  rechts: RIGHT
+  nach rechts: RIGHT
+  oben: UP
+  nach oben: UP
+  hoch: UP
+  unten: DOWN
+  nach unten: DOWN
+  runter: DOWN
+  vorne: FRONT
+  nach vorne: FRONT
+  vorwärts: FRONT
+  vorwaerts: FRONT
+  hinten: BACK
+  nach hinten: BACK
+  zurück: BACK
+  zurueck: BACK
+
+lexicon:
+  schieß: shoot
+  schiess: shoot
+  schieße: shoot
+  schiesse: shoot
+  feuer: shoot
+  flieh: flee
+  fliehe: flee
+  hau ab: flee
+  lauf: run
+  renn: run
+  renne: run
+  geh: walk
+  gehe: walk
+  halt: stop
+  stopp: stop
+  warte: wait
+  nachladen: reload
+  lade nach: reload
+  weich aus: dodge
+  ausweichen: dodge
+  heil dich: recover
+  heile: recover
+  heilen: recover
+  geh zurück: go back
+  geh zurueck: go back
+  zurückgehen: go back
+  prüf: check
+  pruef: check
+  überprüf: check
+  ueberpruef: check
+  untersuche: check
+  schau: look
+  öffne: open
+  oeffne: open
+  mach auf: open
+  schließ: close
+  schliess: close
+  mach zu: close
+  lies: read
+  nimm: take
+  heb auf: pick up
+  benutze: use
+  versteck dich: hide
+  komm näher: approach
+  komm naeher: approach
+  steh auf: get up
+  spring: jump
+  wirf: throw
+  nummer: number
+  schnell: hurry
+  beeil dich: hurry
+  ja: "yes"
+  nein: "no"
+
+command_examples:
+  Walk: [geh, gehe weiter, lauf weiter]
+  Run: [renn, lauf, schneller, lauf los]
+  Stop: [halt, stopp, bleib stehen, warte da]
+  Go back: [geh zurück, geh zurueck, zurück, zurueck, kehr um]
+  Check: [prüf das, pruef das, untersuche das, schau es dir an]
+  Read: [lies, lies das]
+  Open: [öffne, oeffne, mach auf, mach es auf]
+  Close: [schließ, schliess, mach zu]
+  Look: [schau, schau dir das an]
+  Use: [benutze, benutz das]
+  Take: [nimm, nimm es, heb es auf]
+  Shoot: [schieß, schiess, feuer, schieß drauf, schiess drauf]
+  Reload: [nachladen, lade nach, lad die waffe]
+  Flee: [flieh, hau ab, nichts wie weg]
+  Approach: [komm näher, komm naeher, geh ran]
+  Recover: [heil dich, heile dich, nimm eine kapsel]
+  Dodge: [weich aus, ausweichen, geh aus dem weg]
+  Hide: [versteck dich, geh in deckung]
+  Get up: [steh auf, aufstehen, komm hoch]
+  Jump: [spring, spring jetzt]
+  Look out: [pass auf, vorsicht, achtung]
+  Throw it: [wirf es, wirf das]
+  Front: [nach vorne, vorwärts, vorwaerts]
+  Back: [nach hinten, zurück, zurueck]
+  Left: [links, nach links]
+  Right: [rechts, nach rechts]
+  Up: [nach oben, hoch]
+  Down: [nach unten, runter]
+  Head: [kopf, auf den kopf, schieß auf den kopf, schiess auf den kopf]
+  Mouth: [mund, in den mund]
+  Eye: [auge, ins auge]
+  Left eye: [linkes auge, ins linke auge]
+  Middle eye: [mittleres auge, das mittlere auge]
+  Right eye: [rechtes auge, ins rechte auge]
+  Red eye: [rotes auge, ins rote auge]
+  Tongue: [zunge, auf die zunge]
+  Stomach: [bauch, magen, in den bauch]
+  Body: [körper, koerper, auf den körper, auf den koerper]
+  Tail: [schwanz, auf den schwanz]
+  Consultation: [beratung, lass uns reden, sprechen wir]
+  Camera check: [prüf die kamera, pruef die kamera, schau auf die kamera]
+  Break time: [pause, mach eine pause, zeit für eine pause, zeit fuer eine pause]
+  Zoom in: [zoom rein, näher ran, naeher ran]
+  "Yes": [ja, jawohl, genau]
+  "No": [nein, auf keinen fall]

@@ -43,11 +43,14 @@ class ActivationConfig(StrictModel):
 class WhisperCppConfig(StrictModel):
     """Backend padrão de transcrição. O executável e o peso vêm de ``cyhmo setup``.
 
-    ``use_gpu`` é falso porque o build oficial de Windows que o setup instala só tem CPU —
-    e porque a medição do projeto deu a CPU na frente do Vulkan nesta classe de máquina.
-    Quem trocar por um build com GPU liga aqui."""
+    ``use_gpu`` nasce falso porque o build que o setup instala é só CPU: ligá-lo sobre esse
+    build não muda onde a conta é feita, só tira o ``-ng`` da linha de comando. Quem tem
+    placa NVIDIA instala o build cuBLAS pelo painel, e ele vai para ``gpu_binary`` — uma
+    pasta própria, para que voltar à CPU seja trocar a opção e não baixar tudo de novo.
+    Sem esse build no lugar, ``use_gpu`` ligado cai de volta na CPU e avisa no log."""
 
     binary: str = "whisper_cpp/whisper-server.exe"
+    gpu_binary: str = "whisper_cpp/cuda/whisper-server.exe"
     model: str = "models/stt/ggml/ggml-small.bin"
     host: str = "127.0.0.1"
     port: int = Field(default=8178, ge=1, le=65_535)

@@ -1,28 +1,34 @@
 name: Release
 
+# A release so sai quando alguem dispara este workflow a mao. Antes, todo push na main
+# criava tag e release, entao um ajuste de README virava versao nova. Agora quem publica
+# escolhe o incremento na hora de rodar o workflow.
+# A verificacao de cada commit continua: ci.yml roda sozinho em pull request e em push
+# na main.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       bump:
-        description: "Incremento a forcar (auto le os commits desde a ultima tag)"
+        description: "Incremento da versao a publicar"
         type: choice
-        options: [auto, patch, minor, major]
-        default: auto
+        options: [patch, minor, major, auto]
+        default: patch
+      dry_run:
+        description: "Ensaio: monta e confere o pacote, sem criar tag nem publicar"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 # cancel-in-progress fica FALSE de proposito: cancelar no meio pode deixar uma tag
-# criada sem release publicada. Merges seguidos enfileiram em vez de se atropelar.
+# criada sem release publicada. Execucoes seguidas enfileiram em vez de se atropelar.
 concurrency:
   group: release-main
   cancel-in-progress: false
 
 jobs:
   smoke:
-    if: "!contains(github.event.head_commit.message, '[skip release]')"
     uses: ./.github/workflows/ci.yml
 
   version:
@@ -42,21 +48,21 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
 
-      - name: Calcula a versao a partir dos commits
+      - name: Calcula a versao
         id: calc
         shell: bash
         run: |
           set -euo pipefail
 
-          forced="${{ inputs.bump || 'auto' }}"
+          forced="${{ inputs.bump }}"
 
           # O glob do git nao distingue digito de sufixo: sem o grep, uma tag como
           # v1.0.0-rc1 vira base "1.0.0-rc1" e a aritmetica derruba o job.
           previous="$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)"
           if [ -z "$previous" ]; then
             echo "::warning::nenhuma tag vX.Y.Z encontrada; partindo de 0.0.0."
-            echo "::warning::se o projeto ja esta em 1.0.0, cancele e rode: git tag v1.0.0 && git push origin v1.0.0"
             base="0.0.0"
             range=""
           else
@@ -64,20 +70,20 @@ jobs:
             range="${previous}..HEAD"
           fi
 
-          # Le o INTERVALO inteiro, nao so o commit de topo: com fast-forward merge
-          # o 'feat:' fica alguns commits atras e um topo qualquer esconderia o bump.
-          log="$(git log --no-merges --format='%s%n%b' ${range:+$range})"
-
           if [ "$forced" != "auto" ]; then
             bump="$forced"
-          # Fallback patch, nunca "sem release": um commit fora do padrao ainda publica.
-          elif printf '%s\n' "$log" | grep -qiE '^[a-z]+(\([^)]*\))?!:' \
-            || printf '%s\n' "$log" | grep -qiE '^BREAKING[ -]CHANGE:'; then
-            bump="major"
-          elif printf '%s\n' "$log" | grep -qiE '^feat(\([^)]*\))?:'; then
-            bump="minor"
           else
-            bump="patch"
+            # Le o intervalo inteiro em vez de so o commit de topo: com fast-forward
+            # merge o 'feat:' fica alguns commits atras e olhar so o topo perde o bump.
+            log="$(git log --no-merges --format='%s%n%b' ${range:+$range})"
+            if printf '%s\n' "$log" | grep -qiE '^[a-z]+(\([^)]*\))?!:' \
+              || printf '%s\n' "$log" | grep -qiE '^BREAKING[ -]CHANGE:'; then
+              bump="major"
+            elif printf '%s\n' "$log" | grep -qiE '^feat(\([^)]*\))?:'; then
+              bump="minor"
+            else
+              bump="patch"
+            fi
           fi
 
           IFS=. read -r major minor patch <<< "$base"
@@ -114,6 +120,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       # shell: pwsh (PowerShell 7, o padrao do windows-latest) com utf8NoBOM.
       # O Set-Content do PowerShell 5.1 grava BOM e corrompe acentos. Nao trocar
@@ -138,7 +146,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path $stage | Out-Null
 
           # O runtime resolve languages/, config/ e catalog/ relativos ao diretorio do
-          # config.toml, entao a release e um LAYOUT de pasta, nao um arquivo solto.
+          # config.toml, entao o zip precisa preservar esse layout de pastas.
           $payload = @(
             'src', 'languages', 'config', 'catalog', 'datasets',
             'pyproject.toml', 'requirements.txt',
@@ -158,15 +166,67 @@ jobs:
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           $size = '{0:N1}' -f ((Get-Item $zip).Length / 1MB)
 
-          "zip=$zip"     | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "sha256=$hash" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "size=$size"   | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          # O cliente do auto-update recusa o pacote sem este arquivo: e daqui que ele le
+          # o sha256 antes de trocar qualquer coisa na instalacao. Formato do sha256sum,
+          # para conferir a mao tambem.
+          $digest = "$zip.sha256"
+          Set-Content $digest "$hash  $name.zip" -Encoding utf8NoBOM
+
+          "zip=$zip"       | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "digest=$digest" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "sha256=$hash"   | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "size=$size"     | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host "$zip -- $size MB -- sha256 $hash"
+
+      - name: Confere o pacote montado
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = '${{ steps.build.outputs.zip }}'
+          $declared = (Get-Content '${{ steps.build.outputs.digest }}' -Raw).Split(' ')[0].Trim()
+          $actual = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          if ($declared -ne $actual) { throw "o .sha256 publicado nao confere com o zip montado" }
+
+          # O cliente exige estas entradas na raiz para aceitar a troca (REQUIRED_ENTRIES
+          # em update/installer.py): se faltar uma, o erro so aparece na maquina do usuario.
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $zip))
+          try {
+            $roots = $archive.Entries | ForEach-Object { ($_.FullName -split '[/\\]')[0] } | Sort-Object -Unique
+          } finally {
+            $archive.Dispose()
+          }
+          foreach ($required in @('src', 'pyproject.toml', 'CYHMO.cmd', 'VERSION')) {
+            if ($roots -notcontains $required) { throw "o pacote nao traz $required na raiz" }
+          }
+          Write-Host "pacote conferido: sha256 $actual"
 
       - name: Escreve as notas da release
         shell: pwsh
         run: |
-          $notes = @(
+          $ErrorActionPreference = 'Stop'
+
+          # O changelog da versao vai PRIMEIRO no corpo. A janela "Nova versao disponivel"
+          # corta as notas em 1200 caracteres (NOTES_LIMIT em update/release.py), e quem ja
+          # tem o mod instalado precisa ler o que mudou, nao como instalar.
+          $lines = Get-Content 'CHANGELOG.md' -Encoding UTF8
+          $header = '^##\s+' + [regex]::Escape($env:VERSION) + '\s*$'
+          $found = $lines | Select-String -Pattern $header | Select-Object -First 1
+          $changelog = @()
+          if ($found) {
+            for ($i = $found.LineNumber; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match '^##\s') { break }
+              $changelog += $lines[$i]
+            }
+          }
+          if (-not ($changelog -join '').Trim()) {
+            throw "CHANGELOG.md nao tem secao '## $env:VERSION'; a janela de atualizacao ficaria sem o que mudou"
+          }
+
+          $notes = (@(
+            '',
+            '## O que mudou'
+          ) + $changelog + @(
             '',
             '## Como instalar',
             '',
@@ -181,22 +241,46 @@ jobs:
             '',
             '## Verificacao',
             '',
+            'O `CYHMO_portable.zip.sha256` publicado aqui e o mesmo arquivo que o mod confere',
+            'antes de aplicar uma atualizacao automatica. Para conferir a mao no PowerShell:',
+            '',
+            '```',
+            'Get-FileHash CYHMO_portable.zip -Algorithm SHA256',
+            '```',
+            '',
             '```',
             "sha256  $('${{ steps.build.outputs.sha256 }}')  ($('${{ steps.build.outputs.size }}') MB)",
             '```',
             ''
-          ) -join "`n"
+          )) -join "`n"
           Set-Content 'RELEASE_NOTES.md' $notes -Encoding utf8NoBOM
+
+      - name: Ensaio concluido (nada publicado)
+        if: ${{ inputs.dry_run }}
+        shell: bash
+        run: |
+          {
+            echo "### Ensaio de release ${TAG}"
+            echo ""
+            echo "Pacote montado e conferido. Nenhuma tag foi criada e nada foi publicado."
+            echo ""
+            echo '```'
+            echo "sha256  ${{ steps.build.outputs.sha256 }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       # A action cria a tag apontando para este commit quando ela ainda nao existe,
       # entao um build que falhar antes daqui nao deixa tag orfa.
       - name: Publica a release
+        if: ${{ !inputs.dry_run }}
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.TAG }}
           name: CYHMO ${{ env.TAG }}
           target_commitish: ${{ github.sha }}
-          files: ${{ steps.build.outputs.zip }}
+          files: |
+            ${{ steps.build.outputs.zip }}
+            ${{ steps.build.outputs.digest }}
           body_path: RELEASE_NOTES.md
           append_body: true
           generate_release_notes: true

@@ -1,0 +1,212 @@
+# Pacote de idioma — Turco
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# As formas com "ç ğ ı ö ş ü" estão cadastradas junto das transcritas sem diacrítico:
+# a normalização não remove acento e o Whisper alterna entre as duas.
+# Ressalva do "İ" maiúsculo: str.lower() do Python devolve "i" + ponto combinante, que não
+# casa com o "i" simples. Palavra iniciada por İ pode escapar; prefira exemplos sem ela.
+#
+# Atenção de YAML: "on" (dez) é booleano em YAML 1.1 e precisa de aspas.
+
+code: tr
+name: Türkçe
+stt_language: tr
+
+numerals:
+  cardinal:
+    sıfır: 0
+    sifir: 0
+    bir: 1
+    iki: 2
+    üç: 3
+    uc: 3
+    dört: 4
+    dort: 4
+    beş: 5
+    bes: 5
+    altı: 6
+    alti: 6
+    yedi: 7
+    sekiz: 8
+    dokuz: 9
+    "on": 10
+  ordinal:
+    birinci: 1
+    ikinci: 2
+    üçüncü: 3
+    ucuncu: 3
+    dördüncü: 4
+    dorduncu: 4
+    beşinci: 5
+    besinci: 5
+    altıncı: 6
+    altinci: 6
+
+quantifiers: [kez, kere, defa]
+connectives: [ve, sonra, ondan sonra, daha sonra, ardından, ardindan]
+affirmations: [evet, tamam, olur, tabii, doğru, dogru, peki, anlaşıldı, anlasildi]
+negations: [hayır, hayir, yok, asla, olmaz]
+target_words: [numara, düşman, dusman, hedef]
+
+body_parts:
+  kafa: HEAD
+  baş: HEAD
+  bas: HEAD
+  ağız: MOUTH
+  agiz: MOUTH
+  sol göz: LEFT EYE
+  sol goz: LEFT EYE
+  orta göz: MIDDLE EYE
+  orta goz: MIDDLE EYE
+  sağ göz: RIGHT EYE
+  sag goz: RIGHT EYE
+  kırmızı göz: RED EYE
+  kirmizi goz: RED EYE
+  göz: EYE
+  goz: EYE
+  dil: TONGUE
+  sol karın: LEFT STOMACH
+  sol karin: LEFT STOMACH
+  sağ karın: RIGHT STOMACH
+  sag karin: RIGHT STOMACH
+  kırmızı karın: RED STOMACH
+  kirmizi karin: RED STOMACH
+  karın: STOMACH
+  karin: STOMACH
+  mide: STOMACH
+  ön bacak: FRONT LEG
+  on bacak: FRONT LEG
+  vücut: BODY
+  vucut: BODY
+  gövde: BODY
+  govde: BODY
+  kuyruk: TAIL
+  dallar: BRANCHES
+  dal: BRANCHES
+  kök: ROOT
+  kok: ROOT
+  sarmaşık: VINES
+  sarmasik: VINES
+  yaprak: LEAF
+
+directions:
+  sol: LEFT
+  sola: LEFT
+  solda: LEFT
+  sağ: RIGHT
+  sag: RIGHT
+  sağa: RIGHT
+  saga: RIGHT
+  yukarı: UP
+  yukari: UP
+  yukarıya: UP
+  yukariya: UP
+  aşağı: DOWN
+  asagi: DOWN
+  aşağıya: DOWN
+  asagiya: DOWN
+  ileri: FRONT
+  öne: FRONT
+  one: FRONT
+  geri: BACK
+  arkaya: BACK
+
+lexicon:
+  ateş et: shoot
+  ates et: shoot
+  ateş: shoot
+  ates: shoot
+  vur: shoot
+  kaç: flee
+  kac: flee
+  koş: run
+  kos: run
+  yürü: walk
+  yuru: walk
+  dur: stop
+  bekle: wait
+  doldur: reload
+  şarjörü doldur: reload
+  sarjoru doldur: reload
+  kaçın: dodge
+  kacin: dodge
+  sıyrıl: dodge
+  siyril: dodge
+  iyileş: recover
+  iyiles: recover
+  tedavi ol: recover
+  geri dön: go back
+  geri don: go back
+  kontrol et: check
+  incele: check
+  bak: look
+  aç: open
+  ac: open
+  kapat: close
+  oku: read
+  al: take
+  kullan: use
+  saklan: hide
+  gizlen: hide
+  yaklaş: approach
+  yaklas: approach
+  kalk: get up
+  zıpla: jump
+  zipla: jump
+  fırlat: throw
+  firlat: throw
+  numara: number
+  çabuk: hurry
+  cabuk: hurry
+  evet: "yes"
+  hayır: "no"
+  hayir: "no"
+
+command_examples:
+  Walk: [yürü, yuru, yürümeye devam et, yurumeye devam et]
+  Run: [koş, kos, daha hızlı, daha hizli]
+  Stop: [dur, orada dur, bekle orada]
+  Go back: [geri dön, geri don, geri git]
+  Check: [kontrol et, incele, bir bak]
+  Read: [oku, şunu oku, sunu oku]
+  Open: [aç, ac, şunu aç, sunu ac]
+  Close: [kapat, şunu kapat, sunu kapat]
+  Look: [bak, şuna bak, suna bak]
+  Use: [kullan, şunu kullan, sunu kullan]
+  Take: [al, şunu al, sunu al]
+  Shoot: [ateş et, ates et, vur, ateş, ates]
+  Reload: [doldur, şarjörü doldur, sarjoru doldur]
+  Flee: [kaç, kac, oradan kaç, oradan kac]
+  Approach: [yaklaş, yaklas, yanına git, yanina git]
+  Recover: [iyileş, iyiles, kapsülü kullan, kapsulu kullan]
+  Dodge: [kaçın, kacin, çekil, cekil]
+  Hide: [saklan, gizlen]
+  Get up: [kalk, ayağa kalk, ayaga kalk]
+  Jump: [zıpla, zipla, atla]
+  Look out: [dikkat, dikkat et]
+  Throw it: [fırlat, firlat, at şunu, at sunu]
+  Front: [ileri, öne, one]
+  Back: [geri, arkaya]
+  Left: [sol, sola]
+  Right: [sağ, sag, sağa, saga]
+  Up: [yukarı, yukari]
+  Down: [aşağı, asagi]
+  Head: [kafa, kafaya, kafadan vur]
+  Mouth: [ağız, agiz, ağza, agza]
+  Eye: [göz, goz, göze, goze]
+  Left eye: [sol göz, sol goz, sol göze, sol goze]
+  Middle eye: [orta göz, orta goz]
+  Right eye: [sağ göz, sag goz, sağ göze, sag goze]
+  Red eye: [kırmızı göz, kirmizi goz]
+  Tongue: [dil, dile]
+  Stomach: [karın, karin, mide, karna]
+  Body: [vücut, vucut, gövde, govde]
+  Tail: [kuyruk, kuyruğa, kuyruga]
+  Consultation: [danışma, danisma, konuşalım, konusalim]
+  Camera check: [kamerayı kontrol et, kamerayi kontrol et, kameraya bak]
+  Break time: [mola, mola ver, dinlen]
+  Zoom in: [yakınlaştır, yakinlastir, zum yap]
+  "Yes": [evet, tamam, tabii]
+  "No": [hayır, hayir, olmaz]

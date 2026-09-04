@@ -10,6 +10,8 @@ from cyhmo.domain.contracts import CommandRef, InjectResult, Interpretation, Tra
 from cyhmo.domain.errors import AudioDeviceError, LanguagePackError, CyhmoError
 from cyhmo.intent.language_packs import LanguagePackSet
 from cyhmo.intent.llm.ollama_admin import OllamaAdmin
+from cyhmo.stt.whisper_gpu import WhisperGpuAdmin
+from cyhmo.stt.whisper_models import WhisperModelAdmin
 
 if TYPE_CHECKING:
     from cyhmo.app.bootstrap import Application
@@ -25,6 +27,8 @@ class AppServices:
     def __init__(self, application: "Application") -> None:
         self._app = application
         self._ollama = OllamaAdmin(endpoint=application.config.intent.llm.endpoint)
+        self._whisper = WhisperModelAdmin(application.paths.base_dir, application.paths.models_dir)
+        self._whisper_gpu = WhisperGpuAdmin(application.paths.base_dir)
         self._calibration = CalibrationRunner(config=application.config, paths=application.paths)
 
     def list_devices(self) -> list[dict[str, Any]]:
@@ -115,6 +119,46 @@ class AppServices:
             raise CyhmoError(f"só sei remover modelos do Ollama; o provedor atual é {llm.provider!r}")
         self._ollama.endpoint = llm.endpoint
         return self._ollama.delete_model(model)
+
+    def whisper_status(self) -> dict[str, Any]:
+        """A engine entra no payload porque o peso do whisper.cpp só é usado quando ela é a
+        escolhida; sem isso a aba ofereceria download para um backend fora do ar.
+
+        ``device`` é o que está gravado, não o que está rodando: o painel precisa mostrar a
+        escolha do usuário mesmo quando ela só vale depois de reiniciar."""
+        config = self._live_config()
+        whisper = config.stt.whisper_cpp
+        return {
+            "engine": config.stt.engine,
+            "device": "gpu" if whisper.use_gpu else "cpu",
+            "gpu": self._whisper_gpu.status(whisper.gpu_binary),
+            **self._whisper.status(whisper.model),
+        }
+
+    def whisper_download(self, model: str) -> dict[str, Any]:
+        return self._whisper.start_download(self._live_config().stt.whisper_cpp.model, model)
+
+    def whisper_download_cancel(self) -> dict[str, Any]:
+        return self._whisper.cancel_download()
+
+    def whisper_delete(self, model: str) -> dict[str, Any]:
+        return self._whisper.delete(self._live_config().stt.whisper_cpp.model, model)
+
+    def whisper_gpu_install(self) -> dict[str, Any]:
+        return self._whisper_gpu.start_install(self._live_config().stt.whisper_cpp.gpu_binary)
+
+    def whisper_gpu_install_cancel(self) -> dict[str, Any]:
+        return self._whisper_gpu.cancel_install()
+
+    def whisper_gpu_remove(self) -> dict[str, Any]:
+        """Remover o build enquanto ele é o escolhido deixaria o reconhecimento caindo para a
+        CPU sem ninguém ter pedido; trocar a opção antes é a mesma regra do peso em uso."""
+        whisper = self._live_config().stt.whisper_cpp
+        if whisper.use_gpu:
+            raise CyhmoError(
+                "o reconhecimento está configurado para a GPU; escolha a CPU antes de remover o build"
+            )
+        return self._whisper_gpu.remove(whisper.binary, whisper.gpu_binary)
 
     def calibration_status(self) -> dict[str, Any]:
         return self._calibration.status()

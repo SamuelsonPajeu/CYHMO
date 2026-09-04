@@ -1,0 +1,187 @@
+# Pacote de idioma — Russo
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# "ё" e "е" estão cadastrados juntos: o Whisper escreve as duas formas conforme o áudio
+# e a normalização não as unifica.
+
+code: ru
+name: Русский
+stt_language: ru
+
+numerals:
+  cardinal:
+    ноль: 0
+    нуль: 0
+    один: 1
+    одна: 1
+    два: 2
+    две: 2
+    три: 3
+    четыре: 4
+    пять: 5
+    шесть: 6
+    семь: 7
+    восемь: 8
+    девять: 9
+    десять: 10
+  ordinal:
+    первый: 1
+    первая: 1
+    второй: 2
+    вторая: 2
+    третий: 3
+    третья: 3
+    четвёртый: 4
+    четвертый: 4
+    пятый: 5
+    шестой: 6
+
+quantifiers: [раз, раза]
+connectives: [и, потом, затем, после, а потом, дальше]
+affirmations: [да, ага, конечно, хорошо, ладно, так точно, есть, понял]
+negations: [нет, не, никак нет, отрицательно, ни за что]
+target_words: [номер, враг, цель, противник]
+
+body_parts:
+  голова: HEAD
+  башка: HEAD
+  рот: MOUTH
+  левый глаз: LEFT EYE
+  средний глаз: MIDDLE EYE
+  центральный глаз: MIDDLE EYE
+  правый глаз: RIGHT EYE
+  красный глаз: RED EYE
+  глаз: EYE
+  язык: TONGUE
+  левый живот: LEFT STOMACH
+  правый живот: RIGHT STOMACH
+  красный живот: RED STOMACH
+  живот: STOMACH
+  желудок: STOMACH
+  брюхо: STOMACH
+  передняя лапа: FRONT LEG
+  передняя нога: FRONT LEG
+  тело: BODY
+  туловище: BODY
+  хвост: TAIL
+  ветки: BRANCHES
+  ветви: BRANCHES
+  корень: ROOT
+  корни: ROOT
+  лианы: VINES
+  лист: LEAF
+
+directions:
+  влево: LEFT
+  налево: LEFT
+  лево: LEFT
+  слева: LEFT
+  вправо: RIGHT
+  направо: RIGHT
+  право: RIGHT
+  справа: RIGHT
+  вверх: UP
+  наверх: UP
+  вниз: DOWN
+  внизу: DOWN
+  вперёд: FRONT
+  вперед: FRONT
+  назад: BACK
+  сзади: BACK
+
+lexicon:
+  стреляй: shoot
+  стреляйте: shoot
+  огонь: shoot
+  пли: shoot
+  беги: flee
+  убегай: flee
+  бегом: run
+  бежать: run
+  иди: walk
+  шагай: walk
+  стой: stop
+  стоп: stop
+  замри: stop
+  жди: wait
+  подожди: wait
+  перезаряди: reload
+  перезарядка: reload
+  уклонись: dodge
+  уворачивайся: dodge
+  лечись: recover
+  вылечись: recover
+  восстановись: recover
+  вернись: go back
+  возвращайся: go back
+  проверь: check
+  осмотри: check
+  смотри: look
+  открой: open
+  закрой: close
+  читай: read
+  прочти: read
+  возьми: take
+  подбери: pick up
+  используй: use
+  спрячься: hide
+  подойди: approach
+  вставай: get up
+  поднимись: get up
+  прыгай: jump
+  брось: throw
+  кинь: throw
+  номер: number
+  быстрее: hurry
+  скорее: hurry
+  да: "yes"
+  нет: "no"
+
+command_examples:
+  Walk: [иди, шагай, иди дальше]
+  Run: [беги, бегом, быстрее беги]
+  Stop: [стой, стоп, замри, стой там]
+  Go back: [вернись, назад, возвращайся]
+  Check: [проверь, осмотри, глянь на это]
+  Read: [читай, прочти это]
+  Open: [открой, открой это]
+  Close: [закрой, закрой это]
+  Look: [смотри, посмотри туда]
+  Use: [используй, используй это]
+  Take: [возьми, забери, подбери]
+  Shoot: [стреляй, огонь, пли, стреляй в него]
+  Reload: [перезаряди, перезарядка, смени магазин]
+  Flee: [беги, убегай, уходи оттуда]
+  Approach: [подойди, подойди ближе]
+  Recover: [лечись, вылечись, прими капсулу]
+  Dodge: [уклонись, уворачивайся, уйди с линии огня]
+  Hide: [спрячься, укройся]
+  Get up: [вставай, поднимись, на ноги]
+  Jump: [прыгай, прыгай сейчас]
+  Look out: [осторожно, берегись, внимание]
+  Throw it: [брось, кинь это, метни]
+  Front: [вперёд, вперед]
+  Back: [назад, отходи]
+  Left: [влево, налево]
+  Right: [вправо, направо]
+  Up: [вверх, наверх]
+  Down: [вниз]
+  Head: [голова, в голову, стреляй в голову]
+  Mouth: [рот, в рот]
+  Eye: [глаз, в глаз]
+  Left eye: [левый глаз, в левый глаз]
+  Middle eye: [средний глаз, центральный глаз]
+  Right eye: [правый глаз, в правый глаз]
+  Red eye: [красный глаз, в красный глаз]
+  Tongue: [язык, в язык]
+  Stomach: [живот, в живот, в брюхо]
+  Body: [тело, в тело]
+  Tail: [хвост, в хвост]
+  Consultation: [консультация, давай поговорим, поговорим]
+  Camera check: [проверь камеру, посмотри на камеру]
+  Break time: [перерыв, сделай перерыв, отдохни]
+  Zoom in: [приблизь, увеличь, зум]
+  "Yes": [да, ага, конечно]
+  "No": [нет, ни за что]
