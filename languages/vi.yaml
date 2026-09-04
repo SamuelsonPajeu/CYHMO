@@ -1,0 +1,227 @@
+# Pacote de idioma — Vietnamita
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# O vietnamita distingue palavras só pelo tom, e a normalização não remove diacrítico.
+# As formas sem acento entram como reserva para quando o Whisper as omite, MENOS quando
+# duas palavras colidiriam ao perder o tom: "đuôi" (cauda) e "dưới" (baixo) viram ambas
+# "duoi", então só as formas acentuadas estão cadastradas para esse par.
+
+code: vi
+name: Tiếng Việt
+stt_language: vi
+
+numerals:
+  cardinal:
+    không: 0
+    khong: 0
+    một: 1
+    mot: 1
+    hai: 2
+    ba: 3
+    bốn: 4
+    bon: 4
+    năm: 5
+    nam: 5
+    sáu: 6
+    bảy: 7
+    bay: 7
+    tám: 8
+    tam: 8
+    chín: 9
+    chin: 9
+    mười: 10
+    muoi: 10
+  ordinal:
+    thứ nhất: 1
+    thu nhat: 1
+    thứ hai: 2
+    thu hai: 2
+    thứ ba: 3
+    thu ba: 3
+    thứ tư: 4
+    thu tu: 4
+    thứ năm: 5
+    thứ sáu: 6
+
+quantifiers: [lần, lan]
+connectives: [và, va, rồi, roi, sau đó, sau do, tiếp theo, tiep theo]
+affirmations: [có, co, vâng, vang, ừ, được, duoc, đồng ý, dong y, ok]
+negations: [không, khong, đừng, không phải, khong phai]
+target_words: [số, kẻ địch, ke dich, mục tiêu, muc tieu]
+
+body_parts:
+  đầu: HEAD
+  dau: HEAD
+  miệng: MOUTH
+  mieng: MOUTH
+  mắt trái: LEFT EYE
+  mat trai: LEFT EYE
+  mắt giữa: MIDDLE EYE
+  mat giua: MIDDLE EYE
+  mắt phải: RIGHT EYE
+  mat phai: RIGHT EYE
+  mắt đỏ: RED EYE
+  mat do: RED EYE
+  mắt: EYE
+  mat: EYE
+  lưỡi: TONGUE
+  luoi: TONGUE
+  bụng trái: LEFT STOMACH
+  bung trai: LEFT STOMACH
+  bụng phải: RIGHT STOMACH
+  bung phai: RIGHT STOMACH
+  bụng đỏ: RED STOMACH
+  bung do: RED STOMACH
+  bụng: STOMACH
+  bung: STOMACH
+  chân trước: FRONT LEG
+  chan truoc: FRONT LEG
+  thân: BODY
+  than: BODY
+  cơ thể: BODY
+  co the: BODY
+  đuôi: TAIL
+  cành: BRANCHES
+  canh: BRANCHES
+  nhánh: BRANCHES
+  nhanh cay: BRANCHES
+  rễ: ROOT
+  dây leo: VINES
+  day leo: VINES
+  lá: LEAF
+
+directions:
+  trái: LEFT
+  trai: LEFT
+  bên trái: LEFT
+  ben trai: LEFT
+  phải: RIGHT
+  phai: RIGHT
+  bên phải: RIGHT
+  ben phai: RIGHT
+  lên: UP
+  len: UP
+  trên: UP
+  tren: UP
+  xuống: DOWN
+  xuong: DOWN
+  dưới: DOWN
+  phía trước: FRONT
+  phia truoc: FRONT
+  trước: FRONT
+  truoc: FRONT
+  phía sau: BACK
+  phia sau: BACK
+  lùi lại: BACK
+  lui lai: BACK
+
+lexicon:
+  bắn: shoot
+  ban: shoot
+  nổ súng: shoot
+  no sung: shoot
+  chạy trốn: flee
+  chay tron: flee
+  bỏ chạy: flee
+  bo chay: flee
+  chạy: run
+  chay: run
+  đi: walk
+  di bo: walk
+  dừng: stop
+  dừng lại: stop
+  dung lai: stop
+  đợi: wait
+  doi: wait
+  nạp đạn: reload
+  nap dan: reload
+  né: dodge
+  tránh: dodge
+  tranh: dodge
+  hồi phục: recover
+  hoi phuc: recover
+  chữa: recover
+  chua: recover
+  quay lại: go back
+  quay lai: go back
+  trở về: go back
+  tro ve: go back
+  kiểm tra: check
+  kiem tra: check
+  nhìn: look
+  nhin: look
+  mở: open
+  đóng: close
+  đọc: read
+  doc: read
+  lấy: take
+  lay: take
+  dùng: use
+  sử dụng: use
+  su dung: use
+  ẩn nấp: hide
+  an nap: hide
+  trốn: hide
+  tron: hide
+  lại gần: approach
+  lai gan: approach
+  đứng dậy: get up
+  dung day: get up
+  nhảy: jump
+  nhay: jump
+  ném: throw
+  nem: throw
+  số: number
+  nhanh: hurry
+  nhanh lên: hurry
+  có: "yes"
+  co: "yes"
+
+command_examples:
+  Walk: [đi, di bo, đi tiếp, di tiep]
+  Run: [chạy, chay, chạy nhanh, chay nhanh]
+  Stop: [dừng lại, dung lai, đứng yên, dung yen]
+  Go back: [quay lại, quay lai, trở về, tro ve]
+  Check: [kiểm tra, kiem tra, xem thử, xem thu]
+  Read: [đọc, doc, đọc cái này, doc cai nay]
+  Open: [mở, mở ra, mo ra]
+  Close: [đóng, đóng lại, dong lai]
+  Look: [nhìn, nhin, nhìn kìa, nhin kia]
+  Use: [dùng, sử dụng, su dung]
+  Take: [lấy, lay, cầm lấy, cam lay]
+  Shoot: [bắn, ban, nổ súng, no sung, bắn đi, ban di]
+  Reload: [nạp đạn, nap dan, thay băng đạn, thay bang dan]
+  Flee: [chạy trốn, chay tron, bỏ chạy, bo chay]
+  Approach: [lại gần, lai gan, tiến tới, tien toi]
+  Recover: [hồi phục, hoi phuc, dùng thuốc, dung thuoc]
+  Dodge: [né, tránh, tranh, né đi, ne di]
+  Hide: [ẩn nấp, an nap, trốn đi, tron di]
+  Get up: [đứng dậy, dung day, dậy đi, day di]
+  Jump: [nhảy, nhay, nhảy đi, nhay di]
+  Look out: [coi chừng, coi chung, cẩn thận, can than]
+  Throw it: [ném đi, nem di, ném nó, nem no]
+  Front: [phía trước, phia truoc, tiến lên, tien len]
+  Back: [phía sau, phia sau, lùi lại, lui lai]
+  Left: [trái, trai, bên trái, ben trai]
+  Right: [phải, phai, bên phải, ben phai]
+  Up: [lên, len, lên trên, len tren]
+  Down: [xuống, xuong]
+  Head: [đầu, dau, bắn vào đầu, ban vao dau]
+  Mouth: [miệng, mieng, vào miệng, vao mieng]
+  Eye: [mắt, mat, vào mắt, vao mat]
+  Left eye: [mắt trái, mat trai]
+  Middle eye: [mắt giữa, mat giua]
+  Right eye: [mắt phải, mat phai]
+  Red eye: [mắt đỏ, mat do]
+  Tongue: [lưỡi, luoi]
+  Stomach: [bụng, bung, vào bụng, vao bung]
+  Body: [thân, than, cơ thể, co the]
+  Tail: [đuôi]
+  Consultation: [tư vấn, tu van, nói chuyện đi, noi chuyen di]
+  Camera check: [kiểm tra camera, kiem tra camera, nhìn camera, nhin camera]
+  Break time: [nghỉ, nghi, nghỉ một chút, nghi mot chut]
+  Zoom in: [phóng to, phong to, zoom vào, zoom vao]
+  "Yes": [có, co, vâng, vang, được, duoc]
+  "No": [không, khong, không phải, khong phai]

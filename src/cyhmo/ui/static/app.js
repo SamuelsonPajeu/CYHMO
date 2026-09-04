@@ -3,7 +3,7 @@
 
 'use strict';
 
-import { api } from './api.js';
+import { api, sessionToken } from './api.js';
 import { bindCheats, renderCheats } from './cheats.js';
 import { $, COMPONENT_PILL, h, pill, replace, show, updateLevelMeters } from './dom.js';
 import { renderHistory } from './history.js';
@@ -215,9 +215,11 @@ async function requestLifecycle(action) {
   }
 }
 
+/* O token vai na query porque o navegador não deixa a página escolher cabeçalhos do
+   WebSocket; do lado do servidor ele é conferido igual ao das rotas /api. */
 function connect() {
   const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  const socket = new WebSocket(`${protocol}://${location.host}/ws`);
+  const socket = new WebSocket(`${protocol}://${location.host}/ws?token=${encodeURIComponent(sessionToken())}`);
   store.socket = socket;
   socket.addEventListener('open', onSocketOpen);
   socket.addEventListener('message', onSocketMessage);
@@ -270,7 +272,24 @@ function onSocketClose() {
   scheduleRender();
   const delay = RECONNECTING.has(store.lifecycle) ? RECONNECT_MIN_MS : reconnectDelay;
   reconnectDelay = Math.min(RECONNECT_MAX_MS, delay * 2);
-  setTimeout(connect, delay);
+  setTimeout(reconnect, delay);
+}
+
+/* O navegador não distingue servidor fora do ar de token recusado: o handshake negado
+   chega como fechamento anormal nos dois casos, sem código de motivo. Ler o `code` do
+   evento era o que deixava a aba reconectando para sempre depois de um reinício, porque
+   o 1008 do servidor nunca chegava até aqui.
+
+   Quem sabe a diferença é a API, então toda tentativa começa por ela: com o mod ainda
+   subindo dá erro de rede e o socket tenta assim mesmo; com token de uma sessão que já
+   morreu, `api()` recarrega a página e não há por que abrir socket nenhum. */
+async function reconnect() {
+  try {
+    await api('/api/state');
+  } catch (error) {
+    if (error && error.sessionExpired) return;
+  }
+  connect();
 }
 
 /* Nível do microfone não passa pelo render geral. */

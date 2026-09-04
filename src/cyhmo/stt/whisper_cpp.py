@@ -185,7 +185,27 @@ class WhisperCppTranscriber:
                         "Suba-o à mão ou ligue stt.whisper_cpp.auto_start no config.toml."
                     )
                 return
+            self._refuse_orphan()
             self._process = self._spawn()
+
+    def _refuse_orphan(self) -> None:
+        """Alguém já na porta, com auto_start ligado, é sobra de uma sessão anterior.
+
+        Adotar esse servidor é pior do que parar: ele carregou o modelo que valia naquela
+        sessão, e a b4938 não tem como dizer qual é. O sintoma era trocar o modelo pelo
+        painel, reiniciar e continuar ouvindo o modelo velho — sem uma linha de log
+        sugerindo o motivo, porque ``_wait_ready`` dava a porta por pronta antes de o
+        processo recém-criado morrer sem conseguir abri-la."""
+        if not self._alive():
+            return
+        raise WhisperCppError(
+            f"já existe um servidor de reconhecimento respondendo em {self._spec.base_url}, e ele "
+            f"não foi aberto por esta sessão — quase sempre é sobra de uma execução anterior que "
+            f"não encerrou limpo. Como não dá para saber qual modelo ele carregou, o mod não o "
+            f"adota. Feche-o e abra o mod de novo (no Windows, "
+            f"`Get-Process whisper-server | Stop-Process`). Para usar um servidor seu de "
+            f"propósito, desligue stt.whisper_cpp.auto_start no config.toml."
+        )
 
     def _spawn(self) -> subprocess.Popen[bytes]:
         if not self._spec.binary.is_file():

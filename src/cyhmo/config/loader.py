@@ -10,6 +10,7 @@ from typing import Any, Callable
 
 from pydantic import ValidationError
 
+from cyhmo.config.locale import initial_languages
 from cyhmo.config.schema import AppConfig, ProjectPaths
 from cyhmo.config.template import CONFIG_TEMPLATE
 from cyhmo.domain.errors import ConfigError
@@ -24,7 +25,10 @@ def load_config(path: Path | None, create_if_missing: bool = True) -> AppConfig:
         if not create_if_missing:
             raise ConfigError(f"config não encontrada: {path}")
         write_default_config(path)
-        return AppConfig()
+        # Relê o que acabou de ser gravado em vez de devolver os defaults da classe: o
+        # arquivo do primeiro arranque traz o idioma do dispositivo, e devolver AppConfig()
+        # aqui fazia a sessão inicial rodar num idioma diferente do que está no disco.
+        return load_config(path, create_if_missing=False)
     try:
         raw = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     except tomllib.TOMLDecodeError as exc:
@@ -39,9 +43,25 @@ def parse_config(raw: dict[str, Any], source: str = "config") -> AppConfig:
         raise ConfigError(_describe(exc, source)) from exc
 
 
+def default_config(base_dir: Path) -> AppConfig:
+    """Config do primeiro arranque: como ninguém escolheu idioma ainda, ele vem do sistema.
+
+    Só a seção ``languages`` muda; ``ui.language`` e ``stt.language`` seguem em ``auto`` e
+    ``pack``, então a interface e o reconhecedor herdam a escolha sem repeti-la em três
+    lugares. Sem pacote nenhum na pasta, os defaults da classe valem — quem reclama disso
+    é o carregador de pacotes, com mensagem melhor do que a que caberia aqui."""
+    config = AppConfig()
+    chosen = initial_languages(base_dir / config.languages.packs_dir)
+    if chosen is None:
+        return config
+    enabled, primary = chosen
+    languages = config.languages.model_copy(update={"enabled": enabled, "primary": primary})
+    return config.replace(languages=languages)
+
+
 def write_default_config(path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(render_config(AppConfig()), encoding="utf-8")
+    path.write_text(render_config(default_config(path.parent)), encoding="utf-8")
     return path
 
 

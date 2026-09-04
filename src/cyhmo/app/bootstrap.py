@@ -15,7 +15,7 @@ from typing import Any, Callable
 from cyhmo.app.boot_progress import BootProgress
 from cyhmo.app.logging_setup import setup_logging
 from cyhmo.config.loader import ConfigStore
-from cyhmo.config.schema import AppConfig, ProjectPaths
+from cyhmo.config.schema import AppConfig, IntentConfig, LlmConfig, ProjectPaths
 from cyhmo.domain.errors import AudioDeviceError, InjectionError, LanguagePackError, CyhmoError
 from cyhmo.domain.events import ComponentChanged, GrammarChanged, LogLine
 from cyhmo.domain.ports import CommandInjector, Transcriber
@@ -145,7 +145,7 @@ class Application:
         with progress.step("pacotes de idioma"):
             packs = _load_packs(config, paths)
         with progress.step("modelo de comparação de comandos"):
-            llm = _build_llm(config, bus)
+            llm = _build_llm(config.intent.llm, bus)
             interpreter = build_interpreter(config, paths, packs=packs, llm_fallback=llm, bus=bus)
         bus.publish(ComponentChanged(component="intent", status="ready", detail=_intent_detail(config, packs)))
 
@@ -214,6 +214,7 @@ class Application:
             progress,
         )
         application._unsubscribe_grammar = pipeline.add_grammar_listener(application._on_grammar_change)
+        store.subscribe(application._on_config_saved)
         if not headless:
             application._attach_ui(boot_events.close())
         else:
@@ -393,11 +394,39 @@ class Application:
         self._viewmodel = UiViewModel(self._bus, self._config_store, AppServices(self), self._session.id, budget)
         for event in boot_events:
             self._viewmodel.handle_event(event)
-        self._fastapi = create_app(self._viewmodel)
+        ui = self._config.ui
+        self._fastapi = create_app(self._viewmodel, host=ui.host, port=ui.port)
         self._bus.publish(ComponentChanged(component="ui", status="ready", detail=self._ui_url()))
 
     def _ui_url(self) -> str:
         return f"http://{self._config.ui.host}:{self._config.ui.port}/"
+
+    def _on_config_saved(self, old: AppConfig, new: AppConfig) -> None:
+        """A seção ``intent`` passa a valer no enunciado seguinte, sem reinício.
+
+        O ``ConfigStore`` avisa aqui depois de gravar. Só o assistente precisa ser
+        reconstruído, e só quando a própria subseção mudou: trocar um limiar não tem por
+        que derrubar um modelo já carregado e quente."""
+        if old.intent == new.intent:
+            return
+        if old.intent.llm == new.intent.llm:
+            self._interpreter.apply_intent(new.intent, self._llm)
+            return
+        self._swap_llm(new.intent)
+
+    def _swap_llm(self, intent: IntentConfig) -> None:
+        previous = self._llm
+        try:
+            fallback = _build_llm(intent.llm, self._bus)
+        except Exception as exc:
+            log.exception("assistente não pôde ser reconstruído")
+            fallback = None
+            self._bus.publish(
+                LogLine(level="error", message=f"assistente indisponível: {exc}", source=LOG_SOURCE)
+            )
+        self._llm = fallback
+        self._interpreter.apply_intent(intent, fallback)
+        _close_quietly(previous)
 
     def _on_grammar_change(self, event: GrammarChanged) -> None:
         log.debug(
@@ -600,11 +629,11 @@ def _load_packs(config: AppConfig, paths: ProjectPaths) -> LanguagePackSet:
         ) from exc
 
 
-def _build_llm(config: AppConfig, bus: EventBus) -> Any:
+def _build_llm(llm: LlmConfig, bus: EventBus) -> Any:
     """Ligado na config mas quebrado vira status ``error``, não ``off``: o cinza de ``off``
     é indistinguível de desligado de propósito e o usuário fica sem fallback sem saber."""
     try:
-        fallback = build_llm_fallback(config.intent.llm, bus)
+        fallback = build_llm_fallback(llm, bus)
     except CyhmoError as exc:
         bus.publish(LogLine(level="error", message=f"fallback LLM ligado mas indisponível: {exc}", source=LOG_SOURCE))
         bus.publish(ComponentChanged(component="llm", status="error", detail=str(exc)))
@@ -613,9 +642,21 @@ def _build_llm(config: AppConfig, bus: EventBus) -> Any:
     if fallback is None:
         bus.publish(ComponentChanged(component="llm", status="off", detail="desabilitado na config"))
         return None
-    detail = f"{config.intent.llm.provider}: {config.intent.llm.model or '(modelo padrão)'}"
+    detail = f"{llm.provider}: {llm.model or '(modelo padrão)'}"
     bus.publish(ComponentChanged(component="llm", status="ready", detail=detail))
     return fallback
+
+
+def _close_quietly(llm: Any) -> None:
+    """O assistente substituído leva junto o pool de threads dele; falhar aqui não pode
+    derrubar a troca, que já aconteceu."""
+    close = getattr(llm, "close", None)
+    if not callable(close):
+        return
+    try:
+        close()
+    except Exception:
+        log.debug("assistente anterior não encerrou limpo", exc_info=True)
 
 
 def _connect_pine(config: AppConfig, bus: EventBus) -> PineClient:

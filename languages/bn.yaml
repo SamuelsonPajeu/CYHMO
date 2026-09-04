@@ -1,0 +1,187 @@
+# Pacote de idioma — Bengali
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# Chandrabindu (ঁ) entra nas duas grafias — হ্যাঁ e হ্যা — porque o Whisper às vezes o omite
+# e a normalização NFKC não o remove.
+# O imperativo bengali usado aqui é a forma তুমি (করো), a mais comum na fala corrente.
+
+code: bn
+name: বাংলা
+stt_language: bn
+
+numerals:
+  cardinal:
+    শূন্য: 0
+    এক: 1
+    দুই: 2
+    দুটো: 2
+    তিন: 3
+    চার: 4
+    পাঁচ: 5
+    পাচ: 5
+    ছয়: 6
+    সাত: 7
+    আট: 8
+    নয়: 9
+    দশ: 10
+  ordinal:
+    প্রথম: 1
+    দ্বিতীয়: 2
+    তৃতীয়: 3
+    চতুর্থ: 4
+    পঞ্চম: 5
+    ষষ্ঠ: 6
+
+quantifiers: [বার, বার্]
+connectives: [এবং, আর, তারপর, এরপর, তখন]
+affirmations: [হ্যাঁ, হ্যা, হা, ঠিক আছে, অবশ্যই, আচ্ছা, ঠিক]
+negations: [না, নাহ, একদমই না, কখনো না]
+target_words: [নম্বর, নাম্বার, শত্রু, লক্ষ্য, টার্গেট]
+
+body_parts:
+  মাথা: HEAD
+  মুখ: MOUTH
+  বাম চোখ: LEFT EYE
+  বাঁ চোখ: LEFT EYE
+  বা চোখ: LEFT EYE
+  মাঝের চোখ: MIDDLE EYE
+  মাঝখানের চোখ: MIDDLE EYE
+  ডান চোখ: RIGHT EYE
+  ডানদিকের চোখ: RIGHT EYE
+  লাল চোখ: RED EYE
+  চোখ: EYE
+  জিহ্বা: TONGUE
+  জিভ: TONGUE
+  বাম পেট: LEFT STOMACH
+  বাঁ পেট: LEFT STOMACH
+  ডান পেট: RIGHT STOMACH
+  লাল পেট: RED STOMACH
+  পেট: STOMACH
+  সামনের পা: FRONT LEG
+  সামনের ঠ্যাং: FRONT LEG
+  শরীর: BODY
+  দেহ: BODY
+  লেজ: TAIL
+  ডালপালা: BRANCHES
+  ডাল: BRANCHES
+  শাখা: BRANCHES
+  শিকড়: ROOT
+  মূল: ROOT
+  লতা: VINES
+  লতাপাতা: VINES
+  পাতা: LEAF
+
+directions:
+  বাম: LEFT
+  বামে: LEFT
+  বাঁয়ে: LEFT
+  বাঁ দিকে: LEFT
+  ডান: RIGHT
+  ডানে: RIGHT
+  ডান দিকে: RIGHT
+  উপরে: UP
+  উপর: UP
+  উপর দিকে: UP
+  নিচে: DOWN
+  নিচ: DOWN
+  নিচের দিকে: DOWN
+  সামনে: FRONT
+  সামনের দিকে: FRONT
+  পিছনে: BACK
+  পেছনে: BACK
+  পিছন দিকে: BACK
+
+lexicon:
+  গুলি করো: shoot
+  গুলি চালাও: shoot
+  মারো: shoot
+  পালাও: flee
+  পালিয়ে যাও: flee
+  দৌড়াও: run
+  দৌড়ে যাও: run
+  হাঁটো: walk
+  হাটো: walk
+  চলো: walk
+  থামো: stop
+  দাঁড়াও: stop
+  দাড়াও: stop
+  অপেক্ষা করো: wait
+  রিলোড করো: reload
+  গুলি ভরো: reload
+  এড়াও: dodge
+  সরে যাও: dodge
+  সুস্থ হও: recover
+  নিরাময় করো: recover
+  চিকিৎসা করো: recover
+  ফিরে যাও: go back
+  ফিরে এসো: go back
+  পরীক্ষা করো: check
+  দেখে নাও: check
+  দেখো: look
+  খোলো: open
+  বন্ধ করো: close
+  পড়ো: read
+  নাও: take
+  তুলে নাও: pick up
+  ব্যবহার করো: use
+  লুকাও: hide
+  লুকিয়ে পড়ো: hide
+  কাছে যাও: approach
+  এগিয়ে যাও: approach
+  ওঠো: get up
+  উঠে দাঁড়াও: get up
+  লাফাও: jump
+  ছুঁড়ে মারো: throw
+  ছুড়ে মারো: throw
+  নম্বর: number
+  তাড়াতাড়ি: hurry
+  জলদি: hurry
+
+command_examples:
+  Walk: [হাঁটো, হাটো, চলো, হাঁটতে থাকো]
+  Run: [দৌড়াও, দৌড়ে যাও, তাড়াতাড়ি দৌড়াও]
+  Stop: [থামো, দাঁড়াও, দাড়াও, ওখানেই থামো]
+  Go back: [ফিরে যাও, ফিরে এসো, পিছনে ফিরে যাও]
+  Check: [পরীক্ষা করো, দেখে নাও, একবার দেখো]
+  Read: [পড়ো, এটা পড়ো]
+  Open: [খোলো, এটা খোলো]
+  Close: [বন্ধ করো, এটা বন্ধ করো]
+  Look: [দেখো, ওদিকে দেখো]
+  Use: [ব্যবহার করো, এটা ব্যবহার করো]
+  Take: [নাও, এটা নাও, তুলে নাও]
+  Shoot: [গুলি করো, গুলি চালাও, ওকে গুলি করো]
+  Reload: [রিলোড করো, গুলি ভরো, বন্দুক ভরো]
+  Flee: [পালাও, পালিয়ে যাও, ওখান থেকে পালাও]
+  Approach: [কাছে যাও, এগিয়ে যাও]
+  Recover: [সুস্থ হও, চিকিৎসা করো, ক্যাপসুল নাও]
+  Dodge: [এড়াও, সরে যাও, সরে দাঁড়াও]
+  Hide: [লুকাও, লুকিয়ে পড়ো]
+  Get up: [ওঠো, উঠে দাঁড়াও]
+  Jump: [লাফাও, এখনই লাফাও]
+  Look out: [সাবধান, খেয়াল রাখো]
+  Throw it: [ছুঁড়ে মারো, ছুড়ে মারো, এটা ছুঁড়ে দাও]
+  Front: [সামনে, সামনের দিকে]
+  Back: [পিছনে, পেছনে, পিছিয়ে যাও]
+  Left: [বাম, বামে, বাঁ দিকে]
+  Right: [ডান, ডানে, ডান দিকে]
+  Up: [উপরে, উপর দিকে]
+  Down: [নিচে, নিচের দিকে]
+  Head: [মাথা, মাথায়, মাথায় গুলি করো]
+  Mouth: [মুখ, মুখে]
+  Eye: [চোখ, চোখে]
+  Left eye: [বাম চোখ, বাঁ চোখ, বাম চোখে]
+  Middle eye: [মাঝের চোখ, মাঝখানের চোখ]
+  Right eye: [ডান চোখ, ডান চোখে]
+  Red eye: [লাল চোখ, লাল চোখে]
+  Tongue: [জিহ্বা, জিভ, জিভে]
+  Stomach: [পেট, পেটে]
+  Body: [শরীর, দেহ, শরীরে]
+  Tail: [লেজ, লেজে]
+  Consultation: [পরামর্শ, চলো কথা বলি, কথা বলো]
+  Camera check: [ক্যামেরা দেখো, ক্যামেরা পরীক্ষা করো]
+  Break time: [বিশ্রাম, একটু বিশ্রাম নাও, বিরতি]
+  Zoom in: [জুম করো, কাছে আনো, বড় করো]
+  "Yes": [হ্যাঁ, হ্যা, অবশ্যই, ঠিক আছে]
+  "No": [না, নাহ, একদমই না]

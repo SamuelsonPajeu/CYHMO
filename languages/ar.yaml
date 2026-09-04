@@ -1,0 +1,247 @@
+# Pacote de idioma — Árabe
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# O imperativo em árabe flexiona por gênero e quem recebe a ordem no jogo é a Rio, uma
+# mulher. As duas formas estão cadastradas — اطلق (masc.) e اطلقي (fem.) — porque o jogador
+# fala como quiser e o Whisper transcreve o que ouviu.
+#
+# Hamza e alif estão cadastrados nas duas grafias (أطلق e اطلق): a normalização NFKC não
+# unifica أ إ آ com ا, e o Whisper alterna entre elas.
+# O árabe é escrito da direita para a esquerda; a ordem visual das chaves neste arquivo
+# não altera nada, a comparação é sobre a string.
+
+code: ar
+name: العربية
+stt_language: ar
+
+numerals:
+  cardinal:
+    صفر: 0
+    واحد: 1
+    واحدة: 1
+    اثنان: 2
+    اثنين: 2
+    ثلاثة: 3
+    ثلاث: 3
+    أربعة: 4
+    اربعة: 4
+    خمسة: 5
+    خمس: 5
+    ستة: 6
+    سبعة: 7
+    ثمانية: 8
+    تسعة: 9
+    عشرة: 10
+  ordinal:
+    الأول: 1
+    الاول: 1
+    الثاني: 2
+    الثالث: 3
+    الرابع: 4
+    الخامس: 5
+    السادس: 6
+
+quantifiers: [مرات, مرة]
+connectives: [ثم, بعد ذلك, وبعدها, بعدين]
+affirmations: [نعم, أجل, اجل, حسنا, تمام, أكيد, اكيد, ماشي]
+negations: [لا, كلا, أبدا, ابدا, مستحيل]
+target_words: [رقم, عدو, هدف]
+
+body_parts:
+  رأس: HEAD
+  راس: HEAD
+  الرأس: HEAD
+  الراس: HEAD
+  فم: MOUTH
+  الفم: MOUTH
+  العين اليسرى: LEFT EYE
+  عين يسرى: LEFT EYE
+  العين الوسطى: MIDDLE EYE
+  العين الأوسط: MIDDLE EYE
+  العين اليمنى: RIGHT EYE
+  عين يمنى: RIGHT EYE
+  العين الحمراء: RED EYE
+  عين حمراء: RED EYE
+  عين: EYE
+  العين: EYE
+  لسان: TONGUE
+  اللسان: TONGUE
+  المعدة اليسرى: LEFT STOMACH
+  البطن الأيسر: LEFT STOMACH
+  البطن الايسر: LEFT STOMACH
+  المعدة اليمنى: RIGHT STOMACH
+  البطن الأيمن: RIGHT STOMACH
+  البطن الايمن: RIGHT STOMACH
+  المعدة الحمراء: RED STOMACH
+  البطن الأحمر: RED STOMACH
+  البطن الاحمر: RED STOMACH
+  معدة: STOMACH
+  المعدة: STOMACH
+  بطن: STOMACH
+  البطن: STOMACH
+  الساق الأمامية: FRONT LEG
+  الساق الامامية: FRONT LEG
+  الرجل الأمامية: FRONT LEG
+  جسم: BODY
+  الجسم: BODY
+  الجسد: BODY
+  ذيل: TAIL
+  الذيل: TAIL
+  أغصان: BRANCHES
+  اغصان: BRANCHES
+  الأغصان: BRANCHES
+  الاغصان: BRANCHES
+  جذر: ROOT
+  الجذر: ROOT
+  الجذور: ROOT
+  كروم: VINES
+  نباتات متسلقة: VINES
+  ورقة: LEAF
+  الورقة: LEAF
+
+directions:
+  يسار: LEFT
+  اليسار: LEFT
+  لليسار: LEFT
+  على اليسار: LEFT
+  يمين: RIGHT
+  اليمين: RIGHT
+  لليمين: RIGHT
+  على اليمين: RIGHT
+  فوق: UP
+  لأعلى: UP
+  لاعلى: UP
+  للأعلى: UP
+  تحت: DOWN
+  لأسفل: DOWN
+  لاسفل: DOWN
+  للأسفل: DOWN
+  أمام: FRONT
+  امام: FRONT
+  للأمام: FRONT
+  للامام: FRONT
+  خلف: BACK
+  للخلف: BACK
+  وراء: BACK
+
+lexicon:
+  أطلق: shoot
+  اطلق: shoot
+  أطلقي: shoot
+  اطلقي: shoot
+  أطلق النار: shoot
+  اطلق النار: shoot
+  نار: shoot
+  اهرب: flee
+  اهربي: flee
+  اهرب من هنا: flee
+  اركض: run
+  اركضي: run
+  امش: walk
+  امشي: walk
+  توقف: stop
+  توقفي: stop
+  قف: stop
+  قفي: stop
+  انتظر: wait
+  انتظري: wait
+  أعد التلقيم: reload
+  اعد التلقيم: reload
+  أعيدي التلقيم: reload
+  اعيدي التلقيم: reload
+  تفادى: dodge
+  تفادي: dodge
+  تجنب: dodge
+  تجنبي: dodge
+  عالج نفسك: recover
+  عالجي نفسك: recover
+  تعافى: recover
+  تعافي: recover
+  ارجع: go back
+  ارجعي: go back
+  عد: go back
+  عودي: go back
+  افحص: check
+  افحصي: check
+  تحقق: check
+  تحققي: check
+  انظر: look
+  انظري: look
+  افتح: open
+  افتحي: open
+  أغلق: close
+  اغلق: close
+  أغلقي: close
+  اغلقي: close
+  اقرأ: read
+  اقرا: read
+  اقرئي: read
+  خذ: take
+  خذي: take
+  التقط: pick up
+  التقطي: pick up
+  استخدم: use
+  استخدمي: use
+  اختبئ: hide
+  اختبئي: hide
+  اقترب: approach
+  اقتربي: approach
+  انهض: get up
+  انهضي: get up
+  اقفز: jump
+  اقفزي: jump
+  ارم: throw
+  ارمي: throw
+  رقم: number
+  بسرعة: hurry
+  أسرع: hurry
+  اسرعي: hurry
+
+command_examples:
+  Walk: [امشي, امش, واصلي المشي]
+  Run: [اركضي, اركض, أسرعي بالركض, اسرعي بالركض]
+  Stop: [توقفي, توقف, قفي هناك]
+  Go back: [ارجعي, ارجع, عودي للخلف]
+  Check: [افحصي, تحققي, ألقي نظرة, القي نظرة]
+  Read: [اقرئي, اقرأ, اقرا هذا]
+  Open: [افتحي, افتح, افتحي هذا]
+  Close: [أغلقي, اغلقي, أغلق هذا, اغلق هذا]
+  Look: [انظري, انظر, انظري هناك]
+  Use: [استخدمي, استخدم, استخدمي هذا]
+  Take: [خذي, خذ, التقطي هذا]
+  Shoot: [أطلقي النار, اطلقي النار, أطلق النار, اطلق النار, نار]
+  Reload: [أعيدي التلقيم, اعيدي التلقيم, غيري المخزن]
+  Flee: [اهربي, اهرب, اهربي من هناك]
+  Approach: [اقتربي, اقترب, اقتربي أكثر, اقتربي اكثر]
+  Recover: [عالجي نفسك, تعافي, استخدمي الكبسولة]
+  Dodge: [تفادي, تجنبي, ابتعدي]
+  Hide: [اختبئي, اختبئ]
+  Get up: [انهضي, انهض, قفي على قدميك]
+  Jump: [اقفزي, اقفز]
+  Look out: [انتبهي, احترسي, حذار]
+  Throw it: [ارمي هذا, ارم هذا]
+  Front: [للأمام, للامام, أمام, امام]
+  Back: [للخلف, تراجعي]
+  Left: [يسار, لليسار, على اليسار]
+  Right: [يمين, لليمين, على اليمين]
+  Up: [فوق, لأعلى, لاعلى]
+  Down: [تحت, لأسفل, لاسفل]
+  Head: [الرأس, الراس, على الرأس, على الراس]
+  Mouth: [الفم, في الفم]
+  Eye: [العين, في العين]
+  Left eye: [العين اليسرى, في العين اليسرى]
+  Middle eye: [العين الوسطى]
+  Right eye: [العين اليمنى, في العين اليمنى]
+  Red eye: [العين الحمراء, في العين الحمراء]
+  Tongue: [اللسان, على اللسان]
+  Stomach: [المعدة, البطن, في البطن]
+  Body: [الجسم, الجسد, على الجسم]
+  Tail: [الذيل, على الذيل]
+  Consultation: [استشارة, لنتحدث, هيا نتكلم]
+  Camera check: [افحصي الكاميرا, انظري إلى الكاميرا, انظري الى الكاميرا]
+  Break time: [استراحة, خذي استراحة, وقت الراحة]
+  Zoom in: [قربي الصورة, تكبير, زوم]
+  "Yes": [نعم, أجل, اجل, تمام]
+  "No": [لا, كلا, مستحيل]

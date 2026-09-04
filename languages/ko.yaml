@@ -1,0 +1,209 @@
+# Pacote de idioma — Coreano
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# O coreano separa por espaço, então word_separator fica no padrão "space".
+# O numeral sino-coreano 이 (2) ficou DE FORA: sozinho ele é pronome e partícula, e casaria
+# dentro de frase comum. Para "2" use 둘 ou o dígito, que o Whisper costuma emitir.
+
+code: ko
+name: 한국어
+stt_language: ko
+
+numerals:
+  cardinal:
+    영: 0
+    공: 0
+    하나: 1
+    한: 1
+    일: 1
+    둘: 2
+    두: 2
+    셋: 3
+    세: 3
+    삼: 3
+    넷: 4
+    네: 4
+    사: 4
+    다섯: 5
+    오: 5
+    여섯: 6
+    육: 6
+    일곱: 7
+    칠: 7
+    여덟: 8
+    팔: 8
+    아홉: 9
+    구: 9
+    열: 10
+    십: 10
+  ordinal:
+    첫 번째: 1
+    첫번째: 1
+    두 번째: 2
+    두번째: 2
+    세 번째: 3
+    세번째: 3
+    네 번째: 4
+    네번째: 4
+    다섯 번째: 5
+    여섯 번째: 6
+
+quantifiers: [번, 회]
+connectives: [그리고, 그다음, 그 다음, 그러고 나서, 이후, 그런 다음]
+affirmations: [네, 예, 응, 그래, 좋아, 알았어, 확인, 맞아]
+negations: [아니, 아니요, 아니오, 안 돼, 절대, 싫어]
+target_words: [번호, 적, 목표, 타겟]
+
+body_parts:
+  머리: HEAD
+  입: MOUTH
+  왼쪽 눈: LEFT EYE
+  왼눈: LEFT EYE
+  가운데 눈: MIDDLE EYE
+  중앙 눈: MIDDLE EYE
+  중간 눈: MIDDLE EYE
+  오른쪽 눈: RIGHT EYE
+  오른눈: RIGHT EYE
+  빨간 눈: RED EYE
+  붉은 눈: RED EYE
+  눈: EYE
+  혀: TONGUE
+  왼쪽 배: LEFT STOMACH
+  왼배: LEFT STOMACH
+  오른쪽 배: RIGHT STOMACH
+  오른배: RIGHT STOMACH
+  빨간 배: RED STOMACH
+  붉은 배: RED STOMACH
+  배: STOMACH
+  복부: STOMACH
+  앞다리: FRONT LEG
+  앞발: FRONT LEG
+  몸: BODY
+  몸통: BODY
+  꼬리: TAIL
+  가지: BRANCHES
+  나뭇가지: BRANCHES
+  뿌리: ROOT
+  덩굴: VINES
+  잎: LEAF
+  나뭇잎: LEAF
+
+directions:
+  왼쪽: LEFT
+  좌측: LEFT
+  왼쪽으로: LEFT
+  오른쪽: RIGHT
+  우측: RIGHT
+  오른쪽으로: RIGHT
+  위: UP
+  위로: UP
+  아래: DOWN
+  아래로: DOWN
+  밑: DOWN
+  앞: FRONT
+  앞으로: FRONT
+  전방: FRONT
+  뒤: BACK
+  뒤로: BACK
+  후방: BACK
+
+lexicon:
+  쏴: shoot
+  쏘세요: shoot
+  쏴라: shoot
+  발사: shoot
+  사격: shoot
+  도망쳐: flee
+  도망가: flee
+  튀어: flee
+  뛰어: run
+  달려: run
+  걸어: walk
+  걸어가: walk
+  멈춰: stop
+  정지: stop
+  서: stop
+  기다려: wait
+  재장전: reload
+  장전해: reload
+  피해: dodge
+  피하세요: dodge
+  비켜: dodge
+  회복해: recover
+  치료해: recover
+  회복: recover
+  돌아가: go back
+  돌아와: go back
+  확인해: check
+  조사해: check
+  살펴봐: check
+  봐: look
+  쳐다봐: look
+  열어: open
+  닫아: close
+  읽어: read
+  가져가: take
+  주워: pick up
+  사용해: use
+  써: use
+  숨어: hide
+  숨어라: hide
+  다가가: approach
+  가까이 가: approach
+  일어나: get up
+  일어서: get up
+  뛰어올라: jump
+  점프: jump
+  던져: throw
+  번호: number
+  빨리: hurry
+  서둘러: hurry
+
+command_examples:
+  Walk: [걸어, 걸어가, 계속 걸어]
+  Run: [뛰어, 달려, 빨리 뛰어]
+  Stop: [멈춰, 정지, 거기 서]
+  Go back: [돌아가, 돌아와, 뒤로 돌아가]
+  Check: [확인해, 조사해, 살펴봐]
+  Read: [읽어, 그거 읽어]
+  Open: [열어, 그거 열어]
+  Close: [닫아, 그거 닫아]
+  Look: [봐, 저기 봐]
+  Use: [사용해, 그거 써]
+  Take: [가져가, 주워, 집어]
+  Shoot: [쏴, 쏴라, 발사, 사격]
+  Reload: [재장전, 장전해, 탄창 갈아]
+  Flee: [도망쳐, 도망가, 거기서 빠져나와]
+  Approach: [다가가, 가까이 가]
+  Recover: [회복해, 치료해, 캡슐 써]
+  Dodge: [피해, 비켜, 피하세요]
+  Hide: [숨어, 숨어라, 몸을 숨겨]
+  Get up: [일어나, 일어서, 얼른 일어나]
+  Jump: [뛰어올라, 점프]
+  Look out: [조심해, 위험해]
+  Throw it: [던져, 그거 던져]
+  Front: [앞으로, 전방]
+  Back: [뒤로, 후방]
+  Left: [왼쪽, 좌측, 왼쪽으로]
+  Right: [오른쪽, 우측, 오른쪽으로]
+  Up: [위로, 위]
+  Down: [아래로, 아래]
+  Head: [머리, 머리를 쏴]
+  Mouth: [입, 입을 노려]
+  Eye: [눈, 눈을 노려]
+  Left eye: [왼쪽 눈, 왼눈]
+  Middle eye: [가운데 눈, 중앙 눈]
+  Right eye: [오른쪽 눈, 오른눈]
+  Red eye: [빨간 눈, 붉은 눈]
+  Tongue: [혀, 혀를 노려]
+  Stomach: [배, 복부, 배를 노려]
+  Body: [몸, 몸통]
+  Tail: [꼬리, 꼬리를 노려]
+  Consultation: [상담, 얘기하자, 대화하자]
+  Camera check: [카메라 확인, 카메라 봐]
+  Break time: [휴식, 좀 쉬자, 쉬는 시간]
+  Zoom in: [확대, 줌, 당겨봐]
+  "Yes": [네, 예, 그래]
+  "No": [아니, 아니요, 싫어]

@@ -1,0 +1,198 @@
+# Pacote de idioma — Hindi
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# Chandrabindu (ँ) e anusvara (ं) estão cadastrados juntos — आँख e आंख, मुँह e मुंह — porque
+# o Whisper alterna entre os dois sinais e a normalização NFKC não os unifica.
+# O imperativo em hindi (forma तुम: करो) não flexiona por gênero, então uma forma basta.
+
+code: hi
+name: हिन्दी
+stt_language: hi
+
+numerals:
+  cardinal:
+    शून्य: 0
+    एक: 1
+    दो: 2
+    तीन: 3
+    चार: 4
+    पाँच: 5
+    पांच: 5
+    छह: 6
+    छै: 6
+    सात: 7
+    आठ: 8
+    नौ: 9
+    दस: 10
+  ordinal:
+    पहला: 1
+    पहली: 1
+    दूसरा: 2
+    दूसरी: 2
+    तीसरा: 3
+    तीसरी: 3
+    चौथा: 4
+    चौथी: 4
+    पाँचवाँ: 5
+    पांचवां: 5
+    छठा: 6
+
+quantifiers: [बार, दफा]
+connectives: [और, फिर, उसके बाद, तब, इसके बाद]
+affirmations: [हाँ, हां, जी, जी हाँ, ठीक है, बिलकुल, सही, अच्छा]
+negations: [नहीं, नही, ना, बिलकुल नहीं, कभी नहीं]
+target_words: [नंबर, नम्बर, दुश्मन, निशाना, लक्ष्य]
+
+body_parts:
+  सिर: HEAD
+  माथा: HEAD
+  मुँह: MOUTH
+  मुंह: MOUTH
+  बायीं आँख: LEFT EYE
+  बाईं आंख: LEFT EYE
+  बायाँ आँख: LEFT EYE
+  बीच की आँख: MIDDLE EYE
+  बीच की आंख: MIDDLE EYE
+  दायीं आँख: RIGHT EYE
+  दाईं आंख: RIGHT EYE
+  लाल आँख: RED EYE
+  लाल आंख: RED EYE
+  आँख: EYE
+  आंख: EYE
+  जीभ: TONGUE
+  बायाँ पेट: LEFT STOMACH
+  बायां पेट: LEFT STOMACH
+  दायाँ पेट: RIGHT STOMACH
+  दायां पेट: RIGHT STOMACH
+  लाल पेट: RED STOMACH
+  पेट: STOMACH
+  अगला पैर: FRONT LEG
+  सामने का पैर: FRONT LEG
+  शरीर: BODY
+  बदन: BODY
+  पूँछ: TAIL
+  पूंछ: TAIL
+  शाखाएँ: BRANCHES
+  शाखाएं: BRANCHES
+  टहनियाँ: BRANCHES
+  टहनियां: BRANCHES
+  जड़: ROOT
+  बेलें: VINES
+  लताएँ: VINES
+  लताएं: VINES
+  पत्ता: LEAF
+  पत्ती: LEAF
+
+directions:
+  बाएँ: LEFT
+  बाएं: LEFT
+  बायें: LEFT
+  बाईं ओर: LEFT
+  दाएँ: RIGHT
+  दाएं: RIGHT
+  दायें: RIGHT
+  दाईं ओर: RIGHT
+  ऊपर: UP
+  ऊपर की ओर: UP
+  नीचे: DOWN
+  नीचे की ओर: DOWN
+  आगे: FRONT
+  सामने: FRONT
+  पीछे: BACK
+
+lexicon:
+  गोली मारो: shoot
+  गोली चलाओ: shoot
+  फायर करो: shoot
+  मारो: shoot
+  भागो: flee
+  भाग जाओ: flee
+  निकलो: flee
+  दौड़ो: run
+  चलो: walk
+  चलते रहो: walk
+  रुको: stop
+  ठहरो: stop
+  रुक जाओ: stop
+  इंतज़ार करो: wait
+  इंतजार करो: wait
+  रीलोड करो: reload
+  गोली भरो: reload
+  बचो: dodge
+  हट जाओ: dodge
+  चकमा दो: dodge
+  ठीक हो जाओ: recover
+  इलाज करो: recover
+  वापस जाओ: go back
+  वापस आओ: go back
+  लौटो: go back
+  जाँच करो: check
+  जांच करो: check
+  परखो: check
+  देखो: look
+  खोलो: open
+  बंद करो: close
+  पढ़ो: read
+  लो: take
+  उठाओ: pick up
+  इस्तेमाल करो: use
+  छिप जाओ: hide
+  छिपो: hide
+  पास जाओ: approach
+  नज़दीक जाओ: approach
+  उठो: get up
+  खड़े हो जाओ: get up
+  कूदो: jump
+  फेंको: throw
+  नंबर: number
+  जल्दी: hurry
+  जल्दी करो: hurry
+
+command_examples:
+  Walk: [चलो, चलते रहो, आगे चलो]
+  Run: [दौड़ो, तेज़ दौड़ो, जल्दी दौड़ो]
+  Stop: [रुको, रुक जाओ, वहीं ठहरो]
+  Go back: [वापस जाओ, लौटो, पीछे लौटो]
+  Check: [जाँच करो, जांच करो, ज़रा देखो]
+  Read: [पढ़ो, इसे पढ़ो]
+  Open: [खोलो, इसे खोलो]
+  Close: [बंद करो, इसे बंद करो]
+  Look: [देखो, वहाँ देखो, वहां देखो]
+  Use: [इस्तेमाल करो, इसे इस्तेमाल करो]
+  Take: [लो, इसे लो, उठाओ]
+  Shoot: [गोली मारो, गोली चलाओ, फायर करो, उस पर गोली मारो]
+  Reload: [रीलोड करो, गोली भरो, बंदूक भरो]
+  Flee: [भागो, भाग जाओ, वहाँ से निकलो, वहां से निकलो]
+  Approach: [पास जाओ, नज़दीक जाओ]
+  Recover: [ठीक हो जाओ, इलाज करो, कैप्सूल लो]
+  Dodge: [बचो, हट जाओ, चकमा दो]
+  Hide: [छिप जाओ, छिपो]
+  Get up: [उठो, खड़े हो जाओ]
+  Jump: [कूदो, अभी कूदो]
+  Look out: [सावधान, ध्यान रखो, बचकर]
+  Throw it: [फेंको, इसे फेंको]
+  Front: [आगे, सामने]
+  Back: [पीछे, पीछे हटो]
+  Left: [बाएँ, बाएं, बायीं ओर]
+  Right: [दाएँ, दाएं, दायीं ओर]
+  Up: [ऊपर, ऊपर की ओर]
+  Down: [नीचे, नीचे की ओर]
+  Head: [सिर, सिर पर, सिर पर गोली मारो]
+  Mouth: [मुँह, मुंह, मुँह पर]
+  Eye: [आँख, आंख, आँख पर]
+  Left eye: [बायीं आँख, बाईं आंख]
+  Middle eye: [बीच की आँख, बीच की आंख]
+  Right eye: [दायीं आँख, दाईं आंख]
+  Red eye: [लाल आँख, लाल आंख]
+  Tongue: [जीभ, जीभ पर]
+  Stomach: [पेट, पेट पर]
+  Body: [शरीर, बदन, शरीर पर]
+  Tail: [पूँछ, पूंछ, पूँछ पर]
+  Consultation: [सलाह, बात करते हैं, बात करो]
+  Camera check: [कैमरा देखो, कैमरा जाँचो]
+  Break time: [आराम, थोड़ा आराम करो, ब्रेक लो]
+  Zoom in: [ज़ूम करो, पास लाओ, बड़ा करो]
+  "Yes": [हाँ, हां, जी हाँ, बिलकुल]
+  "No": [नहीं, नही, बिलकुल नहीं]

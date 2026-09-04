@@ -265,7 +265,11 @@ class FallbackTranscriber:
     O whisper.cpp é o padrão por ser ~3x mais rápido, mas depende de um executável e de um
     peso baixados fora do pip. Faltando qualquer um dos dois — ou com a porta ocupada, ou
     com o servidor morrendo no boot — o mod troca para o faster-whisper, que se resolve
-    sozinho pelo pip, em vez de ficar sem reconhecimento nenhum."""
+    sozinho pelo pip, em vez de ficar sem reconhecimento nenhum.
+
+    A reserva é uma fábrica, e não um transcritor pronto, para poder ser outro
+    ``FallbackTranscriber``: com a GPU escolhida, o degrau antes do faster-whisper é o mesmo
+    whisper.cpp na CPU."""
 
     def __init__(self, primary: Transcriber, build_backup: Callable[[], Transcriber]) -> None:
         self._primary = primary
@@ -294,9 +298,13 @@ class FallbackTranscriber:
         return self.active.transcribe(audio)
 
     def stop(self) -> None:
-        stop = getattr(self._primary, "stop", None)
-        if callable(stop):
-            stop()
+        """A reserva também é encerrada: quando ela é outro whisper.cpp, deixá-la de pé
+        larga um ``whisper-server`` órfão na porta, e é justamente ele que a sessão
+        seguinte se recusa a adotar."""
+        for target in (self._primary, self._backup):
+            stop = getattr(target, "stop", None)
+            if callable(stop):
+                stop()
 
     def _ready(self) -> bool:
         """``ensure_ready`` é barato com o servidor de pé: só confere o processo."""
@@ -312,12 +320,13 @@ class FallbackTranscriber:
         return True
 
     def _switch(self, reason: Exception) -> bool:
-        log.warning("backend de STT indisponível (%s); usando o faster-whisper", reason)
+        log.warning("backend de STT indisponível (%s); trocando para a reserva", reason)
         try:
             self._backup = self._build_backup()
         except Exception as exc:
-            log.error("o faster-whisper também não subiu (%s); o mod fica sem transcrição", exc)
+            log.error("a reserva também não subiu (%s); o mod fica sem transcrição", exc)
             return False
+        log.info("reserva de STT ativa: %s", type(self._backup).__name__)
         _apply_grammar(self._backup, self._grammar)
         return True
 
@@ -389,8 +398,18 @@ def build_transcriber(
         )
 
     if config.engine == "whisper-cpp":
-        primary = _build_whisper_cpp(config, stt_language, base_dir or Path.cwd(), hotwords, scene)
-        inner: Transcriber = FallbackTranscriber(primary, faster_whisper)
+        root = base_dir or Path.cwd()
+        primary = _build_whisper_cpp(config, stt_language, root, hotwords, scene)
+
+        def whisper_cpp_on_cpu() -> Transcriber:
+            """Degrau extra só de quem escolheu a GPU: a falha esperada ali é VRAM curta para
+            o peso, e trocar de aparelho devolve o reconhecimento inteiro — trocar de motor
+            custa ~3x a latência."""
+            cpu = _build_whisper_cpp(config, stt_language, root, hotwords, scene, use_gpu=False)
+            return FallbackTranscriber(cpu, faster_whisper)
+
+        on_gpu = getattr(primary, "device", "cpu") == "gpu"
+        inner: Transcriber = FallbackTranscriber(primary, whisper_cpp_on_cpu if on_gpu else faster_whisper)
     else:
         inner = faster_whisper()
     if config.silence_gate_ratio <= 0.0:
@@ -404,21 +423,38 @@ def _build_whisper_cpp(
     base_dir: Path,
     hotwords: Sequence[str],
     scene: SceneHotwords | None,
+    use_gpu: bool | None = None,
 ) -> Transcriber:
+    """``use_gpu`` fora de ``None`` ignora a configuração: é como a reserva pede a CPU
+    depois de a GPU não subir."""
     from cyhmo.stt.whisper_cpp import ServerSpec, WhisperCppTranscriber
+    from cyhmo.stt.whisper_gpu import effective_binary
+    from cyhmo.stt.whisper_models import resolve_audio_ctx
 
     settings = config.whisper_cpp
+    model = (base_dir / settings.model).resolve()
+    audio_ctx, warning = resolve_audio_ctx(model.name, settings.audio_ctx)
+    if warning:
+        log.warning("%s", warning)
+    wanted = settings.use_gpu if use_gpu is None else use_gpu
+    binary, use_gpu = effective_binary(base_dir, settings.binary, settings.gpu_binary, wanted)
+    if wanted and not use_gpu:
+        log.warning(
+            "stt.whisper_cpp.use_gpu está ligado, mas o build com GPU não está em %s; "
+            "usando a CPU nesta sessão. Instale-o em Configurações › Modelo de reconhecimento.",
+            (base_dir / settings.gpu_binary).resolve(),
+        )
     spec = ServerSpec(
-        binary=(base_dir / settings.binary).resolve(),
-        model=(base_dir / settings.model).resolve(),
+        binary=binary,
+        model=model,
         host=settings.host,
         port=settings.port,
         language=stt_language,
         beam_size=config.beam_size,
         threads=settings.threads,
-        use_gpu=settings.use_gpu,
+        use_gpu=use_gpu,
         flash_attn=settings.flash_attn,
-        audio_ctx=settings.audio_ctx,
+        audio_ctx=audio_ctx,
         temperature_fallback=config.temperature_fallback,
     )
     return WhisperCppTranscriber(

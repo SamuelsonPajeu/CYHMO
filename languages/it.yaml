@@ -1,0 +1,175 @@
+# Pacote de idioma — Italiano
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# Atenção de YAML: "no" e "si" são booleanos em YAML 1.1 e precisam de aspas.
+
+code: it
+name: Italiano
+stt_language: it
+
+numerals:
+  cardinal:
+    zero: 0
+    uno: 1
+    una: 1
+    un: 1
+    due: 2
+    tre: 3
+    quattro: 4
+    cinque: 5
+    sei: 6
+    sette: 7
+    otto: 8
+    nove: 9
+    dieci: 10
+  ordinal:
+    primo: 1
+    prima: 1
+    secondo: 2
+    seconda: 2
+    terzo: 3
+    terza: 3
+    quarto: 4
+    quarta: 4
+    quinto: 5
+    quinta: 5
+    sesto: 6
+    sesta: 6
+
+quantifiers: [volte, volta]
+connectives: [e, poi, dopo, e poi, quindi, e dopo]
+affirmations: [sì, "si", certo, va bene, ok, affermativo, esatto]
+negations: ["no", negativo, mai, per niente]
+target_words: [numero, nemico, bersaglio, obiettivo]
+
+body_parts:
+  testa: HEAD
+  bocca: MOUTH
+  occhio sinistro: LEFT EYE
+  occhio centrale: MIDDLE EYE
+  occhio di mezzo: MIDDLE EYE
+  occhio destro: RIGHT EYE
+  occhio rosso: RED EYE
+  occhio: EYE
+  lingua: TONGUE
+  stomaco sinistro: LEFT STOMACH
+  pancia sinistra: LEFT STOMACH
+  stomaco destro: RIGHT STOMACH
+  pancia destra: RIGHT STOMACH
+  stomaco rosso: RED STOMACH
+  pancia rossa: RED STOMACH
+  stomaco: STOMACH
+  pancia: STOMACH
+  zampa anteriore: FRONT LEG
+  zampa davanti: FRONT LEG
+  corpo: BODY
+  coda: TAIL
+  rami: BRANCHES
+  radice: ROOT
+  radici: ROOT
+  liane: VINES
+  foglia: LEAF
+
+directions:
+  sinistra: LEFT
+  a sinistra: LEFT
+  destra: RIGHT
+  a destra: RIGHT
+  su: UP
+  in su: UP
+  verso l'alto: UP
+  giù: DOWN
+  giu: DOWN
+  in giù: DOWN
+  in giu: DOWN
+  avanti: FRONT
+  in avanti: FRONT
+  davanti: FRONT
+  indietro: BACK
+  all'indietro: BACK
+
+lexicon:
+  spara: shoot
+  fuoco: shoot
+  fuggi: flee
+  scappa: flee
+  corri: run
+  cammina: walk
+  fermati: stop
+  ferma: stop
+  aspetta: wait
+  ricarica: reload
+  schiva: dodge
+  curati: recover
+  cura: recover
+  torna: go back
+  ritorna: go back
+  controlla: check
+  esamina: check
+  guarda: look
+  apri: open
+  chiudi: close
+  leggi: read
+  prendi: take
+  raccogli: pick up
+  usa: use
+  nasconditi: hide
+  avvicinati: approach
+  alzati: get up
+  salta: jump
+  lancia: throw
+  numero: number
+  veloce: hurry
+  sbrigati: hurry
+  sì: "yes"
+  "si": "yes"
+  "no": "no"
+
+command_examples:
+  Walk: [cammina, continua a camminare, vai avanti]
+  Run: [corri, più veloce, piu veloce, corri via]
+  Stop: [fermati, ferma, aspetta lì, aspetta li]
+  Go back: [torna indietro, ritorna, torniamo indietro]
+  Check: [controlla, esamina, dai un'occhiata]
+  Read: [leggi, leggi questo]
+  Open: [apri, aprilo, apri questo]
+  Close: [chiudi, chiudilo]
+  Look: [guarda, guarda qui]
+  Use: [usa, usalo]
+  Take: [prendi, prendilo, raccoglilo]
+  Shoot: [spara, fuoco, sparagli, spara addosso]
+  Reload: [ricarica, ricarica l'arma]
+  Flee: [fuggi, scappa, vattene via]
+  Approach: [avvicinati, vai vicino]
+  Recover: [curati, usa la capsula, riprenditi]
+  Dodge: [schiva, spostati, togliti di mezzo]
+  Hide: [nasconditi, mettiti al riparo]
+  Get up: [alzati, in piedi, tirati su]
+  Jump: [salta, salta adesso]
+  Look out: [attenta, attenzione, stai attenta]
+  Throw it: [lancialo, tiralo, buttalo]
+  Front: [avanti, in avanti, davanti]
+  Back: [indietro, all'indietro]
+  Left: [sinistra, a sinistra]
+  Right: [destra, a destra]
+  Up: [su, in su, verso l'alto]
+  Down: [giù, giu, in giù, in giu]
+  Head: [testa, alla testa, spara alla testa]
+  Mouth: [bocca, in bocca]
+  Eye: [occhio, nell'occhio]
+  Left eye: [occhio sinistro, nell'occhio sinistro]
+  Middle eye: [occhio centrale, occhio di mezzo]
+  Right eye: [occhio destro, nell'occhio destro]
+  Red eye: [occhio rosso, nell'occhio rosso]
+  Tongue: [lingua, sulla lingua]
+  Stomach: [stomaco, pancia, allo stomaco]
+  Body: [corpo, al corpo]
+  Tail: [coda, sulla coda]
+  Consultation: [consulto, parliamo, facciamo due chiacchiere]
+  Camera check: [controlla la telecamera, guarda la telecamera]
+  Break time: [pausa, facciamo una pausa]
+  Zoom in: [zoom, ingrandisci, avvicina l'immagine]
+  "Yes": [sì, "si", certo, va bene]
+  "No": ["no", per niente]

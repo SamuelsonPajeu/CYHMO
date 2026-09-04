@@ -1,10 +1,21 @@
 name: CI
 
-# Nao roda sozinho em push na main: quem o chama la e o release.yml, via
-# workflow_call. Assim o smoke nao executa duas vezes no mesmo merge.
+# Roda em todo pull request, sem filtro de caminho: assim o smoke serve como check
+# obrigatorio na protecao da main sem ficar pendente para sempre num PR so de texto.
+# Em push na main os arquivos que nao entram no build ficam de fora -- foi o que fazia
+# um ajuste de README gastar a pipeline inteira.
+# O release.yml chama este mesmo workflow por workflow_call antes de publicar.
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
+      - ".gitattributes"
   workflow_call:
 
 permissions:

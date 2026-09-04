@@ -42,17 +42,20 @@ silence_gate_ratio = {stt.silence_gate_ratio}  # descarta enunciado abaixo desta
 
 [stt.whisper_cpp]                    # backend padrão; "cyhmo setup" baixa o executável e o modelo
 binary = {stt.whisper_cpp.binary}    # instalado por "cyhmo setup"; nada é compilado
+gpu_binary = {stt.whisper_cpp.gpu_binary}  # build cuBLAS, instalado pelo painel; sem ele use_gpu cai na CPU
 model = {stt.whisper_cpp.model}      # modelo no formato ggml
 host = {stt.whisper_cpp.host}
 port = {stt.whisper_cpp.port}
 threads = {stt.whisper_cpp.threads}
-use_gpu = {stt.whisper_cpp.use_gpu}  # o build instalado pelo setup só tem CPU; só ligue se trocar por um build com GPU
+use_gpu = {stt.whisper_cpp.use_gpu}  # exige placa NVIDIA e o build de gpu_binary; o painel cuida dos dois
 flash_attn = {stt.whisper_cpp.flash_attn}
 audio_ctx = {stt.whisper_cpp.audio_ctx}  # 0 = janela cheia; reduzir acelera e arrisca cortar fala longa
 auto_start = {stt.whisper_cpp.auto_start}  # o mod sobe e derruba o servidor junto com a sessão
 timeout_ms = {stt.whisper_cpp.timeout_ms}
 
 [languages]                          # pacotes de idioma (dados em languages/*.yaml)
+# Na primeira execução estes dois vieram do idioma do Windows, com inglês de reserva;
+# daqui em diante quem manda é o que está escrito aqui.
 packs_dir = {languages.packs_dir}
 enabled = {languages.enabled}        # pacotes carregados; todos participam do matching
 primary = {languages.primary}        # define STT e as tabelas de numerais/partes/direções

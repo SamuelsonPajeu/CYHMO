@@ -35,6 +35,9 @@ const ADVANCED_SECTIONS = [
 
 let llmStatus = null;
 let llmTimer = null;
+let whisperStatus = null;
+let whisperTimer = null;
+let gpuWanted = false;
 let micMeterVisible = false;
 let registry = null;
 let registryQuery = '';
@@ -46,20 +49,23 @@ export function renderSettings(state) {
   replace($('settings-root'), advanced ? ADVANCED_SECTIONS.map((section) => advancedCard(state, section)) : basicCards(state));
   show($('settings-advanced-note'), advanced);
   if (!(state.devices || []).length) refreshDevices();
-  if (!advanced) refreshLlm();
+  if (!advanced) {
+    refreshLlm();
+    refreshWhisper();
+  }
   renderRegistry();
 }
 
 /* ---------- básico ---------- */
 
-/* CPU ou placa de vídeo para o reconhecimento fica só no avançado: qual das duas ganha
-   muda de máquina, então a escolha só se resolve medindo — trabalho que o modo básico
-   não pede a ninguém. */
+/* Onde o reconhecimento roda mora junto do peso, no cartão do modelo: é a mesma pergunta
+   vista de dois lados — o peso grande só se paga com a placa de vídeo fazendo a conta. */
 function basicCards(state) {
   return [
     micCard(state),
     activationCard(state),
     languageCard(state),
+    sttModelCard(),
     appearanceCard(state),
     assistantCard(),
     updatesCard(state),
@@ -85,7 +91,7 @@ function selectControl(value, options, onChange) {
   const node = h(
     'select',
     { class: 'field__control', onchange: (event) => onChange(event.target.value) },
-    options.map((option) => h('option', { value: option.value, text: option.label })),
+    options.map((option) => h('option', { value: option.value, text: option.label, disabled: Boolean(option.disabled) })),
   );
   const current = value === null || value === undefined ? '' : String(value);
   if (current && !options.some((option) => option.value === current)) {
@@ -355,6 +361,328 @@ function assistantCard() {
     h('p', { class: 'text-muted text-sm', text: t('settings.assistant.help') }),
     h('div', { id: 'llm-body', class: 'stack' }, [empty(t('settings.assistant.detecting'))]),
   ]);
+}
+
+/* ---------- modelo de reconhecimento (whisper.cpp) ---------- */
+
+function sttModelCard() {
+  return card('settings.sttModel.title', [
+    h('p', { class: 'text-muted text-sm', text: t('settings.sttModel.help') }),
+    h('div', { id: 'whisper-body', class: 'stack' }, [empty(t('settings.sttModel.loading'))]),
+  ]);
+}
+
+/* A opção só é gravada quando o build com GPU termina de instalar: gravá-la antes deixaria
+   o mod pedindo uma placa que ainda não tem com que rodar, e o arranque seguinte cairia de
+   volta na CPU sem ninguém entender por quê.
+
+   Quem lembra do pedido é `gpuWanted`, não a transição do progresso: uma instalação que
+   termina entre o POST e a atualização seguinte não tem transição para observar, e o
+   `done` sozinho não serve — ele continua verdadeiro depois de a pessoa voltar para a CPU
+   de propósito, e voltaria a ligar a GPU sem ninguém ter pedido. */
+async function refreshWhisper() {
+  const previous = whisperStatus && whisperStatus.download;
+  try {
+    whisperStatus = await api('/api/stt/models');
+  } catch (error) {
+    whisperStatus = { models: [], error: error.message, download: {}, gpu: {} };
+  }
+  const download = whisperStatus.download || {};
+  if (previous && previous.active && download.done) {
+    toast(t('settings.sttModel.downloaded', { model: download.model }), 'ok');
+  }
+  const install = (whisperStatus.gpu || {}).install || {};
+  if (gpuWanted && !install.active) {
+    gpuWanted = false;
+    if (install.done) {
+      toast(t('settings.sttModel.gpuInstalled'), 'ok');
+      await save({ stt: { whisper_cpp: { use_gpu: true } } }, 'settings.sttModel.title');
+      whisperStatus.device = 'gpu';
+    }
+  }
+  renderWhisper();
+}
+
+function renderWhisper() {
+  const body = $('whisper-body');
+  if (!body || !whisperStatus) return;
+  if (whisperStatus.error) {
+    replace(body, [empty(whisperStatus.error)]);
+    return;
+  }
+  const rows = [];
+  /* O peso só entra em jogo com o whisper.cpp: dizer isso evita a pessoa baixar um
+     modelo grande e não ver diferença nenhuma. */
+  if (whisperStatus.engine && whisperStatus.engine !== 'whisper-cpp') {
+    rows.push(h('span', { class: 'setting__note', text: t('settings.sttModel.engineNote', { engine: whisperStatus.engine }) }));
+  }
+  if (whisperStatus.current_file && !whisperStatus.current_known) {
+    rows.push(h('span', { class: 'setting__note', text: t('settings.sttModel.custom', { file: whisperStatus.current_file }) }));
+  }
+  rows.push(...whisperDeviceRows());
+  rows.push(h('ul', { class: 'list' }, (whisperStatus.models || []).map(whisperRow)));
+  rows.push(...whisperDownloadRows());
+  rows.push(
+    h('div', { class: 'row' }, [
+      h('span', { class: 'setting__note', text: t('settings.sttModel.folder', { path: whisperStatus.directory || '—' }) }),
+      h('button', { class: 'button button--ghost button--sm', type: 'button', text: t('settings.sttModel.refresh'), onclick: refreshWhisper }),
+    ]),
+  );
+  replace(body, rows);
+  scheduleWhisperPoll();
+}
+
+/* A lista já vai do mais leve ao mais preciso, e o tamanho ao lado de cada um diz o
+   preço: um selo repetindo isso em palavras só somava ruído em cada linha. */
+function whisperRow(model) {
+  const busy = whisperBusy();
+  return h('li', { class: 'list__item list__item--model' }, [
+    h('span', { class: 'mono', text: model.name }),
+    model.recommended ? pill(t('settings.sttModel.recommended'), 'pill--ok') : null,
+    h('span', { class: 'text-muted text-sm', text: fmtBytes(model.size_bytes) }),
+    whisperAction(model, busy),
+    model.installed && !model.current ? whisperRemoveButton(model, busy) : null,
+  ]);
+}
+
+function whisperAction(model, busy) {
+  if (model.current) return pill(t('settings.sttModel.inUse'), 'pill--ok');
+  const installed = model.installed;
+  const button = h('button', {
+    class: `button button--${installed ? 'secondary' : 'primary'} button--sm`,
+    type: 'button',
+    text: t(installed ? 'settings.sttModel.use' : 'settings.sttModel.download'),
+    onclick: () => (installed ? useWhisperModel(model) : startWhisperDownload(model)),
+  });
+  button.disabled = busy;
+  return button;
+}
+
+function whisperRemoveButton(model, busy) {
+  const button = h('button', {
+    class: 'button button--ghost button--sm',
+    type: 'button',
+    text: t('settings.sttModel.remove'),
+    onclick: () => removeWhisperModel(model, button),
+  });
+  button.disabled = busy;
+  return button;
+}
+
+function whisperDownloadRows() {
+  const download = whisperStatus.download || {};
+  if (download.active) {
+    return [
+      h('div', { class: 'row' }, [
+        h('span', { class: 'setting__note', text: t('settings.sttModel.downloading', { model: download.model, percent: Math.round(download.percent || 0) }) }),
+        h('button', { class: 'button button--ghost button--sm', type: 'button', text: t('settings.sttModel.cancel'), onclick: cancelWhisperDownload }),
+      ]),
+      progress((download.percent || 0) / 100, !download.percent),
+    ];
+  }
+  if (download.error) {
+    return [h('span', { class: 'field__error', text: t('settings.sttModel.downloadFailed', { model: download.model, error: download.error }) })];
+  }
+  return [];
+}
+
+/* Trocar o peso mexe em `stt`, que só é montado no arranque: o próprio save avisa que
+   precisa reiniciar, e o selo do cabeçalho fica aceso até isso acontecer.
+
+   A janela do encoder vai junto porque ela é do peso, não do gosto de quem escolhe: o
+   corte que acelera o small faz um modelo grande repetir a mesma palavra em laço. */
+async function useWhisperModel(model) {
+  const patch = { stt: { whisper_cpp: { model: model.config_value, audio_ctx: model.audio_ctx } } };
+  if (await save(patch, 'settings.sttModel.title')) refreshWhisper();
+}
+
+async function startWhisperDownload(model) {
+  try {
+    await api('/api/stt/models/download', { method: 'POST', body: { model: model.name } });
+    refreshWhisper();
+  } catch (error) {
+    toast(t('settings.sttModel.downloadFailed', { model: model.name, error: error.message }), 'error');
+  }
+}
+
+async function cancelWhisperDownload() {
+  try {
+    await api('/api/stt/models/download/cancel', { method: 'POST' });
+  } catch (_error) {
+    /* cancelar é melhor esforço: o estado real chega no próximo status */
+  }
+  refreshWhisper();
+}
+
+async function removeWhisperModel(model, button) {
+  if (!window.confirm(t('settings.sttModel.removeConfirm', { model: model.name }))) return;
+  button.disabled = true;
+  try {
+    await api('/api/stt/models/delete', { method: 'POST', body: { model: model.name } });
+    toast(t('settings.sttModel.removed', { model: model.name }), 'ok');
+    refreshWhisper();
+  } catch (error) {
+    toast(t('settings.sttModel.removeFailed', { model: model.name, error: error.message }), 'error');
+    button.disabled = false;
+  }
+}
+
+/* ---------- onde o whisper.cpp roda (CPU/GPU) ---------- */
+
+/* A GPU só fica clicável quando existe placa que a atenda: o único build com GPU que o
+   whisper.cpp publica é o cuBLAS, ou seja, NVIDIA. Oferecer a opção a uma placa AMD seria
+   prometer uma troca que o servidor engole em silêncio — ele sobe igual, na CPU, e a
+   pessoa fica procurando no lugar errado por que nada acelerou. */
+function whisperDeviceRows() {
+  const gpu = whisperStatus.gpu || {};
+  const device = whisperStatus.device === 'gpu' ? 'gpu' : 'cpu';
+  const options = [
+    { value: 'cpu', label: t('settings.sttModel.deviceCpu') },
+    { value: 'gpu', label: t('settings.sttModel.deviceGpu'), disabled: !gpu.supported },
+  ];
+  const select = selectControl(device, options, chooseWhisperDevice);
+  select.disabled = whisperBusy();
+  return [
+    settingRow(t('settings.sttModel.device'), [select], whisperDeviceNote(gpu, device)),
+    ...whisperGpuRows(gpu, device),
+  ];
+}
+
+function whisperDeviceNote(gpu, device) {
+  if (!gpu.supported) {
+    if (gpu.reason === 'old-driver') {
+      return t('settings.sttModel.gpuDriverOld', {
+        adapter: gpu.adapter,
+        driver: gpu.driver,
+        required: gpu.required_driver,
+      });
+    }
+    return t('settings.sttModel.gpuNoNvidia');
+  }
+  if (!gpu.installed) return t('settings.sttModel.gpuNotInstalled', { adapter: gpu.adapter, size: fmtBytes(gpu.download_bytes) });
+  return t(device === 'gpu' ? 'settings.sttModel.gpuInUse' : 'settings.sttModel.gpuReady', { adapter: gpu.adapter });
+}
+
+/* O erro fica na tela E o botão continua ali: um download cancelado no meio deixa a falha
+   registrada, e sem o botão a única saída seria recarregar a página. */
+function whisperGpuRows(gpu, device) {
+  const install = gpu.install || {};
+  if (install.active) {
+    return [
+      h('div', { class: 'row' }, [
+        h('span', {
+          class: 'setting__note',
+          text: t(install.phase === 'extract' ? 'settings.sttModel.gpuExtracting' : 'settings.sttModel.gpuDownloading', {
+            percent: Math.round(install.percent || 0),
+          }),
+        }),
+        h('button', {
+          class: 'button button--ghost button--sm',
+          type: 'button',
+          text: t('settings.sttModel.cancel'),
+          onclick: cancelWhisperGpuInstall,
+        }),
+      ]),
+      progress((install.percent || 0) / 100, !install.percent),
+    ];
+  }
+  const rows = [];
+  if (install.error) rows.push(h('span', { class: 'field__error', text: t('settings.sttModel.gpuFailed', { error: install.error }) }));
+  if (!gpu.supported) return rows;
+  if (!gpu.installed) {
+    rows.push(
+      h('div', { class: 'row' }, [
+        h('button', {
+          class: 'button button--secondary button--sm',
+          type: 'button',
+          text: t('settings.sttModel.gpuInstall', { size: fmtBytes(gpu.download_bytes) }),
+          onclick: () => startWhisperGpuInstall(gpu),
+        }),
+      ]),
+    );
+    return rows;
+  }
+  if (device === 'gpu') return rows;
+  rows.push(
+    h('div', { class: 'row' }, [
+      h('span', { class: 'setting__note', text: t('settings.sttModel.gpuFolder', { path: gpu.directory, size: fmtBytes(gpu.disk_bytes) }) }),
+      h('button', {
+        class: 'button button--ghost button--sm',
+        type: 'button',
+        text: t('settings.sttModel.gpuRemove'),
+        onclick: (event) => removeWhisperGpu(event.target),
+      }),
+    ]),
+  );
+  return rows;
+}
+
+/* Escolher a GPU sem o build instalado não grava nada — dispara a instalação. Gravar antes
+   deixaria a configuração pedindo uma placa sem ter com que rodar nela, e o mod voltaria
+   para a CPU no arranque seguinte; quem grava é o fim da instalação, em `refreshWhisper`. */
+async function chooseWhisperDevice(value) {
+  const gpu = whisperStatus.gpu || {};
+  if (value === 'gpu' && !gpu.installed) {
+    if (!(await startWhisperGpuInstall(gpu))) renderWhisper();
+    return;
+  }
+  if (await save({ stt: { whisper_cpp: { use_gpu: value === 'gpu' } } }, 'settings.sttModel.title')) refreshWhisper();
+}
+
+async function startWhisperGpuInstall(gpu) {
+  const confirmed = window.confirm(
+    t('settings.sttModel.gpuConfirm', {
+      build: gpu.build,
+      download: fmtBytes(gpu.download_bytes),
+      disk: fmtBytes(gpu.disk_bytes),
+    }),
+  );
+  if (!confirmed) return false;
+  try {
+    await api('/api/stt/gpu/install', { method: 'POST' });
+  } catch (error) {
+    toast(t('settings.sttModel.gpuFailed', { error: error.message }), 'error');
+    return false;
+  }
+  gpuWanted = true;
+  refreshWhisper();
+  return true;
+}
+
+async function cancelWhisperGpuInstall() {
+  gpuWanted = false;
+  try {
+    await api('/api/stt/gpu/install/cancel', { method: 'POST' });
+  } catch (_error) {
+    /* cancelar é melhor esforço: o estado real chega no próximo status */
+  }
+  refreshWhisper();
+}
+
+async function removeWhisperGpu(button) {
+  const gpu = whisperStatus.gpu || {};
+  if (!window.confirm(t('settings.sttModel.gpuRemoveConfirm', { size: fmtBytes(gpu.disk_bytes) }))) return;
+  button.disabled = true;
+  try {
+    await api('/api/stt/gpu/remove', { method: 'POST' });
+    toast(t('settings.sttModel.gpuRemoved'), 'ok');
+    refreshWhisper();
+  } catch (error) {
+    toast(t('settings.sttModel.gpuRemoveFailed', { error: error.message }), 'error');
+    button.disabled = false;
+  }
+}
+
+/* Um download por vez: os dois puxam centenas de MB da mesma conexão, e o do build com GPU
+   passa de meio giga — deixar os dois correndo juntos só faz cada um demorar o dobro. */
+function whisperBusy() {
+  const install = (whisperStatus.gpu || {}).install || {};
+  return Boolean((whisperStatus.download || {}).active || install.active);
+}
+
+function scheduleWhisperPoll() {
+  clearTimeout(whisperTimer);
+  if (whisperStatus && whisperBusy()) whisperTimer = setTimeout(refreshWhisper, LLM_POLL_MS);
 }
 
 function updatesCard(state) {

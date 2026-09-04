@@ -1,8 +1,10 @@
 """Provisiona o backend padrão de transcrição: o binário oficial do whisper.cpp e o peso ggml.
 
 Nada é compilado. O projeto whisper.cpp publica um build de Windows x64 pronto, e é dele
-que saem o ``whisper-server.exe`` e as DLLs do ggml. Só a CPU: o build com GPU exige CUDA,
-e a medição do projeto mostrou a CPU ganhando do Vulkan nesta classe de máquina.
+que saem o ``whisper-server.exe`` e as DLLs do ggml. Este é o build de CPU, que serve em
+qualquer máquina; o de GPU exige placa NVIDIA, pesa mais de meio giga e por isso não entra
+na instalação — quem tem a placa o instala pelo painel, e quem cuida disso é
+``cyhmo.stt.whisper_gpu``.
 
 Usa apenas a biblioteca padrão de propósito — este módulo roda no instalador, antes de as
 dependências do mod estarem garantidas.
@@ -134,12 +136,34 @@ def _download_model(model: Path, say: Reporter) -> None:
     model.parent.mkdir(parents=True, exist_ok=True)
     say(f"baixando {model.name} (algumas centenas de MB, uma vez só)...")
     _download(f"{MODEL_BASE_URL}/{model.name}", model, say)
-    if model.stat().st_size < MODEL_MINIMUM_BYTES:
+    _verify_model(model, say)
+
+
+def _verify_model(model: Path, say: Reporter) -> None:
+    """O catálogo traz o SHA-1 que o próprio whisper.cpp publica para cada peso. Para um
+    arquivo fora dele — quem apontou a config para outro modelo — resta o piso de tamanho,
+    que ainda separa um download interrompido de um modelo inteiro."""
+    from cyhmo.stt.whisper_models import BY_FILE, mismatch, sha1_of
+
+    size = model.stat().st_size
+    known = BY_FILE.get(model.name)
+    if known is None:
+        if size < MODEL_MINIMUM_BYTES:
+            model.unlink(missing_ok=True)
+            raise WhisperSetupError(
+                f"o download de {model.name} veio pequeno demais para ser um modelo; "
+                "confira a conexão e rode de novo"
+            )
+        say(f"{model.name} não está no catálogo: conferido só pelo tamanho")
+        return
+    problem = mismatch(size, sha1_of(model), known)
+    if problem is not None:
         model.unlink(missing_ok=True)
         raise WhisperSetupError(
-            f"o download de {model.name} veio pequeno demais para ser um modelo; "
-            "confira a conexão e rode de novo"
+            f"o download de {model.name} não confere ({problem}); o arquivo foi descartado. "
+            "Rode `CYHMO.cmd setup` de novo."
         )
+    say(f"{model.name} confere com o sha1 publicado")
 
 
 def _download(url: str, target: Path, say: Reporter) -> None:

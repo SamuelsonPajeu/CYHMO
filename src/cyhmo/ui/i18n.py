@@ -1,7 +1,10 @@
 """Textos da interface: dados em ``locales/*.json``, nunca embutidos na View.
 
-O idioma efetivo sai de ``ui.language``; em ``auto`` ele segue o pacote de idioma
-primário, para que quem fala português não precise configurar nada duas vezes.
+O idioma efetivo sai de ``ui.language``. Em ``auto`` ele segue o pacote de idioma
+primário, para que quem fala português não precise configurar nada duas vezes; quando não
+existe locale para esse pacote, o idioma do dispositivo decide; e quando nem isso casa,
+o inglês. Um jogador que fala chinês com o jogo num Windows em português lê a interface
+em português, em vez de cair no inglês por não haver locale zh-CN.
 """
 
 from __future__ import annotations
@@ -9,8 +12,9 @@ from __future__ import annotations
 import json
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
+from cyhmo.config.locale import system_language
 from cyhmo.domain.errors import UiServerError
 
 LOCALES_DIR = Path(__file__).resolve().parent / "locales"
@@ -26,13 +30,25 @@ def resolve_language(ui_language: str, primary_pack: str) -> str:
     known = available_languages()
     if ui_language != "auto":
         return ui_language if ui_language in known else FALLBACK_LANGUAGE
-    if primary_pack in known:
-        return primary_pack
-    prefix = primary_pack.split("-", 1)[0].casefold()
+    for candidate in (primary_pack, system_language()):
+        matched = _closest(candidate, known)
+        if matched is not None:
+            return matched
+    return FALLBACK_LANGUAGE
+
+
+def _closest(wanted: str, known: Sequence[str]) -> str | None:
+    """Casa ``pt-BR`` exato e depois a base ``pt``; ``None`` quando nada serve."""
+    wanted = (wanted or "").strip().replace("_", "-")
+    if not wanted:
+        return None
+    if wanted in known:
+        return wanted
+    prefix = wanted.split("-", 1)[0].casefold()
     for code in known:
         if code.split("-", 1)[0].casefold() == prefix:
             return code
-    return FALLBACK_LANGUAGE
+    return None
 
 
 @lru_cache(maxsize=8)

@@ -1,0 +1,229 @@
+# Pacote de idioma — Japonês
+# Esquema: src/cyhmo/domain/language_pack.py. Chaves em minúsculas, sem pontuação.
+# As chaves de command_examples são as strings LITERAIS da gramática do jogo
+# (comparação insensível a maiúsculas). Exemplos são frases faladas, de autoria própria.
+#
+# word_separator: none — o japonês escreve sem espaço entre palavras. A fronteira de palavra
+# sai deste vocabulário por casamento mais longo, então um termo que falte aqui é cortado
+# caractere a caractere. Prefira cadastrar a palavra inteira (止まって) a confiar no caractere.
+#
+# Kana de um caractere só ficou DE FORA de propósito: は, ね, め, に, し, ご e く são
+# partículas ou sufixos comuns e casariam dentro de qualquer frase. As formas em kanji
+# (目, 頭, 下) são seguras porque não aparecem como partícula.
+
+code: ja
+name: 日本語
+stt_language: ja
+word_separator: none
+
+numerals:
+  cardinal:
+    ゼロ: 0
+    れい: 0
+    零: 0
+    一: 1
+    いち: 1
+    二: 2
+    三: 3
+    さん: 3
+    四: 4
+    よん: 4
+    五: 5
+    六: 6
+    ろく: 6
+    七: 7
+    なな: 7
+    八: 8
+    はち: 8
+    九: 9
+    きゅう: 9
+    十: 10
+    じゅう: 10
+  ordinal:
+    一番: 1
+    いちばん: 1
+    二番: 2
+    にばん: 2
+    三番: 3
+    さんばん: 3
+    四番: 4
+    よんばん: 4
+    五番: 5
+    六番: 6
+
+quantifiers: [回, かい, 度]
+connectives: [そして, それから, その後, つぎに, 次に, あと, それで]
+affirmations: [はい, うん, ええ, そうだ, オーケー, わかった, 了解, いいよ]
+negations: [いいえ, いや, ちがう, 違う, だめ, ダメ, しない]
+target_words: [番号, 敵, ターゲット, 目標]
+
+body_parts:
+  頭: HEAD
+  あたま: HEAD
+  口: MOUTH
+  くち: MOUTH
+  左目: LEFT EYE
+  ひだりめ: LEFT EYE
+  真ん中の目: MIDDLE EYE
+  中央の目: MIDDLE EYE
+  まんなかのめ: MIDDLE EYE
+  右目: RIGHT EYE
+  みぎめ: RIGHT EYE
+  赤い目: RED EYE
+  あかいめ: RED EYE
+  目: EYE
+  舌: TONGUE
+  左腹: LEFT STOMACH
+  左のお腹: LEFT STOMACH
+  右腹: RIGHT STOMACH
+  右のお腹: RIGHT STOMACH
+  赤い腹: RED STOMACH
+  赤いお腹: RED STOMACH
+  お腹: STOMACH
+  おなか: STOMACH
+  腹: STOMACH
+  前足: FRONT LEG
+  まえあし: FRONT LEG
+  体: BODY
+  からだ: BODY
+  胴体: BODY
+  尻尾: TAIL
+  しっぽ: TAIL
+  枝: BRANCHES
+  えだ: BRANCHES
+  根: ROOT
+  根っこ: ROOT
+  つる: VINES
+  蔓: VINES
+  葉: LEAF
+  葉っぱ: LEAF
+
+directions:
+  左: LEFT
+  ひだり: LEFT
+  左に: LEFT
+  右: RIGHT
+  みぎ: RIGHT
+  右に: RIGHT
+  上: UP
+  うえ: UP
+  上に: UP
+  下: DOWN
+  下に: DOWN
+  前: FRONT
+  まえ: FRONT
+  前に: FRONT
+  後ろ: BACK
+  うしろ: BACK
+  後ろに: BACK
+
+lexicon:
+  撃て: shoot
+  撃って: shoot
+  うって: shoot
+  撃つ: shoot
+  発砲: shoot
+  逃げろ: flee
+  逃げて: flee
+  にげて: flee
+  走れ: run
+  走って: run
+  はしって: run
+  歩け: walk
+  歩いて: walk
+  あるいて: walk
+  止まれ: stop
+  止まって: stop
+  とまって: stop
+  待て: wait
+  待って: wait
+  まって: wait
+  リロード: reload
+  装填: reload
+  弾を込めて: reload
+  かわせ: dodge
+  よけろ: dodge
+  よけて: dodge
+  回復: recover
+  治せ: recover
+  回復して: recover
+  戻れ: go back
+  戻って: go back
+  もどって: go back
+  調べろ: check
+  調べて: check
+  しらべて: check
+  見て: look
+  見ろ: look
+  開けろ: open
+  開けて: open
+  あけて: open
+  閉めろ: close
+  閉めて: close
+  読んで: read
+  読め: read
+  取って: take
+  拾って: pick up
+  使え: use
+  使って: use
+  隠れろ: hide
+  隠れて: hide
+  近づけ: approach
+  近づいて: approach
+  立て: get up
+  起きろ: get up
+  立って: get up
+  跳べ: jump
+  ジャンプ: jump
+  投げろ: throw
+  投げて: throw
+  番号: number
+  急げ: hurry
+  急いで: hurry
+
+command_examples:
+  Walk: [歩いて, 歩け, そのまま歩いて]
+  Run: [走って, 走れ, 急いで走って]
+  Stop: [止まって, 止まれ, そこで待って]
+  Go back: [戻って, 戻れ, 引き返して]
+  Check: [調べて, 調べろ, 見てみて]
+  Read: [読んで, これを読んで]
+  Open: [開けて, 開けろ]
+  Close: [閉めて, 閉めろ]
+  Look: [見て, あれを見て]
+  Use: [使って, これを使って]
+  Take: [取って, 拾って]
+  Shoot: [撃って, 撃て, 発砲, そいつを撃って]
+  Reload: [リロード, 装填, 弾を込めて]
+  Flee: [逃げて, 逃げろ, そこから逃げて]
+  Approach: [近づいて, 近づけ]
+  Recover: [回復して, 治せ, カプセルを使って]
+  Dodge: [かわせ, よけて, よけろ]
+  Hide: [隠れて, 隠れろ]
+  Get up: [立って, 起きろ, 立ち上がって]
+  Jump: [跳べ, ジャンプ]
+  Look out: [危ない, 気をつけて]
+  Throw it: [投げて, 投げろ]
+  Front: [前に, まえに]
+  Back: [後ろに, 下がって]
+  Left: [左, 左に]
+  Right: [右, 右に]
+  Up: [上に, うえに]
+  Down: [下に]
+  Head: [頭, 頭を撃って]
+  Mouth: [口, 口を狙って]
+  Eye: [目, 目を狙って]
+  Left eye: [左目, 左目を狙って]
+  Middle eye: [真ん中の目, 中央の目]
+  Right eye: [右目, 右目を狙って]
+  Red eye: [赤い目, 赤い目を狙って]
+  Tongue: [舌, 舌を狙って]
+  Stomach: [お腹, 腹, お腹を狙って]
+  Body: [体, 胴体]
+  Tail: [尻尾, しっぽ]
+  Consultation: [相談, 話をしよう, 話そう]
+  Camera check: [カメラを確認, カメラを見て]
+  Break time: [休憩, 休憩しよう, 少し休んで]
+  Zoom in: [ズーム, 拡大, 寄って]
+  "Yes": [はい, うん, そうだ]
+  "No": [いいえ, いや, ちがう]

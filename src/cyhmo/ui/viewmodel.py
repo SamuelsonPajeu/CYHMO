@@ -63,6 +63,20 @@ class UiServices(Protocol):
 
     def llm_delete_model(self, model: str) -> dict[str, Any]: ...
 
+    def whisper_status(self) -> dict[str, Any]: ...
+
+    def whisper_download(self, model: str) -> dict[str, Any]: ...
+
+    def whisper_download_cancel(self) -> dict[str, Any]: ...
+
+    def whisper_delete(self, model: str) -> dict[str, Any]: ...
+
+    def whisper_gpu_install(self) -> dict[str, Any]: ...
+
+    def whisper_gpu_install_cancel(self) -> dict[str, Any]: ...
+
+    def whisper_gpu_remove(self) -> dict[str, Any]: ...
+
     def calibration_status(self) -> dict[str, Any]: ...
 
     def calibration_start(self, dataset: str, spontaneous: str, grid: str) -> dict[str, Any]: ...
@@ -457,6 +471,39 @@ class UiViewModel:
             raise CyhmoError("informe o modelo a remover")
         result = dict(self._services.llm_delete_model(model))
         self._log(f"modelo do assistente removido: {model}")
+        return result
+
+    def whisper_status(self) -> dict[str, Any]:
+        return dict(self._services.whisper_status())
+
+    def whisper_download(self, model: str) -> dict[str, Any]:
+        model = model.strip()
+        if not model:
+            raise CyhmoError("informe o modelo de reconhecimento a baixar")
+        self._log(f"baixando o modelo de reconhecimento: {model}")
+        return dict(self._services.whisper_download(model))
+
+    def whisper_download_cancel(self) -> dict[str, Any]:
+        return dict(self._services.whisper_download_cancel())
+
+    def whisper_delete(self, model: str) -> dict[str, Any]:
+        model = model.strip()
+        if not model:
+            raise CyhmoError("informe o modelo de reconhecimento a remover")
+        result = dict(self._services.whisper_delete(model))
+        self._log(f"modelo de reconhecimento removido: {model}")
+        return result
+
+    def whisper_gpu_install(self) -> dict[str, Any]:
+        self._log("instalando o build com GPU do whisper.cpp")
+        return dict(self._services.whisper_gpu_install())
+
+    def whisper_gpu_install_cancel(self) -> dict[str, Any]:
+        return dict(self._services.whisper_gpu_install_cancel())
+
+    def whisper_gpu_remove(self) -> dict[str, Any]:
+        result = dict(self._services.whisper_gpu_remove())
+        self._log("build com GPU do whisper.cpp removido")
         return result
 
     def calibration_status(self) -> dict[str, Any]:
