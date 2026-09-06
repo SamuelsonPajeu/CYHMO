@@ -35,6 +35,7 @@ class LanguagePackSet:
         self.target_words = _merge_words(pack.target_words for pack in self._packs)
         self.body_parts = _merge_mapping(pack.body_parts for pack in self._packs)
         self.directions = _merge_mapping(pack.directions for pack in self._packs)
+        self.spatial = _merge_mapping(pack.spatial for pack in self._packs)
         self.lexicon = _merge_mapping(pack.lexicon for pack in self._packs)
         self._cardinals = _merge_numerals(pack.numerals.cardinal for pack in self._packs)
         self._ordinals = _merge_numerals(pack.numerals.ordinal for pack in self._packs)
@@ -78,6 +79,10 @@ class LanguagePackSet:
             *self.target_words,
             *self.body_parts,
             *self.directions,
+            # Entra no vocabulário do tokenizador, não no tradutor: em pacotes de escrita
+            # contínua (zh, ja) a fronteira de palavra sai daqui, e uma relação de lugar
+            # fora da lista ficaria invisível justamente para quem mais precisa dela.
+            *self.spatial,
             *self.lexicon,
             *self._cardinals,
             *self._ordinals,

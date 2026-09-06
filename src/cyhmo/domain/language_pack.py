@@ -7,6 +7,19 @@ só exige o esquema abaixo. Chaves de texto são comparadas já normalizadas
 ``word_separator`` diz como a escrita separa palavras: ``space`` para as que usam
 espaço e ``none`` para as que escrevem sem ele (chinês, japonês). Escolher errado
 não dá erro — deixa a interpretação cega para tudo que dependa de palavra.
+
+``spatial`` mapeia a relação de lugar que o jogador fala ("atrás", "embaixo") para a
+relação canônica em inglês ("back", "under"). Serve SÓ para desempatar comandos quase
+idênticos — "olha atrás do convite" precisa preferir `Look on the backside of the
+invitation` a `look in the invitation`, que estavam a 0,017 de distância no cosseno.
+
+Ao contrário de ``directions``, esta tabela NUNCA pode virar argumento nem entrar no
+tradutor lexical, e é por isso que ela é um campo separado em vez de mais linhas em
+``lexicon``. O valor de ``directions`` vira argumento de direção (``intent/arguments.py``),
+e argumento entra em ``english_candidates``; de lá o casamento literal do interpretador
+acha a entrada nua ``back`` — que existe de verdade na gramática de combate — e a injeta
+com score 1.0, antes de qualquer ranking. Medido: com "atrás: back" no ``lexicon``,
+"olha atrás do convite" passa a injetar ``back``. Mantenha a tabela fora do tradutor.
 """
 
 from __future__ import annotations
@@ -51,6 +64,7 @@ class LanguagePack(BaseModel):
     target_words: list[str] = Field(default_factory=list)
     body_parts: dict[str, str] = Field(default_factory=dict)
     directions: dict[str, str] = Field(default_factory=dict)
+    spatial: dict[str, str] = Field(default_factory=dict)
     lexicon: dict[str, str] = Field(default_factory=dict)
     command_examples: dict[str, list[str]] = Field(default_factory=dict)
 
@@ -75,7 +89,7 @@ class LanguagePack(BaseModel):
         cleaned = [word.strip().lower() for word in words if word and word.strip()]
         return list(dict.fromkeys(cleaned))
 
-    @field_validator("body_parts", "directions", "lexicon")
+    @field_validator("body_parts", "directions", "spatial", "lexicon")
     @classmethod
     def _clean_mapping(cls, mapping: dict[str, str]) -> dict[str, str]:
         return {source.strip().lower(): target.strip() for source, target in mapping.items()}
@@ -92,7 +106,7 @@ class LanguagePack(BaseModel):
 
     @model_validator(mode="after")
     def _no_empty_targets(self) -> "LanguagePack":
-        for table_name in ("body_parts", "directions", "lexicon"):
+        for table_name in ("body_parts", "directions", "spatial", "lexicon"):
             table: dict[str, str] = getattr(self, table_name)
             empty = [source for source, target in table.items() if not target]
             if empty:

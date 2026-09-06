@@ -245,6 +245,73 @@ commands:
     notes: "Na mesa do Break Room; revela a chave do escritório do gerente (F-05)."
 
   # ---------------------------------------------------------------------------
+  # NORMAL — verbos que o jogo CASA sozinhos mas sobre os quais a cena não age.
+  # O matcher preenche o slot do verbo, o slot do objeto fica vazio, nenhuma regra
+  # da gramática sobrevive e o jogo despacha "sem comando" — na tela, silêncio.
+  # Medido em 2026-09-05: 14 injeções de verbo nu, todas com id real e oráculo
+  # dizendo que casou, nenhuma com efeito; o jogador só avançou quando o objeto
+  # foi injetado. `needs_companion` faz o interpretador preferir a entrada fundida
+  # ("Search behind the chair") ou emparelhar o verbo com o objeto.
+  # SEM bloco `examples`, de propósito: exemplo aqui vira linha no índice de
+  # embeddings e mudaria o ranking de toda cena que contenha estas chaves — mudança
+  # não medida pegando carona numa mudança sobre slots.
+  # ---------------------------------------------------------------------------
+
+  - key: SEARCH
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    needs_companion: true
+    notes: "Verbo nu casa (id 109) e não faz nada; precisa do objeto da cena."
+
+  - key: GO TO
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    needs_companion: true
+    notes: "Verbo nu casa (id 1) e não faz nada; precisa do destino."
+
+  - key: LOOK AT
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    needs_companion: true
+    notes: "Verbo nu casa (id 109) e não faz nada; precisa do alvo."
+
+  - key: LOOKAT
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    needs_companion: true
+    notes: "Grafia sem espaço que aparece no pool da gramática; mesmo caso de LOOK AT."
+
+  - key: GET
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    needs_companion: true
+    notes: "Verbo nu casa e não faz nada; precisa do objeto. Distinto de GET UP/GET OFF."
+
+  - key: BREAK
+    category: normal
+    class: core
+    game_id: null
+    contexts: [normal]
+    source: guide_walkthrough
+    needs_companion: true
+    notes: "Verbo nu casa e não faz nada; precisa do alvo. Distinto de BREAK TIME."
+
+  # ---------------------------------------------------------------------------
   # BATTLE (G-04) — keywords de batalha listadas no guia (+ TURN LEFT)
   # Batalha aceita pilha de até 3 comandos.
   # ---------------------------------------------------------------------------

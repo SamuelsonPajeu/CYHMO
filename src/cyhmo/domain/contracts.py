@@ -167,6 +167,10 @@ class Candidate:
     matched_example: str = ""
     example_lang: str = "en"
     has_primary_language_examples: bool = False
+    lexical_bonus: float = 0.0
+    """Quanto do ``score`` veio do desempate por relação espacial (``intent/lexical.py``).
+    Fica no log para que uma escolha estranha possa ser lida como "o cosseno queria outra"
+    em vez de virar adivinhação."""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -175,6 +179,7 @@ class Candidate:
             "matched_example": self.matched_example,
             "example_lang": self.example_lang,
             "has_primary_language_examples": self.has_primary_language_examples,
+            "lexical_bonus": round(self.lexical_bonus, 4),
         }
 
 

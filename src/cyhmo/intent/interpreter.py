@@ -20,9 +20,11 @@ from cyhmo.intent.annex import Annex
 from cyhmo.intent.arguments import ArgumentResolver, ResolvedSegment
 from cyhmo.intent.embedders import build_embedder
 from cyhmo.intent.embedding_cache import EmbeddingCache
+from cyhmo.intent.gloss import GlossStore, GrammarGlosser
 from cyhmo.intent.index import CandidateIndex, build_example_provider
 from cyhmo.intent.language_packs import LanguagePackSet
-from cyhmo.intent.normalization import normalize_text
+from cyhmo.intent.lexical import spatial_intent
+from cyhmo.intent.normalization import normalize_text, normalized_key
 from cyhmo.intent.segmentation import UtteranceSegmenter
 from cyhmo.intent.vocabulary import ActiveGrammar, ObservedVocabulary
 
@@ -31,6 +33,14 @@ log = logging.getLogger("cyhmo.intent")
 LOG_SOURCE = "intent"
 FIRST_GRAMMAR_WAIT_S = 5.0
 LOGGED_CANDIDATES = 3
+# A linha de debug continua com 3; o registro JSONL leva 8, porque diagnosticar uma escolha
+# ruim exige ver o que perdeu — com 3 a lista costuma acabar antes da alternativa certa.
+RECORDED_CANDIDATES = 8
+# Piso do top-k quando o acompanhante está ligado: sem assistente o top-k cai para
+# ``intent.top_k`` = 3, e os três podem ser verbos nus. Subir o piso não toca no produto de
+# matrizes nem no primeiro colocado — só deixa o laço de seleção parar mais tarde.
+COMPANION_TOP_K = 12
+COMPANION_SLOT_BUDGET = 2
 LLM_UNAVAILABLE_REASONS = frozenset({"llm_unavailable", "llm_error"})
 
 
@@ -80,6 +90,7 @@ class IntentInterpreter:
         llm_fallback: LlmFallbackPort | None = None,
         bus: EventSink | None = None,
         observed_vocabulary: ObservedVocabulary | None = None,
+        glosser: GrammarGlosser | None = None,
     ) -> None:
         self._config = config
         self._packs = packs
@@ -89,7 +100,9 @@ class IntentInterpreter:
         self._llm = llm_fallback
         self._bus = bus
         self._observed = observed_vocabulary
-        self._provider = build_example_provider(packs, annex)
+        self._glosser = glosser
+        self._glossed: set[str] = set()
+        self._provider = build_example_provider(packs, annex, glosser)
         self._segmenter = UtteranceSegmenter(packs)
         self._arguments = ArgumentResolver(packs)
         self._lock = threading.RLock()
@@ -185,8 +198,9 @@ class IntentInterpreter:
             return self._finish(transcript, state, Interpretation.none("no_grammar", normalized_text=normalized), started)
         if state.grammar_stale:
             return self._finish(transcript, state, self._stale_refusal(normalized, started), started)
-        max_commands = MAX_STACKED_COMMANDS if state.in_battle or state.mode == "unknown" else 1
-        segmentation = self._segmenter.segment(normalized, snapshot.grammar, max_commands)
+        stacking = state.in_battle or state.mode == "unknown"
+        max_segments = MAX_STACKED_COMMANDS if stacking else 1
+        segmentation = self._segmenter.segment(normalized, snapshot.grammar, max_segments)
         accept = self._accept_threshold(state, snapshot.grammar)
         outcomes: list[_SegmentOutcome] = []
         for segment in segmentation.segments:
@@ -195,13 +209,17 @@ class IntentInterpreter:
                 rejection = Interpretation.none(outcome.reason, outcome.candidates, normalized, _elapsed_ms(started))
                 return self._finish(transcript, state, rejection, started, outcomes + [outcome])
             outcomes.append(outcome)
-        commands = tuple(command for outcome in outcomes for command in outcome.commands)[:max_commands]
+        # Orçamento de SLOTS, separado do de segmentos: fora de batalha o enunciado continua
+        # valendo um comando só, mas o par verbo+objeto ocupa dois slots de UMA regra do jogo.
+        # Com o acompanhante desligado o orçamento é 1 e o corte é o de antes.
+        budget = MAX_STACKED_COMMANDS if stacking else (COMPANION_SLOT_BUDGET if self._companion_on else 1)
+        commands, overflow = _stack(outcomes, budget)
         interpretation = Interpretation(
             commands=commands,
             confidence=min(outcome.confidence for outcome in outcomes),
             method="llm" if any(outcome.method == "llm" for outcome in outcomes) else "embeddings",
-            reason="truncated" if segmentation.truncated else "ok",
-            candidates=outcomes[-1].candidates[:LOGGED_CANDIDATES],
+            reason="truncated" if segmentation.truncated or overflow else "ok",
+            candidates=outcomes[-1].candidates[:RECORDED_CANDIDATES],
             normalized_text=normalized,
             latency_ms=_elapsed_ms(started),
         )
@@ -238,26 +256,122 @@ class IntentInterpreter:
         )
         return Interpretation.none("grammar_stale", normalized_text=normalized, latency_ms=_elapsed_ms(started))
 
-    def _is_accepted(self, score: float, margin: float, accept: float) -> bool:
+    def _is_accepted(self, candidate: Candidate, margin: float, accept: float) -> bool:
         """Aceite em dois níveis. Score alto basta por si; score médio precisa
         também de distância para o segundo colocado.
 
         Uma margem única não resolve: medido na batalha de 2026-08-26, exigir 0.05 de
         todo mundo derrubaria 'anda para a direita' → `move right` (0.988, margem 0.034)
         junto com o lixo, levando o acerto de 18 para 9. Com o nível de confiança,
-        o acerto fica em 16 e o erro cai de 7 para 2."""
+        o acerto fica em 16 e o erro cai de 7 para 2.
+
+        O atalho de confiança olha o cosseno CRU, sem o desempate espacial: é ele que pula a
+        penalidade de gramática velha, e um +0,03 fabricado aqui dentro não pode comprar essa
+        passagem. O bônus continua valendo no ramo com margem, que é onde ele deve decidir."""
         confident = max(self._config.confident_threshold, accept)
-        return score >= confident or (score >= accept and margin >= self._config.accept_margin)
+        raw = candidate.score - candidate.lexical_bonus
+        return raw >= confident or (candidate.score >= accept and margin >= self._config.accept_margin)
 
     def _accept_threshold(self, state: GameState, grammar: ActiveGrammar) -> float:
         without_context = state.mode == "unknown" and state.can_talk is None and state.grammar is None
         threshold = self._config.accept_threshold_no_context if without_context else self._config.accept_threshold
         return threshold + (self._config.stale_grammar_penalty if grammar.stale else 0.0)
 
+    @property
+    def _companion_on(self) -> bool:
+        return self._config.companion_slot != "off"
+
     def _resolve_segment(self, segment: str, state: GameState, snapshot: _IndexState, accept: float) -> _SegmentOutcome:
         resolved = self._arguments.resolve(segment, state)
         if resolved.reject_reason:
             return _SegmentOutcome(reason=resolved.reject_reason)
+        outcome = self._decide_segment(segment, resolved, state, snapshot, accept)
+        return self._with_companion(outcome, state)
+
+    def _with_companion(self, outcome: _SegmentOutcome, state: GameState) -> _SegmentOutcome:
+        """Tira do ar o verbo nu, que o jogo casa e ignora.
+
+        Medido em 2026-09-05, sessão s20260905-081805: "procura nas ações/rações/regiões" caiu
+        quatro vezes seguidas em ``Search`` sozinho, cada uma com oráculo dizendo que casou e
+        nada acontecendo; o jogador só passou em #00029, quando ``rations`` foi injetado. Em
+        #00024 o objeto certo já era o PRIMEIRO da lista (``rations`` 0,8056 contra ``Search``
+        0,7176) e o assistente escolheu o verbo mesmo assim.
+
+        Duas saídas, nesta ordem: a entrada FUNDIDA da própria cena ("Search behind the chair"),
+        que é um slot só e o jeito que a gramática dessa cena prefere; ou o par verbo + objeto
+        em dois slots. Só entra candidato que já está na lista — sintetizar "verbo + objeto"
+        fabricaria frase que a cena talvez não aceite.
+
+        A barra é o limiar de ACEITE, não o de rejeição, e é o argumento de segurança inteiro:
+        reproduzida sobre os 417 registros reais ela forma exatamente UM par, o #00024 correto,
+        e mata todos os danosos (Pick up + Take 0,5962; Look at + "have a taste of the ration"
+        0,7685; Go to + "Leave the room" 0,6078).
+
+        Sem objeto acima da barra o verbo é RECUSADO, não injetado sozinho. Injetá-lo não é a
+        opção conservadora: o jogo casa o verbo, não age, e a interface diz "Enviado" — o
+        jogador acha que falou certo e fica repetindo. Recusar devolve "não reconhecido", que é
+        a verdade e faz ele reformular. E o enunciado não é consumido à toa. O par danoso
+        continua barrado: "vai na cama" tinha `Leave the room` 0,6078 no topo, e sair da sala
+        seria pior que não fazer nada."""
+        if not self._companion_on or outcome.rejected or len(outcome.commands) != 1:
+            return outcome
+        if state.in_battle or state.mode == "unknown":
+            return outcome
+        # O caminho do casamento exato devolve UM candidato só; sem alternativa não há par.
+        if len(outcome.candidates) < 2:
+            return outcome
+        head = outcome.commands[0]
+        if not self._annex.needs_companion(head.key):
+            return outcome
+        bar = max(self._config.accept_threshold, outcome.confidence)
+        prefix = normalized_key(head.key) + " "
+        fused: Candidate | None = None
+        companion: Candidate | None = None
+        for candidate in outcome.candidates:
+            if candidate.score < bar:
+                break
+            if candidate.key == head.key or self._annex.needs_companion(candidate.key):
+                continue
+            if fused is None and normalized_key(candidate.key).startswith(prefix):
+                fused = candidate
+            if companion is None:
+                companion = candidate
+        if fused is not None:
+            return replace(
+                outcome,
+                commands=(CommandRef(fused.key, dict(head.args)),),
+                confidence=min(outcome.confidence, fused.score),
+                has_primary_examples=fused.has_primary_language_examples,
+                detail=_with_detail(outcome.detail, "companion_fused"),
+            )
+        if companion is not None:
+            return replace(
+                outcome,
+                commands=(head, CommandRef(companion.key, {})),
+                confidence=min(outcome.confidence, companion.score),
+                detail=_with_detail(outcome.detail, "companion_pair"),
+            )
+        self._publish(
+            LogLine(
+                level="info",
+                message=f"{head.key!r} sozinho não faz nada nesta cena: nomeie o alvo (ex.: {head.key} + objeto)",
+                source=LOG_SOURCE,
+            )
+        )
+        return _SegmentOutcome(
+            candidates=outcome.candidates,
+            reason="needs_companion",
+            detail=_with_detail(outcome.detail, "companion_missing"),
+        )
+
+    def _decide_segment(
+        self,
+        segment: str,
+        resolved: ResolvedSegment,
+        state: GameState,
+        snapshot: _IndexState,
+        accept: float,
+    ) -> _SegmentOutcome:
         literal = self._literal_match(segment, resolved, snapshot)
         if literal is not None:
             return literal
@@ -265,7 +379,7 @@ class IntentInterpreter:
         if not candidates:
             return _SegmentOutcome(reason="no_candidates")
         best = candidates[0]
-        accepted = self._is_accepted(best.score, _margin(candidates), accept)
+        accepted = self._is_accepted(best, _margin(candidates), accept)
         llm = self._consulted_llm(state)
         if llm is not None and self._config.llm.mode == "pair":
             return self._arbitrated(llm, segment, state, snapshot, candidates, resolved, accepted, accept)
@@ -403,15 +517,32 @@ class IntentInterpreter:
         )
 
     def _search(self, resolved: ResolvedSegment, snapshot: _IndexState) -> list[Candidate]:
-        top_k = max(self._config.top_k, self._config.llm.prompt_top_k if self._llm is not None else 0)
-        return snapshot.index.search_variants(self._query_vectors(resolved), top_k)
+        """A relação de lugar sai das MESMAS variantes que viram vetor, não do enunciado cru:
+        se a evidência lexical e o vetor descrevessem consultas diferentes, o log não teria como
+        explicar a decisão. Assim a palavra que o jogador falou e a que a tradução lexical
+        produziu contam igual, e quem joga em inglês é atendido pelo mesmo caminho."""
+        top_k = max(
+            self._config.top_k,
+            self._config.llm.prompt_top_k if self._llm is not None else 0,
+            COMPANION_TOP_K if self._companion_on else 0,
+        )
+        texts = self._query_texts(resolved)
+        return snapshot.index.search_variants(
+            self._query_vectors(texts),
+            top_k,
+            spatial_intent(texts, self._packs.spatial),
+            self._config.spatial_bonus,
+            self._config.spatial_band,
+        )
 
-    def _query_vectors(self, resolved: ResolvedSegment) -> list[np.ndarray]:
+    def _query_texts(self, resolved: ResolvedSegment) -> list[str]:
+        texts = [text for text in dict.fromkeys([resolved.query_text, *resolved.english_candidates]) if text]
+        return texts[: self._config.max_query_variants]
+
+    def _query_vectors(self, texts: Sequence[str]) -> list[np.ndarray]:
         """As variantes vão ao modelo num lote só: três chamadas separadas custam quase o
         triplo de uma, e isso está no caminho crítico do enunciado."""
-        texts = [text for text in dict.fromkeys([resolved.query_text, *resolved.english_candidates]) if text]
-        texts = texts[: self._config.max_query_variants]
-        found, missing = self._cache.get_many(texts, "query")
+        found, missing = self._cache.get_many(list(texts), "query")
         if missing:
             vectors = np.asarray(self._embedder.embed_queries(missing), dtype=np.float32)
             self._cache.put_many(missing, "query", vectors)
@@ -480,6 +611,64 @@ class IntentInterpreter:
         self._publish(ComponentChanged(component="intent", status="ready", detail=detail))
         self._persist_to_disk()
         self._signal_ready(grammar)
+        if installed:
+            self._schedule_gloss(grammar)
+
+    def _schedule_gloss(self, grammar: ActiveGrammar) -> None:
+        """Traduz o vocabulário da cena e reindexa com as traduções.
+
+        Fica DEPOIS de o índice estar instalado e pronto de propósito: a cena começa a valer
+        com o que já havia em cache, e a tradução chega na sequência sem ninguém esperar por
+        ela. Cada gramática é traduzida uma vez por execução — a marca é a impressão digital
+        dela, senão a reindexação se chamaria para sempre."""
+        # A config é relida a cada cena, então DESLIGAR pela interface vale na hora. Ligar não:
+        # sem `auto_gloss` no boot o provider nem foi criado — por isso o campo está em
+        # RESTART_INTENT_FIELDS e a interface avisa.
+        if self._glosser is None or not self._glosser.enabled or not self._config.auto_gloss:
+            return
+        with self._lock:
+            if grammar.fingerprint in self._glossed or not self._glosser.missing(grammar.entries):
+                return
+            self._glossed.add(grammar.fingerprint)
+        threading.Thread(target=self._gloss_and_reindex, args=(grammar,), name="intent-gloss", daemon=True).start()
+
+    def _gloss_and_reindex(self, grammar: ActiveGrammar) -> None:
+        assert self._glosser is not None
+        started = time.perf_counter()
+        try:
+            added = self._glosser.fill(grammar.entries)
+        except Exception as exc:
+            log.warning("tradução da gramática falhou: %s", exc)
+            return
+        if not added:
+            return
+        self._publish(
+            LogLine(
+                level="info",
+                message=(
+                    f"{added} comandos da cena traduzidos para {self._glosser.language} "
+                    f"em {_elapsed_ms(started):.0f} ms; reindexando"
+                ),
+                source=LOG_SOURCE,
+            )
+        )
+        self._reindex(grammar)
+
+    def _reindex(self, grammar: ActiveGrammar) -> None:
+        """Reconstrói o índice da MESMA cena, sem marcá-la desatualizada.
+
+        ``update_grammar`` não serve aqui: ela vê as mesmas entradas e só atualiza os sinais.
+        E marcar stale seria mentira — a cena não mudou, só ganhou âncoras — e ainda elevaria
+        o limiar de aceite pela penalidade de gramática velha."""
+        with self._lock:
+            current = self._state
+            if current is None or current.grammar.entries != grammar.entries:
+                return
+            self._generation += 1
+            refreshed = replace(current.grammar, version=self._generation)
+            self._pending = refreshed
+            self._ready.clear()
+        threading.Thread(target=self._build_index, args=(refreshed,), name="intent-index", daemon=True).start()
 
     def _install_index(self, grammar: ActiveGrammar, index: CandidateIndex | None) -> bool:
         with self._lock:
@@ -587,7 +776,63 @@ def build_interpreter(
     cache = EmbeddingCache(paths.embedding_cache, embedder.identity, embedder.dimension)
     observed = ObservedVocabulary(paths.observed_vocab)
     observed.load()
-    return IntentInterpreter(config.intent, packs, annex, embedder, cache, llm_fallback, bus, observed)
+    glosser = build_glosser(config, paths, packs)
+    return IntentInterpreter(config.intent, packs, annex, embedder, cache, llm_fallback, bus, observed, glosser)
+
+
+def build_glosser(config: AppConfig, paths: ProjectPaths, packs: LanguagePackSet) -> GrammarGlosser | None:
+    """Sem assistente configurado não há tradutor, e o mod segue como sempre foi.
+
+    O provider é montado à parte do assistente porque o teto de saída é outro: o assistente
+    responde UM comando e 48 tokens sobram, o tradutor responde um lote inteiro."""
+    if not config.intent.auto_gloss or packs.primary.is_english:
+        # Devolver um tradutor sem provider NÃO serve: ele ainda leria o cache e as traduções
+        # velhas continuariam entrando no índice. O interruptor tem de desligar o USO, não só o
+        # preenchimento — senão medir "com" contra "sem" compara a mesma coisa duas vezes.
+        return None
+    store = GlossStore(paths.gloss_cache)
+    store.load()
+    provider = None
+    if config.intent.llm.enabled:
+        try:
+            from cyhmo.intent.llm.factory import build_llm_provider
+
+            budget = config.intent.llm.model_copy(update={"max_output_tokens": config.intent.gloss_max_tokens})
+            provider = build_llm_provider(budget)
+        except Exception as exc:
+            log.warning("tradução automática da gramática indisponível: %s", exc)
+    return GrammarGlosser(
+        store,
+        provider,
+        packs.primary.code,
+        packs.primary.name,
+        timeout_ms=config.intent.gloss_timeout_ms,
+    )
+
+
+def _with_detail(current: str, added: str) -> str:
+    """O rótulo novo se soma ao que já havia. Sobrescrever apagaria pair_agree/pair_override/
+    pair_kept/pair_refused, cuja distinção o próprio ``_matcher_prevails`` documenta como
+    necessária para saber, no log, qual dos dois desfechos opostos aconteceu."""
+    return f"{current}+{added}" if current else added
+
+
+def _stack(outcomes: Sequence[_SegmentOutcome], limit: int) -> tuple[tuple[CommandRef, ...], bool]:
+    """Empilha segmentos INTEIROS enquanto couberem no orçamento de slots.
+
+    Cortar no meio de um par devolveria o verbo sozinho — exatamente o comando inerte que o
+    acompanhante existe para eliminar. Se nem o primeiro segmento couber, ele é truncado assim
+    mesmo: resultado vazio viraria "nenhum comando" sem explicação nenhuma no log."""
+    commands: list[CommandRef] = []
+    overflow = False
+    for outcome in outcomes:
+        if len(commands) + len(outcome.commands) > limit:
+            overflow = True
+            break
+        commands.extend(outcome.commands)
+    if not commands and outcomes:
+        return tuple(outcomes[0].commands[:limit]), True
+    return tuple(commands), overflow
 
 
 def _margin(candidates: Sequence[Candidate]) -> float:

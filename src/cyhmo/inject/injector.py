@@ -30,8 +30,14 @@ Clock = Callable[[], float]
 LOG_SOURCE = "inject"
 EMPTY_ORACLE_ID = 0xFFFF
 ORACLE_ID_SLOTS = 8
-ORACLE_TEXT_LIMIT = 64
-DRY_RUN_MAX_TEXT_LENGTH = 63
+# 128 é o passo do espelho do texto casado no objeto de fala (0x0050E750 + i*0x80 + 0x94):
+# ler menos que isso truncava o texto de volta e fazia o oráculo julgar "não casou" um
+# comando que casou — foi o que aconteceu com a entrada de 69 caracteres da Sun Suite.
+ORACLE_TEXT_LIMIT = 128
+# Espelha ``slot_size - 1`` da receita em ``config/write_recipe.yaml``. O dry-run não carrega
+# receita (roda sem PCSX2), então o valor é duplicado aqui: mantenha os dois juntos, senão o
+# dry-run recusa o que a injeção de verdade aceita e o teste vira mentira.
+DRY_RUN_MAX_TEXT_LENGTH = 127
 ERROR_CANNOT_TALK = "cannot_talk"
 ERROR_CAN_TALK_UNKNOWN = "can_talk desconhecido (endereço não mapeado); desligue inject.require_can_talk ou mapeie o campo"
 
@@ -152,6 +158,10 @@ class Injector:
             ]
         )
         slots = range(count) if count <= recipe.max_slots else range(0)
+        # Lê no passo da RECEITA, que é o passo com que o mod escreve. O produtor do próprio
+        # jogo usa 0x40 (`&DAT_003f6600 + i*0x40`), então um resultado que não tenha vindo
+        # daqui aparece torto do slot 1 em diante. Só o eco de diagnóstico é afetado: o
+        # matcher lê pelo array de ponteiros, que é escrito junto com o texto.
         words = [self._client.read_cstring(recipe.slot_address(slot), recipe.slot_size) for slot in slots]
         return {
             "asr_state": asr_state,
