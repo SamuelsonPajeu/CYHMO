@@ -20,7 +20,12 @@ const CLIPPING = 0.99;
 const TOO_QUIET = 0.01;
 
 const RESTART_SECTIONS = new Set(['audio', 'activation', 'stt', 'languages', 'pine', 'state']);
-const RESTART_INTENT_FIELDS = new Set(['embedding_backend', 'embedding_model', 'embedding_cache', 'annex']);
+// O tradutor da gramática é montado na composição: provider, cache e teto de saída só valem
+// no reinício seguinte. Espelha RESTART_INTENT_FIELDS em ui/viewmodel.py.
+const RESTART_INTENT_FIELDS = new Set([
+  'embedding_backend', 'embedding_model', 'embedding_cache', 'annex',
+  'auto_gloss', 'gloss_cache', 'gloss_timeout_ms', 'gloss_max_tokens',
+]);
 
 const ADVANCED_SECTIONS = [
   { id: 'audio', title: 'settings.advanced.audio', paths: ['audio'] },

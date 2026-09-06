@@ -110,8 +110,11 @@ class LlmConfig(StrictModel):
     quente custa ~600 ms e a fria ~6,5 s, quase toda em carregamento do disco — sem ele
     qualquer intervalo entre comandos faz a chamada seguinte estourar o timeout.
 
-    ``max_output_tokens`` é pequeno de propósito: o assistente responde o TEXTO do comando,
-    não JSON, e a entrada mais longa da gramática cabe com folga em 16 tokens."""
+    ``max_output_tokens`` é um TETO, não um alvo: o assistente responde o TEXTO do comando e
+    para sozinho. Os 16 de antes foram dimensionados contra um vocabulário de até 40
+    caracteres e passaram a cortar o assistente no meio da senha da Sun Suite, de 69 — e
+    resposta truncada não casa com a gramática, então virava recusa. Com o slot em 0x80 uma
+    entrada pode ter 127 caracteres, e 48 cobre isso com margem."""
 
     enabled: bool = False
     mode: Literal["fallback", "pair"] = "fallback"
@@ -121,7 +124,7 @@ class LlmConfig(StrictModel):
     api_key_env: str = "CYHMO_LLM_API_KEY"
     timeout_ms: int = Field(default=800, ge=100, le=60_000)
     keep_alive: str = "30m"
-    max_output_tokens: int = Field(default=16, ge=1, le=256)
+    max_output_tokens: int = Field(default=48, ge=1, le=256)
     warm_up: bool = True
     in_battle: bool = False
     prompt_top_k: int = Field(default=20, ge=3, le=60)
@@ -135,6 +138,39 @@ class LlmConfig(StrictModel):
 
 
 class IntentConfig(StrictModel):
+    """``spatial_bonus`` desempata comandos que o cosseno deixa colados, usando a relação de
+    lugar que o jogador falou: medido em 2026-09-05, "olha atrás do convite" separava
+    ``look in the invitation`` (0,9155) de ``Look on the backside of the invitation`` (0,8994)
+    por 0,017, e o genérico ganhava. O bônus só vale dentro de ``spatial_band`` abaixo do
+    primeiro colocado, e só quando algum candidato dessa faixa concorda com a relação — assim
+    ele nunca alcança um comando que o cosseno ganhou com folga nem transforma escolha errada
+    em silêncio. ``spatial_bonus = 0`` desliga o termo e devolve o ranking de antes.
+
+    ``companion_slot`` trata o verbo nu. O jogo CASA "Search" sozinho e não age: o matcher
+    preenche o slot do verbo, o do objeto fica vazio e nenhuma regra sobrevive. Em ``prefer``
+    o interpretador troca o verbo pela entrada fundida da cena ("Search behind the chair")
+    quando ela já está entre os candidatos, ou emparelha verbo + objeto em dois slots. Nunca
+    recusa: sem objeto acima do limiar de aceite, o verbo sai sozinho como saía antes.
+
+    ``auto_gloss`` manda o assistente traduzir o vocabulário da CENA uma vez, guardar em
+    ``gloss_cache`` e usar as traduções como âncoras do índice. Nasce DESLIGADO porque, medido,
+    ele PIORA o acerto: sobre 62 enunciados rotulados em 7 cenas, 61,3% → 54,8%; e com a
+    curadoria do pacote junto, 66,1% → 61,3%, com as injeções erradas subindo de 6 para 7.
+
+    O motivo é estrutural e não se resolve com prompt melhor. A cobertura é real (410 dos 416
+    literais), mas 21,6% das linhas geradas colidem com OUTRA chave da mesma cena, e como cada
+    chave é representada pela sua melhor linha, uma tradução ruim levanta permanentemente a
+    chave errada contra TODO enunciado daquela cena — `drawer on the right` traduzido como
+    "caixa na direita" passou a ganhar de `box on the right` em três enunciados diferentes.
+    Ficar fora do casamento exato limita o estrago a empurrar score, e empurrar a chave errada
+    acima da certa já é o estrago inteiro.
+
+    Fica no código porque a ideia é boa e o que falta é contenção — descartar linha que colide
+    dentro da cena foi tentado e rendeu +1,6pp de acerto ao custo de +1 injeção errada, porque
+    o pior caso ("caixa na direita" contra "caixa a direita") é uma colisão APROXIMADA que a
+    guarda não enxerga. Ligue para experimentar, com o log de candidatos à mão: a marca
+    ``pt-BR~auto`` diz quando um casamento veio daqui."""
+
     embedding_backend: Literal["sentence_transformers", "hashing"] = "sentence_transformers"
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
     accept_threshold: float = Field(default=0.78, ge=-1.0, le=1.0)
@@ -145,6 +181,13 @@ class IntentConfig(StrictModel):
     stale_grammar_penalty: float = Field(default=0.05, ge=0.0, le=0.5)
     top_k: int = Field(default=3, ge=1, le=10)
     max_query_variants: int = Field(default=3, ge=1, le=8)
+    spatial_bonus: float = Field(default=0.03, ge=0.0, le=0.5)
+    spatial_band: float = Field(default=0.06, ge=0.0, le=1.0)
+    companion_slot: Literal["prefer", "off"] = "prefer"
+    auto_gloss: bool = False
+    gloss_timeout_ms: int = Field(default=20_000, ge=1_000, le=180_000)
+    gloss_max_tokens: int = Field(default=1_024, ge=64, le=8_192)
+    gloss_cache: str = "data/gloss.yaml"
     annex: str = "catalog/commands.yaml"
     observed_vocab: str = "data/observed_vocab.yaml"
     embedding_cache: str = "data/embeddings"
@@ -277,6 +320,7 @@ class ProjectPaths:
     annex: Path
     observed_vocab: Path
     embedding_cache: Path
+    gloss_cache: Path
     recipe: Path
     log_file: Path
     audio_dir: Path
@@ -298,6 +342,7 @@ class ProjectPaths:
             annex=resolve(config.intent.annex),
             observed_vocab=resolve(config.intent.observed_vocab),
             embedding_cache=resolve(config.intent.embedding_cache),
+            gloss_cache=resolve(config.intent.gloss_cache),
             recipe=resolve(config.pine.recipe),
             log_file=resolve(config.ui.log_file),
             audio_dir=resolve(config.debug.audio_dir),

@@ -57,6 +57,14 @@ class LexicalTranslator:
 
 
 def _build_table(packs: LanguagePackSet) -> dict[str, str]:
+    """``packs.spatial`` fica DELIBERADAMENTE de fora, e não é esquecimento.
+
+    O que entra aqui vira texto de consulta e, pelas direções, argumento — e argumento entra
+    em ``english_candidates``, onde o casamento literal do interpretador procura entrada da
+    gramática. Medido: com "atrás → back" nesta tabela, "olha atrás do convite" produz o
+    candidato ``back``, que casa exato com a entrada nua ``back`` da gramática de combate e é
+    injetado com score 1.0 — comando errado, com confiança máxima, sem passar pelo ranking.
+    A relação de lugar é evidência de RANKING (``intent/lexical.py``), nunca de tradução."""
     table: dict[str, str] = {}
     for source, target in packs.lexicon.items():
         table.setdefault(source, normalize_text(target))

@@ -10,7 +10,18 @@ active: ascii_words
 
 ascii_words:
   words_addr:   0x003F6600
-  slot_size:    0x40
+  # 0x80 e não 0x40: o texto do comando cabe em slot_size-1, e a gramática da senha da
+  # Sun Suite traz uma entrada de 69 caracteres ("Even the very shadow that you cast in
+  # sunlight. I want to monopolize.") que o teto de 63 recusava — o jogador ficava preso.
+  # Alargar é seguro porque o passo do slot é escolha NOSSA, não do jogo: o matcher recebe
+  # o PONTEIRO da palavra e o número de blocos derivado do strlen dela
+  # (FUN_001ad8b0 → FUN_001ad668(ctx, str, (strlen+7)>>3, ...)), então nunca lê por passo
+  # fixo. E o próprio jogo zera 0x400 bytes a partir de words_addr a cada reconhecimento
+  # (FUN_00299050(0x3f6600, 0, 0x400)), de modo que 8 × 0x80 = 0x400 cobre exatamente o
+  # buffer dele e para antes dos histogramas de confiança em 0x003F6A00.
+  # O teto de 127 também é o passo do espelho do texto casado (0x0050E750 + i*0x80 + 0x94):
+  # 127 + o nulo enchem um espelho inteiro sem invadir o seguinte.
+  slot_size:    0x80
   max_slots:    8
   ptrs_addr:    0x003F6AA0
   count_addr:   0x0034F43C

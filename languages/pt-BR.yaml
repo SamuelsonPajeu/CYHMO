@@ -106,6 +106,41 @@ directions:
   para trás: BACK
   pra trás: BACK
 
+# Relação espacial dita pelo jogador -> relação canônica em inglês.
+# Usada SÓ como evidência de ranking (src/cyhmo/intent/lexical.py): desempata comandos que o
+# cosseno deixa colados ("olha atrás do convite" separava `Look on the backside of the
+# invitation` de `look in the invitation` por 0,017).
+# NUNCA entra no tradutor nem vira argumento — o porquê está em translation.py, _build_table.
+spatial:
+  atrás: back
+  atras: back
+  por trás: back
+  por tras: back
+  de trás: back
+  de tras: back
+  verso: back
+  no verso: back
+  fundo: back
+  costas: back
+  dentro: inside
+  por dentro: inside
+  embaixo: under
+  debaixo: under
+  em baixo: under
+  sob: under
+  em cima: top
+  sobre: "on"   # com aspas: YAML lê on/off/yes/no sem aspas como booleano
+  do lado: side
+  ao lado: side
+  do outro lado: side
+  outro lado: side
+  entre: between
+  ao redor: around
+  em volta: around
+  em frente: front
+  na frente: front
+  fora: outside
+
 lexicon:
   rio: rio
   atira: shoot
@@ -312,3 +347,38 @@ command_examples:
   Paper: [papel, o papel]
   Notebook: [caderno, o caderno]
   Newspaper: [jornal, o jornal]
+
+  # Substantivos de cena vistos na gramática de verdade (data/observed_vocab.yaml) e que não
+  # tinham nenhuma âncora em pt-BR: a consulta ficava inteira em português e o literal inglês
+  # pontuava no nível do ruído (medido: "vai na cama" dava `Bed` 0,5927 em TERCEIRO, atrás de
+  # `Leave the room` 0,6078 e `Exit the room` 0,5928 — os dois só ganharam por TEREM exemplo
+  # curado). Exemplo curado casa exato e tem precedência sobre score e margem.
+  # Estes entram só no ÍNDICE: `command_examples` não alimenta o tradutor lexical, então
+  # nenhum deles pode virar argumento nem casar com entrada nua da gramática.
+  Sun Suite: [suíte do sol, suite do sol, a suíte do sol, vai pra suíte do sol, sun suite]
+  Bed: [cama, a cama, vai na cama, vai pra cama, deita na cama, deita]
+  Bedroom: [quarto de dormir, o dormitório, dormitorio]
+  Bathroom: [banheiro, o banheiro, vai pro banheiro, lavabo]
+  Living room: [sala, a sala, sala de estar, vai pra sala]
+  Living area: [área de estar, area de estar, estar]
+  The next room: [a próxima sala, proxima sala, a sala seguinte, o próximo cômodo]
+  # "escrivaninha" também é `desk` no léxico. Nos carimbos do vocabulário observado Desk e
+  # Dresser caem em grupos diferentes, mas isso é heurística: uma gramática de 150 entradas
+  # cobre mais de um grupo, e onde as duas conviverem quem ganha o casamento exato depende da
+  # ordem da cena. Fica assim mesmo porque foi a palavra que o jogador usou para o móvel de
+  # gavetas e, sem ela, "escrivaninha" não alcança `Dresser` de jeito nenhum (medido: 0,5144,
+  # atrás de `Hallway` 0,5266). Se aparecer cena com as duas, separe por aqui.
+  Dresser: [cômoda, comoda, penteadeira, gaveteiro, escrivaninha, o móvel das gavetas]
+  Infirmary: [enfermaria, a enfermaria, vai pra enfermaria]
+  Equipment room: [sala de equipamentos, almoxarifado, depósito, deposito]
+  Security Room: [sala de segurança, sala de seguranca, segurança, seguranca]
+  # SEM 'carta' e 'cartão' nus: `letter`, `card` e `envelope` são entradas REAIS desta cena, e
+  # exemplo curado casa exato em 1,0 — reivindicar a palavra nua roubaria o literal do dono.
+  Invitation: [convite, o convite, o bilhete de convite]
+  Blueprint: [planta, a planta, projeto, planta baixa]
+  Projector: [projetor, o projetor]
+  Helmet: [capacete, o capacete]
+  Steel pipe: [cano, cano de aço, cano de aco, barra de ferro]
+  Corpse: [cadáver, cadaver, o corpo, defunto]
+  Mirror: [espelho, o espelho]
+  Questionnaire: [questionário, questionario, formulário, formulario]

@@ -38,7 +38,22 @@ from cyhmo.pipeline.bus import EventBus
 log = logging.getLogger("cyhmo.ui")
 
 RESTART_SECTIONS = frozenset({"audio", "activation", "stt", "languages", "pine", "state"})
-RESTART_INTENT_FIELDS = frozenset({"embedding_backend", "embedding_model", "embedding_cache", "annex"})
+# O tradutor da gramática é montado uma vez, na composição: trocar o provider, o caminho do
+# cache ou o teto de saída pela interface só vale no reinício seguinte. Ligar `auto_gloss` com
+# ele desligado no boot também exige reinício, porque o provider nem chegou a ser criado —
+# desligar, esse sim, vale na hora (o interpretador consulta a config a cada cena).
+RESTART_INTENT_FIELDS = frozenset(
+    {
+        "embedding_backend",
+        "embedding_model",
+        "embedding_cache",
+        "annex",
+        "auto_gloss",
+        "gloss_cache",
+        "gloss_timeout_ms",
+        "gloss_max_tokens",
+    }
+)
 DEFAULT_GRAMMAR_LIMIT = 500
 
 _TEMPLATE_LINE = re.compile(r"^\s*\w+\s*=\s*\{([a-z_.]+)\}\s*(?:#\s*(.*?))?\s*$")

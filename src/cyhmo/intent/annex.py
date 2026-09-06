@@ -24,6 +24,7 @@ class AnnexEntry:
     key: str
     category: str | None
     examples: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    needs_companion: bool = False
 
 
 class Annex:
@@ -65,6 +66,21 @@ class Annex:
         entry = self._entries.get(normalized_key(key))
         return None if entry is None else entry.category
 
+    def needs_companion(self, key: str) -> bool:
+        """Verbo que o jogo aceita sozinho mas sobre o qual a cena não age.
+
+        O reconhecedor CASA o verbo nu — no corpus de 2026-09-05 são 14 injeções com id real
+        (Search/Look at/Lookat 109, Pick up 103, Go to 1) e oráculo dizendo que casou — e ainda
+        assim nada acontece na tela: o matcher preenche o slot do verbo, o slot do objeto fica
+        vazio, nenhuma regra da gramática sobrevive e o jogo despacha "sem comando". O jogador
+        só avançou em #00029, quando o objeto (`rations`) foi injetado.
+
+        A marca é curada, não derivada de ``args``: ``args`` diz que o comando PODE levar alvo,
+        não que precisa — o próprio catálogo anota "Alvo opcional" em CHECK e cura exemplos com
+        o verbo nu."""
+        entry = self._entries.get(normalized_key(key))
+        return entry is not None and entry.needs_companion
+
     def examples_for(self, key: str) -> dict[str, list[str]]:
         entry = self._entries.get(normalized_key(key))
         if entry is None:
@@ -104,4 +120,5 @@ def _parse_entry(item: Any, path: Path) -> AnnexEntry:
         key=str(item["key"]).strip(),
         category=None if category is None else str(category),
         examples={lang: phrases for lang, phrases in examples.items() if phrases},
+        needs_companion=bool(item.get("needs_companion")),
     )
